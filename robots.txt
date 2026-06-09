@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://www.mandsaurgarlic.com/sitemap.xml
