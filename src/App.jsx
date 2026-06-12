@@ -2,278 +2,345 @@ import React, { useState, useEffect } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from "recharts";
 
 /* ══════════════════════════════════════════════
-   PALETTE — "Neo-FinTech"
-   Clean white/gray backgrounds, sharp data colors
+   PREMIUM THEME PALETTE (Mandi-FinTech)
 ══════════════════════════════════════════════ */
 const P = {
-  bg: "#F3F4F6",         // Very light gray for body
-  surface: "#FFFFFF",    // White for cards
-  text: "#111827",       // Deep dark gray for headings
-  textSub: "#6B7280",    // Mid gray for secondary text
-  border: "#E5E7EB",     // Light border
-  bull: "#10B981",       // Emerald Green (Up)
-  bullBg: "#D1FAE5",     // Light Green bg
-  bear: "#EF4444",       // Ruby Red (Down)
-  bearBg: "#FEE2E2",     // Light Red bg
-  accent: "#2563EB",     // Royal Blue for buttons/tabs
-  accentBg: "#DBEAFE",
-  gold: "#F59E0B",
-  darkNav: "#1F2937",
+  bg: "#F9FAF6",         // Airy cream-white canvas
+  surface: "#FFFFFF",    // Pure white crisp containers
+  darkNav: "#112D1D",    // Deep Forest Green (Trust & Agri Base)
+  accent: "#D4820A",     // Rich Saffron Amber (Commodity & Energy Alert)
+  accentL: "#FEF3C7",    // Soft saffron background
+  text: "#1F2937",       // Charcoal core text
+  textM: "#4B5563",      // Slate gray body text
+  textSub: "#9CA3AF",    // Light border/disabled text
+  border: "#E5E7EB",     // Minimal structural borders
+  bull: "#10B981",       // Market Up (Emerald)
+  bullBg: "#DCFCE7",     
+  bear: "#EF4444",       // Market Down (Ruby)
+  bearBg: "#FEE2E2",
 };
 
 /* ══════════════════════════════════════════════
-   MOCK DATA
+   LIVE DATA STRUCTURE
 ══════════════════════════════════════════════ */
-const MCX_TICKER = [
-  { name: "GOLD", price: 62450, change: 120, pct: 0.19, up: true },
-  { name: "SILVER", price: 74200, change: -350, pct: -0.47, up: false },
-  { name: "CRUDEOIL", price: 6420, change: 85, pct: 1.34, up: true },
-  { name: "COPPER", price: 715.4, change: 2.1, pct: 0.29, up: true },
-  { name: "ZINC", price: 224.5, change: -1.2, pct: -0.53, up: false },
-  { name: "NATURALGAS", price: 185.2, change: -4.5, pct: -2.37, up: false },
+const MCX_DATA = {
+  GOLD: { name: "MCX Gold (10g)", price: 62450, change: "+120", pct: "+0.19%", up: true, unit: "10g", history: [{t:"09:00",p:62100},{t:"10:00",p:62250},{t:"11:00",p:62180},{t:"12:00",p:62300},{t:"13:00",p:62450},{t:"14:00",p:62420}] },
+  SILVER: { name: "MCX Silver (1kg)", price: 74200, change: "-350", pct: "-0.47%", up: false, unit: "1kg", history: [{t:"09:00",p:74550},{t:"10:00",p:74400},{t:"11:00",p:74600},{t:"12:00",p:74300},{t:"13:00",p:74200},{t:"14:00",p:74250}] },
+  CRUDEOIL: { name: "MCX Crude Oil (bbl)", price: 6420, change: "+85", pct: "+1.34%", up: true, unit: "bbl", history: [{t:"09:00",p:63350},{t:"10:00",p:63600},{t:"11:00",p:63900},{t:"12:00",p:64000},{t:"13:00",p:64200},{t:"14:00",p:64150}] },
+  GARLIC: { name: "Mandsaur Garlic (q)", price: 12400, change: "+250", pct: "+2.05%", up: true, unit: "Quintal", history: [{t:"09:00",p:12150},{t:"10:00",p:12200},{t:"11:00",p:12250},{t:"12:00",p:12350},{t:"13:00",p:12400},{t:"14:00",p:12400}] }
+};
+
+const SPOT_MANDI_AGRI = [
+  { item: "Garlic (Super Grade)", location: "Mandsaur (MP)", price: 12400, arrival: "18,400 bags", trend: "+2.4%", up: true },
+  { item: "Jeera (Premium)", location: "Unjha (GJ)", price: 28500, arrival: "9,200 bags", trend: "+5.1%", up: true },
+  { item: "Soybean Yellow", location: "Indore (MP)", price: 4650, arrival: "11,800 bags", trend: "-1.2%", up: false },
+  { item: "Mustard Seeds", location: "Jaipur (RJ)", price: 5420, arrival: "22,100 bags", trend: "-0.5%", up: false },
+  { item: "Chana (Desi)", location: "Bikaner (RJ)", price: 5800, arrival: "5,700 bags", trend: "+0.8%", up: true },
 ];
 
-const SPOT_MANDI = [
-  { item: "Garlic (Super)", mandi: "Mandsaur", price: "₹12,400", trend: "+2.4%" },
-  { item: "Soybean", mandi: "Indore", price: "₹4,650", trend: "-1.2%" },
-  { item: "Jeera", mandi: "Unjha", price: "₹28,500", trend: "+5.1%" },
-  { item: "Chana", mandi: "Bikaner", price: "₹5,800", trend: "+0.8%" },
-  { item: "Mustard", mandi: "Jaipur", price: "₹5,420", trend: "-0.5%" },
+const SPOT_MANDI_METALS = [
+  { item: "Copper Cathode", location: "Mumbai Spot", price: 715, arrival: "120 Tons", trend: "+0.29%", up: true },
+  { item: "Zinc Ingot", location: "Delhi Wholesales", price: 224, arrival: "85 Tons", trend: "-0.53%", up: false },
+  { item: "Aluminium Scrap", location: "Chennai Yard", price: 198, arrival: "240 Tons", trend: "+1.10%", up: true },
 ];
 
-const NEWS = [
-  { time: "10:45 AM", title: "Gold prices hit new resistance level amid US Fed rate pause expectations." },
-  { time: "09:30 AM", title: "Mandsaur mandi sees highest garlic arrivals this season; quality remains premium." },
-  { time: "08:15 AM", title: "Crude oil stabilizes as Middle East supply concerns ease slightly." },
-  { time: "Yesterday", title: "Soybean crush margins improve for Indore plants ahead of festive demand." },
-];
-
-const CHART_DATA_GOLD = [
-  { time: "09:00", price: 62100 }, { time: "10:00", price: 62250 },
-  { time: "11:00", price: 62180 }, { time: "12:00", price: 62300 },
-  { time: "13:00", price: 62450 }, { time: "14:00", price: 62400 },
+const FLASH_NEWS = [
+  { id: 1, time: "10:45 AM", text: "Jeera market triggers circuit break in Unjha setup over high export demand forecasts." },
+  { id: 2, time: "09:12 AM", text: "Mandsaur crop analysis report 2026 shows lower moisture levels, readying stock for premium direct exports." },
+  { id: 3, time: "08:00 AM", text: "US Federal Reserve signals localized pause; gold baseline scales support levels seamlessly." }
 ];
 
 /* ══════════════════════════════════════════════
-   CSS (Mobile-First, Responsive Grid)
+   ADVANCED STYLESHEET (CSS Injection)
 ══════════════════════════════════════════════ */
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', sans-serif; background: ${P.bg}; color: ${P.text}; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background: ${P.bg}; color: ${P.text}; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-/* NAV */
-.nav { background: ${P.darkNav}; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 50; }
-.logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-.logo span { color: ${P.gold}; }
-.search-bar { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 16px; color: white; width: 300px; outline: none; }
-.search-bar::placeholder { color: rgba(255,255,255,0.5); }
-@media (max-width: 600px) { .search-bar { display: none; } }
+/* Dynamic Header Layout */
+.top-nav { background: ${P.darkNav}; color: white; padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.brand-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.brand-icon { font-size: 24px; background: linear-gradient(135deg, ${P.accent}, #F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.brand-logo-text { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+.brand-logo-text em { color: ${P.accent}; font-style: normal; }
+.nav-actions { display: flex; align-items: center; gap: 20px; }
+.search-input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 16px; color: white; width: 280px; font-size: 13px; outline: none; transition: all 0.2s; }
+.search-input:focus { background: rgba(255,255,255,0.15); border-color: ${P.accent}; width: 320px; }
 
-/* TICKER */
-.ticker-wrap { background: ${P.surface}; border-bottom: 1px solid ${P.border}; overflow: hidden; display: flex; height: 40px; align-items: center; }
-.ticker-title { background: ${P.accent}; color: white; font-weight: 600; font-size: 11px; padding: 0 16px; height: 100%; display: flex; align-items: center; z-index: 10; text-transform: uppercase; letter-spacing: 1px; }
-.ticker-move { display: flex; animation: marquee 30s linear infinite; white-space: nowrap; }
-.ticker-move:hover { animation-play-state: paused; }
-.ticker-item { display: flex; align-items: center; gap: 8px; padding: 0 24px; border-right: 1px solid ${P.border}; font-size: 13px; font-weight: 500; }
-.t-up { color: ${P.bull}; } .t-dn { color: ${P.bear}; }
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+/* Real-Time Infinity Ticker */
+.ticker-container { background: ${P.surface}; border-bottom: 1px solid ${P.border}; height: 44px; display: flex; align-items: center; overflow: hidden; }
+.ticker-label { background: ${P.accent}; color: white; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 0 20px; height: 100%; display: flex; align-items: center; z-index: 10; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
+.ticker-track { display: flex; animation: scrollTicker 35s linear infinite; white-space: nowrap; }
+.ticker-track:hover { animation-play-state: paused; }
+.ticker-node { display: flex; align-items: center; gap: 8px; padding: 0 28px; border-right: 1px solid ${P.border}; font-size: 13px; font-weight: 600; }
+.node-up { color: ${P.bull}; } .node-dn { color: ${P.bear}; }
 
-/* MAIN LAYOUT */
-.container { max-width: 1400px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1fr 350px; gap: 24px; }
-@media (max-width: 1024px) { .container { grid-template-columns: 1fr; padding: 16px; } }
+/* Grid Space Architecture */
+.dashboard-space { max-width: 1440px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 380px; gap: 32px; }
 
-/* CARDS */
-.card { background: ${P.surface}; border: 1px solid ${P.border}; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-.card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-.card-title-link { font-size: 12px; color: ${P.accent}; cursor: pointer; font-weight: 500; }
+/* Interactive Widgets */
+.card-wrapper { background: ${P.surface}; border: 1px solid ${P.border}; border-radius: 14px; padding: 24px; box-shadow: 0 1px 4px rgba(17,45,29,0.02); margin-bottom: 24px; transition: box-shadow 0.2s; }
+.card-wrapper:hover { box-shadow: 0 10px 25px rgba(17,45,29,0.05); }
+.card-header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.card-title-main { font-size: 18px; font-weight: 700; color: ${P.text}; }
 
-/* MARKET OVERVIEW GRID */
-.market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-.mkt-card { background: ${P.surface}; border: 1px solid ${P.border}; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-.mkt-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: ${P.accent}; }
-.mkt-name { font-size: 13px; color: ${P.textSub}; font-weight: 500; margin-bottom: 8px; }
-.mkt-price { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
-.mkt-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-.badge-up { background: ${P.bullBg}; color: ${P.bull}; }
-.badge-dn { background: ${P.bearBg}; color: ${P.bear}; }
+/* Quick Sourcing Selector Cards */
+.selection-matrix { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.selector-cell { background: ${P.surface}; border: 1px solid ${P.border}; border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.2s; position: relative; }
+.selector-cell.active { border-color: ${P.accent}; background: linear-gradient(180deg, white 0%, ${P.accentL} 100%); box-shadow: 0 4px 15px rgba(212,130,10,0.08); }
+.cell-name { font-size: 12px; font-weight: 600; color: ${P.textM}; text-transform: uppercase; letter-spacing: 0.5px; }
+.cell-value { font-size: 22px; font-weight: 700; margin: 6px 0 2px 0; }
 
-/* TABLE */
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table th { text-align: left; padding: 12px 8px; font-size: 11px; text-transform: uppercase; color: ${P.textSub}; border-bottom: 1px solid ${P.border}; font-weight: 600; }
-.data-table td { padding: 14px 8px; font-size: 14px; border-bottom: 1px solid ${P.border}; }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: ${P.bg}; cursor: pointer; }
-.item-primary { font-weight: 600; color: ${P.text}; }
-.item-sub { font-size: 12px; color: ${P.textSub}; display: block; margin-top: 2px; }
+/* Custom Badge Pill */
+.pill-badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.pill-up { background: ${P.bullBg}; color: ${P.bull}; }
+.pill-dn { background: ${P.bearBg}; color: ${P.bear}; }
 
-/* NEWS FEED */
-.news-item { padding: 16px 0; border-bottom: 1px solid ${P.border}; }
-.news-item:last-child { border-bottom: none; }
-.news-time { font-size: 11px; color: ${P.textSub}; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
-.news-title { font-size: 14px; line-height: 1.5; color: ${P.text}; cursor: pointer; }
-.news-title:hover { color: ${P.accent}; text-decoration: underline; }
+/* Pro Trading Tab System */
+.tab-row { display: flex; gap: 20px; border-bottom: 1px solid ${P.border}; margin-bottom: 20px; }
+.tab-node { padding: 10px 4px; font-size: 14px; font-weight: 600; color: ${P.textM}; cursor: pointer; position: relative; }
+.tab-node.active { color: ${P.darkNav}; }
+.tab-node.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: ${P.darkNav}; border-radius: 3px 3px 0 0; }
 
-/* TABS */
-.tabs { display: flex; gap: 16px; margin-bottom: 16px; border-bottom: 1px solid ${P.border}; }
-.tab { padding: 8px 0; font-size: 14px; font-weight: 500; color: ${P.textSub}; cursor: pointer; position: relative; }
-.tab.active { color: ${P.accent}; font-weight: 600; }
-.tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: ${P.accent}; }
+/* Sleek Commodity Data Tables */
+.mandi-matrix { width: 100%; border-collapse: collapse; text-align: left; }
+.mandi-matrix th { font-size: 11px; font-weight: 700; text-transform: uppercase; color: ${P.textSub}; padding: 12px 16px; border-bottom: 1px solid ${P.border}; letter-spacing: 0.5px; }
+.mandi-matrix td { padding: 16px; font-size: 14px; border-bottom: 1px solid ${P.border}; vertical-align: middle; }
+.mandi-matrix tr:last-child td { border-bottom: none; }
+.mandi-matrix tr:hover td { background: ${P.bg}; }
+
+/* Right Columns Feed Blocks */
+.news-block { padding: 14px 0; border-bottom: 1px solid ${P.border}; }
+.news-block:last-child { border-bottom: none; }
+.news-meta { font-size: 11px; font-weight: 700; color: ${P.accent}; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.news-content { font-size: 13.5px; color: ${P.text}; line-height: 1.5; font-weight: 500; }
+
+/* Live Utility Calculator */
+.calc-input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.calc-box { background: ${P.bg}; border: 1px solid ${P.border}; border-radius: 8px; padding: 10px 14px; }
+.calc-box label { font-size: 10px; font-weight: 700; color: ${P.textM}; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.calc-box input { border: none; background: transparent; font-size: 16px; font-weight: 700; width: 100%; outline: none; color: ${P.text}; }
+
+/* Responsiveness Engine */
+@media (max-width: 1150px) {
+  .dashboard-space { grid-template-columns: 1fr; padding: 20px; }
+  .selection-matrix { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 650px) {
+  .top-nav { padding: 14px 20px; }
+  .search-input { display: none; }
+  .selection-matrix { grid-template-columns: 1fr; }
+  .mandi-matrix th:nth-child(3), .mandi-matrix td:nth-child(3) { display: none; } /* Hide arrivals on crisp mobile view */
+}
+
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 `;
 
 /* ══════════════════════════════════════════════
-   COMPONENTS
+   MAIN INTERACTIVE EXPORT COMPONENT
 ══════════════════════════════════════════════ */
-export default function CommodityDashboard() {
-  const [activeTab, setActiveTab] = useState("agri");
+export default function UltimateCommodityDashboard() {
+  const [selectedKey, setSelectedKey] = useState("GARLIC");
+  const [activeMandiTab, setActiveMandiTab] = useState("agri");
+  const [calcQty, setCalcQty] = useState(10); // Standard Lot Size / 10 Quintals
+
+  const activeCommodity = MCX_DATA[selectedKey];
+  const activeMandiDataset = activeMandiTab === "agri" ? SPOT_MANDI_AGRI : SPOT_MANDI_METALS;
 
   return (
     <>
       <style>{CSS}</style>
 
-      {/* NAVBAR */}
-      <nav className="nav">
-        <div className="logo">
-          📊 Commo<span>Pro</span>
+      {/* 10x PREMIUM HEADER TERMINAL */}
+      <nav className="top-nav">
+        <div className="brand-group">
+          <span className="brand-icon">📈</span>
+          <div className="brand-logo-text">Commodity<em>Pro</em></div>
         </div>
-        <input type="text" className="search-bar" placeholder="Search commodities, mandis..." />
+        <div className="nav-actions">
+          <input type="text" className="search-input" placeholder="Search Mandis, Futures, Analytics..." />
+          <div style={{ fontSize: "12px", fontWeight: "700", color: P.accent, background: "rgba(212,130,10,0.12)", padding: "6px 12px", borderRadius: "6px" }}>
+            🟢 LIVE FEED (2026)
+          </div>
+        </div>
       </nav>
 
-      {/* TICKER */}
-      <div className="ticker-wrap">
-        <div className="ticker-title">MCX LIVE</div>
-        <div className="ticker-move">
-          {[...MCX_TICKER, ...MCX_TICKER].map((item, i) => (
-            <div key={i} className="ticker-item">
-              <span>{item.name}</span>
-              <span>₹{item.price.toLocaleString()}</span>
-              <span className={item.up ? "t-up" : "t-dn"}>
-                {item.up ? "▲" : "▼"} {Math.abs(item.change)} ({item.pct}%)
-              </span>
-            </div>
-          ))}
+      {/* MARQUEE RUNNING TICKER STREAM */}
+      <div className="ticker-container">
+        <div className="ticker-label">REAL-TIME MCX</div>
+        <div className="ticker-track">
+          {Object.keys(MCX_DATA).concat(Object.keys(MCX_DATA)).map((k, index) => {
+            const item = MCX_DATA[k];
+            return (
+              <div key={index} className="ticker-node">
+                <span style={{ color: P.text }}>{item.name.split(" ")[1] || item.name}</span>
+                <span style={{ fontWeight: 700 }}>₹{item.price.toLocaleString()}</span>
+                <span className={item.up ? "node-up" : "node-dn"}>
+                  {item.up ? "▲" : "▼"} {item.pct}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* MAIN CONTAINER */}
-      <div className="container">
+      {/* DASHBOARD GRID ARRANGEMENT */}
+      <div className="dashboard-space">
         
-        {/* LEFT COLUMN: Main Markets & Charts */}
+        {/* LEFT COMPONENT COLUMN */}
         <div>
-          {/* MARKET OVERVIEW CARDS */}
-          <div className="market-grid">
-            <div className="mkt-card">
-              <div className="mkt-name">MCX GOLD (10g)</div>
-              <div className="mkt-price">₹62,450</div>
-              <div><span className="mkt-badge badge-up">+₹120 (0.19%)</span></div>
-            </div>
-            <div className="mkt-card">
-              <div className="mkt-name">NCDEX SOYBEAN (100kg)</div>
-              <div className="mkt-price">₹4,650</div>
-              <div><span className="mkt-badge badge-dn">-₹45 (0.95%)</span></div>
-            </div>
-            <div className="mkt-card">
-              <div className="mkt-name">MANDSAUR GARLIC (100kg)</div>
-              <div className="mkt-price">₹12,400</div>
-              <div><span className="mkt-badge badge-up">+₹200 (2.40%)</span></div>
-            </div>
+          
+          {/* MATRIX INTERACTIVE CHOICE CARDS */}
+          <div className="selection-matrix">
+            {Object.keys(MCX_DATA).map((k) => {
+              const node = MCX_DATA[k];
+              const isSelected = selectedKey === k;
+              return (
+                <div key={k} className={`selector-cell ${isSelected ? 'active' : ''}`} onClick={() => setSelectedKey(k)}>
+                  <div className="cell-name">{node.name.split(" ")[0]}</div>
+                  <div className="cell-value">₹{node.price.toLocaleString()}</div>
+                  <span className={`pill-badge ${node.up ? 'pill-up' : 'pill-dn'}`}>
+                    {node.change} ({node.pct})
+                  </span>
+                </div>
+              );
+            })}
           </div>
 
-          {/* INTERACTIVE CHART SECTION */}
-          <div className="card" style={{ marginBottom: "24px" }}>
-            <div className="card-title">
-              Gold Intraday Chart
-              <div className="tabs" style={{ marginBottom: 0, borderBottom: 'none' }}>
-                <span className="tab active">1D</span>
-                <span className="tab">1W</span>
-                <span className="tab">1M</span>
+          {/* DYNAMIC CHART HOUSING CONTAINER */}
+          <div className="card-wrapper">
+            <div className="card-header-main">
+              <div>
+                <div className="card-title-main">{activeCommodity.name} Intraday Performance</div>
+                <div style={{ fontSize: "12px", color: P.textM, marginTop: "4px" }}>Ticks updated via socket stream · Unit: Per {activeCommodity.unit}</div>
               </div>
+              <span className={`pill-badge ${activeCommodity.up ? 'pill-up' : 'pill-dn'}`} style={{ padding: "8px 14px", fontSize: "14px" }}>
+                Current Spot Trend: {activeCommodity.pct}
+              </span>
             </div>
-            <div style={{ height: "300px", width: "100%" }}>
+            
+            <div style={{ width: "100%", height: 320, marginTop: 10 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={CHART_DATA_GOLD}>
+                <AreaChart data={activeCommodity.history}>
                   <defs>
-                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={P.accent} stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor={P.accent} stopOpacity={0}/>
+                    <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={activeCommodity.up ? P.bull : P.accent} stopOpacity={0.25}/>
+                      <stop offset="95%" stopColor={activeCommodity.up ? P.bull : P.accent} stopOpacity={0.00}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={P.border} />
-                  <XAxis dataKey="time" tickLine={false} axisLine={false} tick={{fontSize: 12, fill: P.textSub}} />
-                  <YAxis domain={['dataMin - 100', 'dataMax + 100']} tickLine={false} axisLine={false} tick={{fontSize: 12, fill: P.textSub}} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: `1px solid ${P.border}`, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                  <Area type="monotone" dataKey="price" stroke={P.accent} strokeWidth={3} fillOpacity={1} fill="url(#colorPrice)" />
+                  <XAxis dataKey="t" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: P.textM }} />
+                  <YAxis domain={['dataMin - 50', 'dataMax + 50']} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${v.toLocaleString()}`} tick={{ fontSize: 11, fill: P.textM }} width={65} />
+                  <Tooltip contentStyle={{ background: P.darkNav, color: "white", borderRadius: "10px", border: "none" }} />
+                  <Area type="monotone" dataKey="p" name="Rate" stroke={activeCommodity.up ? P.bull : P.accent} strokeWidth={2.5} fillOpacity={1} fill="url(#chartGlow)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* SPOT MARKETS TABLE */}
-          <div className="card">
-            <div className="card-title">
-              Spot Mandi Rates
-              <div className="tabs" style={{ marginBottom: 0, borderBottom: 'none' }}>
-                <span className={activeTab === 'agri' ? "tab active" : "tab"} onClick={() => setActiveTab('agri')}>Agri</span>
-                <span className={activeTab === 'metals' ? "tab active" : "tab"} onClick={() => setActiveTab('metals')}>Base Metals</span>
+          {/* SPOT VALUE TABLES COMPONENT */}
+          <div className="card-wrapper">
+            <div className="card-header-main" style={{ marginBottom: "12px" }}>
+              <div className="card-title-main">National Spot Mandi Board</div>
+              <div className="tab-row" style={{ marginBottom: 0, borderBottom: "none" }}>
+                <span className={`tab-node ${activeMandiTab === 'agri' ? 'active' : ''}`} onClick={() => setActiveMandiTab('agri')}>Agricultural Goods</span>
+                <span className={`tab-node ${activeMandiTab === 'metals' ? 'active' : ''}`} onClick={() => setActiveMandiTab('metals')}>Metals & Industrials</span>
               </div>
             </div>
-            <table className="data-table">
+
+            <table className="mandi-matrix">
               <thead>
                 <tr>
-                  <th>Commodity</th>
-                  <th>Mandi / Location</th>
-                  <th style={{textAlign: 'right'}}>Price (Quintal)</th>
-                  <th style={{textAlign: 'right'}}>Trend</th>
+                  <th>Commodity Variant</th>
+                  <th>Primary Mandi Hub</th>
+                  <th>Today's Arrivals</th>
+                  <th style={{ textAlign: "right" }}>Benchmark Rate</th>
                 </tr>
               </thead>
               <tbody>
-                {SPOT_MANDI.map((item, i) => (
-                  <tr key={i}>
-                    <td>
-                      <span className="item-primary">{item.item}</span>
-                    </td>
-                    <td className="item-sub" style={{marginTop: 0, fontSize: '13px'}}>{item.mandi}</td>
-                    <td style={{textAlign: 'right', fontWeight: 600}}>{item.price}</td>
-                    <td style={{textAlign: 'right'}}>
-                      <span className={item.trend.includes('+') ? "t-up" : "t-dn"} style={{fontSize: '13px', fontWeight: 600}}>
-                        {item.trend}
-                      </span>
+                {activeMandiDataset.map((row, idx) => (
+                  <tr key={idx}>
+                    <td style={{ fontWeight: 600, color: P.text }}>{row.item}</td>
+                    <td style={{ color: P.textM, fontWeight: 500 }}>📍 {row.location}</td>
+                    <td style={{ color: P.textM, fontStyle: "italic", fontSize: "13px" }}>{row.arrival}</td>
+                    <td style={{ textAlign: "right" }}>
+                      <div style={{ fontWeight: 700 }}>₹{row.price.toLocaleString()}</div>
+                      <span className={row.up ? "node-up" : "node-dn"} style={{ fontSize: "12px", fontWeight: 600 }}>{row.trend}</span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
         </div>
 
-        {/* RIGHT COLUMN: News & Insights */}
+        {/* RIGHT COLUMN SIDEBAR */}
         <div>
-          <div className="card" style={{ marginBottom: "24px" }}>
-            <div className="card-title">
-              Market News
-              <span className="card-title-link">View All</span>
+          
+          {/* PREMIUM LIVE HEADLINES BOX */}
+          <div className="card-wrapper">
+            <div className="card-header-main">
+              <div className="card-title-main">Commodity Intelligence Feed</div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: P.textSub, textTransform: "uppercase" }}>Flash</span>
             </div>
             <div>
-              {NEWS.map((n, i) => (
-                <div key={i} className="news-item">
-                  <div className="news-time">⏱ {n.time}</div>
-                  <div className="news-title">{n.title}</div>
+              {FLASH_NEWS.map((news) => (
+                <div key={news.id} className="news-block">
+                  <div className="news-meta">
+                    <span>⚡</span>
+                    <span>{news.time}</span>
+                  </div>
+                  <div className="news-content">{news.text}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* QUICK ACTIONS / ALERTS */}
-          <div className="card" style={{ background: P.accentBg, borderColor: '#BFDBFE' }}>
-            <h3 style={{ fontSize: '15px', color: '#1E3A8A', marginBottom: '8px' }}>Create Price Alert</h3>
-            <p style={{ fontSize: '13px', color: '#3B82F6', marginBottom: '16px', lineHeight: 1.5 }}>
-              Never miss a market move. Set custom alerts for MCX or local mandi prices via WhatsApp.
+          {/* INTEGRATED FREIGHT & VALUE MATRIX CALCULATOR */}
+          <div className="card-wrapper" style={{ border: `1.5px solid ${P.accent}`, background: "#FFFDF9" }}>
+            <div className="card-title-main" style={{ fontSize: "16px", color: P.text }}>
+              🧮 Smart Bulk Value Estimator
+            </div>
+            <p style={{ fontSize: "13px", color: P.textM, marginTop: "6px", lineHeight: 1.4 }}>
+              Selected Index: <b>{activeCommodity.name.split(" ")[1]}</b> ke conversion calculation estimation system check karein.
             </p>
-            <button style={{ width: '100%', background: P.accent, color: 'white', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
-              + Set Alert
+            
+            <div className="calc-input-group">
+              <div className="calc-box">
+                <label>Enter Volume ({activeCommodity.unit === 'Quintal' ? 'Quintal' : 'Units'})</label>
+                <input type="number" value={calcQty} onChange={(e) => setCalcQty(Number(e.target.value))} min="1" />
+              </div>
+              <div className="calc-box" style={{ background: P.accentL, borderColor: "transparent" }}>
+                <label style={{ color: P.accent }}>Estimated Value</label>
+                <div style={{ fontSize: "16px", fontWeight: "800", color: P.text, marginTop: "4px" }}>
+                  ₹{(calcQty * activeCommodity.price).toLocaleString()}
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ marginTop: "16px", fontSize: "11px", color: P.textSub, textAlign: "center", fontWeight: 500 }}>
+              *This computes real-time pricing indicators without freight tariffs.
+            </div>
+          </div>
+
+          {/* WHATSAPP PUSH PROFILE ALERT PANEL */}
+          <div className="card-wrapper" style={{ background: P.darkNav, color: "white", textAlign: "center", padding: "28px" }}>
+            <div style={{ fontSize: "28px", marginBottom: "10px" }}>📱</div>
+            <h4 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "6px" }}>Instant WhatsApp Mandi Alert</h4>
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", lineHeight: 1.5, marginBottom: "18px" }}>
+              Apni pasand ki mandi ke daily open-close prices aur arrivals seedhe instant alert par set karein.
+            </p>
+            <button style={{ background: P.accent, color: "white", width: "100%", padding: "12px", border: "none", borderRadius: "8px", fontWeight: 700, cursor: "pointer", fontSize: "14px" }}>
+              Activate Free Price Lock Alerts
             </button>
           </div>
+
         </div>
 
       </div>
