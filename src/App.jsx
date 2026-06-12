@@ -151,3 +151,137 @@
     </script>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MandsaurGarlic.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom styles to hide standard radio buttons and use cards */
+        .role-radio:checked + div {
+            border-color: #047857; /* Emerald 700 */
+            background-color: #ecfdf5; /* Emerald 50 */
+        }
+        .role-radio:checked + div .check-icon {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 h-screen flex flex-col">
+
+    <!-- Login Container -->
+    <main class="max-w-md w-full mx-auto p-6 flex-1 flex flex-col justify-center">
+        
+        <!-- Branding -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
+                <i class="fa-solid fa-seedling text-3xl text-emerald-700"></i>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">MandsaurGarlic<span class="text-lime-500">.com</span></h1>
+            <p class="text-gray-500 text-sm mt-1">Bharat ka No.1 Garlic Marketplace</p>
+        </div>
+
+        <!-- Step 1: Phone Number & Role -->
+        <div id="step-phone" class="space-y-6">
+            
+            <!-- Role Selection -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3">Aap Kaun Hain?</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="role" value="kisan" class="role-radio sr-only" checked>
+                        <div class="border-2 border-gray-200 rounded-xl p-4 text-center transition-all">
+                            <i class="fa-solid fa-tractor text-2xl text-emerald-700 mb-2"></i>
+                            <div class="font-bold text-gray-900">Kisan</div>
+                            <div class="text-[10px] text-gray-500">Garlic Bechna Hai</div>
+                            <i class="fa-solid fa-circle-check check-icon text-emerald-600 absolute top-2 right-2 opacity-0 transition-opacity"></i>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="role" value="vyapari" class="role-radio sr-only">
+                        <div class="border-2 border-gray-200 rounded-xl p-4 text-center transition-all">
+                            <i class="fa-solid fa-briefcase text-2xl text-emerald-700 mb-2"></i>
+                            <div class="font-bold text-gray-900">Vyapari</div>
+                            <div class="text-[10px] text-gray-500">Garlic Kharidna Hai</div>
+                            <i class="fa-solid fa-circle-check check-icon text-emerald-600 absolute top-2 right-2 opacity-0 transition-opacity"></i>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Phone Number Input -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
+                <div class="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden focus-within:border-emerald-600 transition-colors bg-white">
+                    <span class="px-4 text-gray-500 font-semibold border-r border-gray-200 bg-gray-50">+91</span>
+                    <input type="tel" id="mobileNumber" placeholder="98765 43210" class="w-full px-4 py-3 outline-none font-bold text-lg text-gray-800" maxlength="10">
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button onclick="sendOTP()" class="w-full bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-700/30 active:scale-95 transition-all flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-lg text-lime-400"></i> Get OTP on WhatsApp
+            </button>
+            <p class="text-center text-xs text-gray-400 mt-4">By continuing, you agree to our Terms & Conditions</p>
+        </div>
+
+        <!-- Step 2: OTP Verification (Hidden by default) -->
+        <div id="step-otp" class="space-y-6 hidden">
+            <div class="text-center">
+                <h2 class="text-xl font-bold text-gray-900">Verify OTP</h2>
+                <p class="text-sm text-gray-500 mt-1">OTP sent to <span id="displayNumber" class="font-bold text-gray-800"></span></p>
+            </div>
+
+            <!-- OTP Input -->
+            <div class="flex justify-center gap-3">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-emerald-600 focus:outline-none bg-white">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-emerald-600 focus:outline-none bg-white">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-emerald-600 focus:outline-none bg-white">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-emerald-600 focus:outline-none bg-white">
+            </div>
+
+            <button onclick="verifyLogin()" class="w-full bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-700/30 active:scale-95 transition-all">
+                Verify & Login
+            </button>
+            
+            <div class="flex justify-between text-sm font-semibold mt-4">
+                <button onclick="goBack()" class="text-gray-500"><i class="fa-solid fa-arrow-left"></i> Change Number</button>
+                <button class="text-emerald-700">Resend OTP</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript for UI Flow -->
+    <script>
+        function sendOTP() {
+            const number = document.getElementById('mobileNumber').value;
+            if(number.length < 10) {
+                alert("Please enter a valid 10-digit mobile number");
+                return;
+            }
+            
+            // UI Transition
+            document.getElementById('step-phone').classList.add('hidden');
+            document.getElementById('step-otp').classList.remove('hidden');
+            document.getElementById('displayNumber').innerText = '+91 ' + number;
+        }
+
+        function goBack() {
+            document.getElementById('step-otp').classList.add('hidden');
+            document.getElementById('step-phone').classList.remove('hidden');
+        }
+
+        function verifyLogin() {
+            // In a real app, this verifies the OTP with the backend and redirects to dashboard
+            alert("OTP Verified! Redirecting to your Dashboard...");
+            // window.location.href = '/dashboard.html';
+        }
+    </script>
+</body>
+</html>
+
