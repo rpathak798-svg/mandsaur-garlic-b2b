@@ -1,815 +1,620 @@
 import { useState, useEffect, useRef } from "react";
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { AreaChart, Area, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
-/* ════════════════════════════════════════════════════════
-   WHATSAPP CONFIG
-════════════════════════════════════════════════════════ */
-const WA_NUMBER = "917772993222";
-const waLink = (msg) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-const waGeneral = waLink("Namaskar! 🧄 MandsaurGarlic.com se inquiry kar raha/rahi hoon. Kripya garlic ki jankari dijiye.");
+/* ─────────────────────────────────────────────
+   CONFIG
+───────────────────────────────────────────── */
+const WA_NUM = "917772993222";
+const wa = (t) => `https://wa.me/${WA_NUM}?text=${encodeURIComponent(t)}`;
+const WA_DEFAULT = wa("Namaskar! 🧄 MandsaurGarlic.com se inquiry — kripya garlic ki jankari dijiye.");
 
-/* ════════════════════════════════════════════════════════
-   THEME — Warm Garlic Farm Theme
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────
+   PALETTE  — "Commodity Green" inspired by
+   CommodityOnline's green but richer, warmer
+───────────────────────────────────────────── */
 const C = {
-  bg:"#1C1208", surface:"#251A0A", card:"#2E2010", cardH:"#3A280E",
-  border:"#4A3418",
-  gold:"#F0A500", goldL:"#FFD166", goldD:"#A06A00", amber:"#E07B00",
-  green:"#5DBE5A", greenD:"#2A7A28", greenL:"#8FE88C",
-  cream:"#FFF4E0", creamD:"#C8A878", ivory:"#FAF0D8",
-  text:"#FFF0D8", textD:"#A08060",
-  red:"#E85040", blue:"#5A9EE0", purple:"#9870D8", white:"#fff",
+  bg:      "#F7F9F4",   // very light green-tinted white
+  surface: "#FFFFFF",
+  card:    "#FFFFFF",
+  parchm:  "#F2F7EE",
+  border:  "#DDE8D5",
+  forest:  "#0F3D1F",
+  forestM: "#1A5C30",
+  leaf:    "#2A8A45",
+  leafL:   "#3DB860",
+  mint:    "#E8F5ED",
+  saffron: "#D4820A",
+  amber:   "#F0A030",
+  amberL:  "#FFD080",
+  ivory:   "#FEFAF2",
+  text:    "#111A0F",
+  textM:   "#3A4A35",
+  textD:   "#7A8A72",
+  white:   "#FFFFFF",
+  red:     "#C83030",
+  blue:    "#1A60B0",
+  orange:  "#E07020",
 };
 
-/* ════════════════════════════════════════════════════════
-   MOCK DATA
-════════════════════════════════════════════════════════ */
-const PRICE_TREND = [
-  {m:"Jan",super:6200,agrade:4800,bgrade:2900},
-  {m:"Feb",super:5800,agrade:4200,bgrade:2600},
-  {m:"Mar",super:7400,agrade:5600,bgrade:3200},
-  {m:"Apr",super:9800,agrade:7200,bgrade:4100},
-  {m:"May",super:12400,agrade:9100,bgrade:5300},
-  {m:"Jun",super:11800,agrade:8600,bgrade:4900},
-];
-const MONTHLY_DEALS = [
-  {m:"Jan",deals:38,val:24},{m:"Feb",deals:42,val:31},{m:"Mar",deals:61,val:48},
-  {m:"Apr",deals:89,val:72},{m:"May",deals:124,val:108},{m:"Jun",deals:97,val:86},
-];
-const EXPORT_DIST = [
-  {country:"Bangladesh",pct:34,color:C.green},
-  {country:"UAE/Dubai",pct:22,color:C.gold},
-  {country:"Malaysia",pct:18,color:C.blue},
-  {country:"Indonesia",pct:11,color:C.purple},
-  {country:"Others",pct:15,color:C.creamD},
-];
+/* ─────────────────────────────────────────────
+   DATA
+───────────────────────────────────────────── */
 const LISTINGS = [
-  {id:1,grade:"Super",farmer:"Ramesh Patidar",village:"Malhargarh",dist:"Mandsaur",
-   name:"Mandsaur Bold White — Export Ready",qty:500,size:"55-65mm",moisture:"60%",
-   cured:true,phyto:true,price:8900,avail:"Immediate",badge:"Export",
-   desc:"FOB-ready lot. Phytosanitary done. Full container. Previous: Dubai, Bangladesh."},
-  {id:2,grade:"A Grade",farmer:"Suresh Chouhan",village:"Sitamau",dist:"Neemuch",
-   name:"Neemuch Premium Garlic",qty:200,size:"45-55mm",moisture:"63%",
-   cured:true,phyto:false,price:7200,avail:"3 Days",badge:"Popular",
-   desc:"Consistent quality. Regular buyers from Delhi, Mumbai wholesale."},
-  {id:3,grade:"Organic",farmer:"Dinesh Bairagi",village:"Dalauda",dist:"Mandsaur",
-   name:"Dalauda Certified Organic",qty:40,size:"35-50mm",moisture:"64%",
-   cured:true,phyto:true,price:11500,avail:"Immediate",badge:"Organic",
-   desc:"NPOP certified. Lab report available. Health supplement companies preferred."},
-  {id:4,grade:"B Grade",farmer:"Kailash Sharma",village:"Jaora",dist:"Ratlam",
-   name:"Ratlam Processing Grade — Bulk",qty:800,size:"28-40mm",moisture:"70%",
-   cured:false,phyto:false,price:3800,avail:"5 Days",badge:"Bulk",
-   desc:"Best for powder, paste, dehydration units. Huge quantity."},
-  {id:5,grade:"Super",farmer:"Jagdish Malviya",village:"Garoth",dist:"Mandsaur",
-   name:"Garoth Super — 2 Full Containers",qty:1000,size:"58-68mm",moisture:"59%",
-   cured:true,phyto:true,price:9400,avail:"Immediate",badge:"Export",
-   desc:"Largest lot. Competitive FOB pricing. 6 international buyers trusted."},
-  {id:6,grade:"A Grade",farmer:"Prahlad Tiwari",village:"Mandsaur City",dist:"Mandsaur",
-   name:"Mandsaur City — Fresh Mandi Arrival",qty:150,size:"40-52mm",moisture:"65%",
-   cured:true,phyto:false,price:6500,avail:"Immediate",badge:"Fresh",
-   desc:"Just arrived. Quick sale. Negotiable for 100q+."},
+  { id:1, type:"seller", verified:true, name:"Ramesh Patidar Farms", loc:"Malhargarh, Mandsaur", grade:"Super", size:"55-65mm", qty:"500 Quintal", price:8900, avail:"Immediate", rating:4.9, deals:142, phyto:true, desc:"Export-ready Super grade. Full container available. FOB Nhava Sheva.", badge:"Top Seller" },
+  { id:2, type:"seller", verified:true, name:"Suresh Chouhan Traders", loc:"Sitamau, Neemuch", grade:"A Grade", size:"45-55mm", qty:"200 Quintal", price:7200, avail:"3 Days", rating:4.7, deals:89, phyto:false, desc:"Consistent quality. Regular Delhi/Mumbai wholesale buyers.", badge:"Verified" },
+  { id:3, type:"buyer", verified:true, name:"Al Baraka Trading LLC", loc:"Dubai, UAE", grade:"Super", size:"55mm+", qty:"5 Containers", price:9500, avail:"Ongoing", rating:4.8, deals:34, phyto:true, desc:"Looking for monthly container supply. FOB price preferred. Long-term contract.", badge:"Export Buyer" },
+  { id:4, type:"seller", verified:true, name:"Dinesh Organic Farms", loc:"Dalauda, Mandsaur", grade:"Organic", size:"35-50mm", qty:"40 Quintal", price:11500, avail:"Immediate", rating:4.9, deals:61, phyto:true, desc:"NPOP certified organic. Lab report available. Pharmaceutical buyers preferred.", badge:"Organic" },
+  { id:5, type:"buyer", verified:true, name:"BD Food Imports Ltd", loc:"Dhaka, Bangladesh", grade:"A Grade", size:"45-55mm", qty:"3 Containers/month", price:8000, avail:"Regular", rating:4.8, deals:28, phyto:true, desc:"Monthly requirement 3 containers A Grade. Established importer since 2018.", badge:"Export Buyer" },
+  { id:6, type:"seller", verified:false, name:"Kailash Sharma", loc:"Jaora, Ratlam", grade:"B Grade", size:"28-40mm", qty:"800 Quintal", price:3800, avail:"5 Days", rating:4.3, deals:22, phyto:false, desc:"Processing grade. Best for powder, paste, dehydration units. Huge qty.", badge:"Bulk" },
+  { id:7, type:"seller", verified:true, name:"Jagdish Malviya Exports", loc:"Garoth, Mandsaur", grade:"Super", size:"58-68mm", qty:"1000 Quintal", price:9400, avail:"Immediate", rating:4.9, deals:198, phyto:true, desc:"2 full containers ready. Competitive FOB pricing. 6 countries exported.", badge:"Top Seller" },
+  { id:8, type:"buyer", verified:true, name:"Metro Cash & Carry India", loc:"Mumbai, Maharashtra", grade:"A Grade", size:"40-55mm", qty:"100 Quintal/week", price:7800, avail:"Weekly", rating:4.7, deals:156, phyto:false, desc:"Weekly requirement for 18 stores. Quality-tested buyers. Immediate payment.", badge:"Premium Buyer" },
 ];
-const MANDI = [
-  {name:"Mandsaur",grade:"Super",min:8200,max:12800,arr:"18,400",ch:+12.4},
-  {name:"Neemuch",grade:"A Grade",min:6500,max:9800,arr:"22,100",ch:+8.1},
-  {name:"Ratlam",grade:"A Grade",min:5800,max:8500,arr:"9,200",ch:-3.2},
-  {name:"Dalauda",grade:"B Grade",min:4200,max:6200,arr:"5,700",ch:+5.7},
-  {name:"Jaora",grade:"B Grade",min:3800,max:5700,arr:"3,400",ch:-1.8},
-  {name:"Indore",grade:"Super",min:9000,max:14500,arr:"11,800",ch:+15.3},
-  {name:"Ujjain",grade:"A Grade",min:6200,max:9100,arr:"7,600",ch:+4.2},
-];
-const TRANSPORTERS = [
-  {id:1,name:"MP Garlic Transport",loc:"Mandsaur",rating:4.8,trucks:45,
-   routes:["Mandsaur→Delhi","Mandsaur→Mumbai","Mandsaur→Nhava Sheva"],
-   rate:"₹18-22/km/ton",contact:"9876001122",special:"Refrigerated trucks"},
-  {id:2,name:"Chouhan Logistics",loc:"Neemuch",rating:4.6,trucks:28,
-   routes:["Neemuch→Delhi","Neemuch→Ahmedabad","Neemuch→Indore"],
-   rate:"₹16-20/km/ton",contact:"9765002233",special:"GPS on all vehicles"},
-  {id:3,name:"Malwa Freight Services",loc:"Ratlam",rating:4.7,trucks:62,
-   routes:["Ratlam→JNPT Port","Ratlam→Mundra","Pan India"],
-   rate:"₹15-19/km/ton",contact:"9654003344",special:"Export stuffing experts"},
-  {id:4,name:"Kisan Cargo Solutions",loc:"Mandsaur",rating:4.5,trucks:18,
-   routes:["Local Mandsaur","Mandsaur→Indore","Small loads OK"],
-   rate:"₹20-28/km/ton",contact:"9543004455",special:"Low MOQ farmer-friendly"},
-];
-const PAYMENT_HISTORY = [
-  {id:"TXN-2841",date:"31 May 2026",party:"Al Baraka Trading, Dubai",amt:4720000,status:"Received",type:"Export",method:"SWIFT"},
-  {id:"TXN-2840",date:"30 May 2026",party:"Suresh Wholesalers, Delhi",amt:864000,status:"Received",type:"Domestic",method:"NEFT"},
-  {id:"TXN-2839",date:"29 May 2026",party:"Bangladesh Food Imports Ltd",amt:6390000,status:"Pending",type:"Export",method:"LC"},
-  {id:"TXN-2838",date:"28 May 2026",party:"Metro Cash & Carry, Mumbai",amt:975000,status:"Received",type:"Domestic",method:"UPI"},
-  {id:"TXN-2837",date:"27 May 2026",party:"Malabar Traders, Calicut",amt:432000,status:"Processing",type:"Domestic",method:"RTGS"},
-  {id:"TXN-2836",date:"26 May 2026",party:"KL Garlic Imports, Malaysia",amt:8140000,status:"Received",type:"Export",method:"SWIFT"},
-];
-const WA_MESSAGES = [
-  {id:1,from:"Al Baraka Trading",phone:"+971501234567",time:"09:14 AM",
-   msg:"Hello, we need 5 containers Super grade. Please send FOB quote for July shipment.",unread:true,country:"🇦🇪"},
-  {id:2,from:"Ramesh Broker, Delhi",phone:"+919876543210",time:"08:52 AM",
-   msg:"Bhai 200 quintal A grade chahiye kal tak. Price confirm karo.",unread:true,country:"🇮🇳"},
-  {id:3,from:"BD Food Imports",phone:"+8801712345678",time:"Yesterday",
-   msg:"Payment done for TXN-2839. Please confirm dispatch date.",unread:false,country:"🇧🇩"},
-  {id:4,from:"Metro Buyer, Mumbai",phone:"+912212345678",time:"Yesterday",
-   msg:"Quality report for last lot was excellent. Ready for next order 300q.",unread:false,country:"🇮🇳"},
-  {id:5,from:"Organic Herbs Inc, USA",phone:"+14155551234",time:"2 days ago",
-   msg:"We are interested in certified organic garlic. Can you send COA and pricing?",unread:false,country:"🇺🇸"},
-];
-const WA_TEMPLATES = [
-  {name:"Price Quote",text:"Namaskar! 🧄\n\nAapke inquiry ke liye shukriya.\n\nAaj ka rate:\n• Super Grade: ₹8,200–12,800/q\n• A Grade: ₹6,500–9,800/q\n• B Grade: ₹3,800–5,700/q\n\nQuality: Properly cured, graded\nAvailability: Immediate\n\nDetailed quote ke liye quantity batayein.\n\n*MandsaurGarlic.com*"},
-  {name:"Export Quote",text:"Dear Buyer,\n\nThank you for your interest in Mandsaur Garlic!\n\n🧄 Super Grade FOB Price: USD 850-950/MT\n📦 Min Order: 1 container (18-20 MT)\n✅ Phytosanitary: Available\n🚢 Port: Nhava Sheva / Mundra\n⏱ Dispatch: Within 7 days of order\n\nWe can provide:\n• Certificate of Origin\n• Lab Analysis Report\n• Fumigation Certificate\n\nPlease share your exact requirements.\n\nMandsaurGarlic.com"},
-  {name:"Dispatch Alert",text:"🚛 Dispatch Alert!\n\nAapka order dispatch ho gaya hai.\n\n📦 Quantity: [QTY] Quintal\n🚛 Truck No: [TRUCK]\n📍 From: Mandsaur\n📍 To: [DESTINATION]\n⏱ ETA: [DATE]\n\nTracking ke liye hamse contact karo.\n\nMandsaurGarlic.com"},
-  {name:"Payment Reminder",text:"Namaskar,\n\n💰 Payment Reminder\n\nTransaction: [TXN_ID]\nAmount: ₹[AMOUNT]\nDue Date: [DATE]\n\nPayment options:\n• UPI: garlic@upi\n• NEFT: [Bank Details]\n• SWIFT (Export): Contact us\n\nKoi sawaal ho toh batayein.\n\nMandsaurGarlic.com"},
-];
-const COUNTRIES = ["Bangladesh","UAE / Dubai","Malaysia","Indonesia","Sri Lanka","Nepal","USA","UK","Canada","Singapore","Other"];
-const CERTS = ["Phytosanitary Certificate","Certificate of Origin","FSSAI Certificate","Organic Certificate (NPOP)","Lab Analysis Report","Fumigation Certificate"];
 
-/* ════════════════════════════════════════════════════════
-   STYLES
-════════════════════════════════════════════════════════ */
+const MANDI = [
+  { name:"Mandsaur",  grade:"Super",   min:8200,  max:12800, arr:18400, ch:+12.4 },
+  { name:"Neemuch",   grade:"A Grade", min:6500,  max:9800,  arr:22100, ch:+8.1  },
+  { name:"Ratlam",    grade:"A Grade", min:5800,  max:8500,  arr:9200,  ch:-3.2  },
+  { name:"Dalauda",   grade:"B Grade", min:4200,  max:6200,  arr:5700,  ch:+5.7  },
+  { name:"Jaora",     grade:"B Grade", min:3800,  max:5700,  arr:3400,  ch:-1.8  },
+  { name:"Indore",    grade:"Super",   min:9000,  max:14500, arr:11800, ch:+15.3 },
+  { name:"Ujjain",    grade:"A Grade", min:6200,  max:9100,  arr:7600,  ch:+4.2  },
+];
+
+const NEWS = [
+  { date:"Jun 9", tag:"Market", title:"Mandsaur mein Super grade ka bhav ₹12,800/q ke par", sub:"Kal ki aawak 18,400 katte rahi, phir bhi demand strong" },
+  { date:"Jun 8", tag:"Export", title:"Bangladesh ne is season mein India se 2.4 lakh MT garlic import kiya", sub:"Pichhle saal ke mukable 34% zyada — main source Mandsaur" },
+  { date:"Jun 7", tag:"Policy", title:"Garlic export pe minimum export price hatai gayi — trade ko rahat", sub:"APEDA ne notification jaari kiya, exporters ne welcome kiya" },
+  { date:"Jun 6", tag:"Mandi", title:"Neemuch mandi mein record 22,100 katte ek din mein aaye", sub:"Season ki sabse badi single-day arrival, prices stable rahe" },
+];
+
+const PRICE_7D = [
+  {d:"Jun 3",s:10200,a:7800},{d:"Jun 4",s:10800,a:8100},{d:"Jun 5",s:11200,a:8400},
+  {d:"Jun 6",s:11600,a:8800},{d:"Jun 7",s:12100,a:9000},{d:"Jun 8",s:12400,a:9100},{d:"Jun 9",s:12800,a:9400},
+];
+
+const GRADES = ["All","Super","A Grade","B Grade","Organic"];
+const TYPES  = ["All","Sellers","Buyers"];
+const COUNTRIES = ["Bangladesh","UAE / Dubai","Malaysia","Indonesia","Sri Lanka","Nepal","USA","UK","Canada","Singapore","Other"];
+const CERTS = ["Phytosanitary Certificate","Certificate of Origin","FSSAI Certificate","Organic (NPOP)","Lab Analysis Report","Fumigation Certificate"];
+
+/* ─────────────────────────────────────────────
+   CSS — CommodityOnline structure +
+   premium garlic market aesthetics
+───────────────────────────────────────────── */
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Noto+Sans:wght@300;400;500;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:${C.bg};--surface:${C.surface};--card:${C.card};--cardH:${C.cardH};
-  --border:${C.border};--gold:${C.gold};--green:${C.green};--cream:${C.cream};
-  --text:${C.text};--textD:${C.textD};--red:${C.red};--blue:${C.blue};
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{font-family:'Poppins',sans-serif;background:${C.bg};color:${C.text};min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:${C.parchm};}::-webkit-scrollbar-thumb{background:${C.leaf};border-radius:3px;}
+a{text-decoration:none;color:inherit;}
+button{font-family:'Poppins',sans-serif;cursor:pointer;}
+input,select,textarea{font-family:'Poppins',sans-serif;}
+
+/* ── TOP BAR ── */
+.topbar{
+  background:${C.forest};height:36px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;font-size:12px;color:rgba(255,255,255,.6);
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
-html{scroll-behavior:smooth}
-body{
-  font-family:'Noto Sans',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;overflow-x:hidden;
-  background-image:
-    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(240,165,0,0.07) 0%, transparent 60%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23F0A500' fill-opacity='0.025'%3E%3Cpath d='M30 10 C30 10 25 18 25 25 C25 32 30 36 30 36 C30 36 35 32 35 25 C35 18 30 10 30 10Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--surface)}
-::-webkit-scrollbar-thumb{background:${C.goldD};border-radius:3px}
+.topbar-left{display:flex;align-items:center;gap:20px;}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.topbar a{color:rgba(255,255,255,.6);transition:color .15s;}
+.topbar a:hover{color:rgba(255,255,255,.9);}
+.topbar-phone{color:${C.amberL}!important;font-weight:600;}
 
 /* ── NAV ── */
 .nav{
-  position:sticky;top:0;z-index:100;height:60px;
-  background:rgba(28,18,8,0.97);backdrop-filter:blur(20px);
-  border-bottom:1px solid ${C.border};
-  display:flex;align-items:center;padding:0 20px;gap:8px;
-  box-shadow:0 2px 20px rgba(0,0,0,0.4);
+  background:${C.surface};
+  border-bottom:2px solid ${C.border};
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(15,61,31,.08);
 }
-.nav-logo{
-  display:flex;align-items:center;gap:10px;margin-right:12px;flex-shrink:0;
-  text-decoration:none;
+.nav-main{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;gap:16px;
+  padding:0 20px;height:64px;
 }
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .nav-logo-icon{
-  width:36px;height:36px;border-radius:10px;
-  background:linear-gradient(135deg,${C.gold},${C.amber});
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,${C.leaf},${C.forest});
   display:flex;align-items:center;justify-content:center;
-  font-size:20px;box-shadow:0 4px 14px rgba(240,165,0,0.4);
+  font-size:24px;box-shadow:0 4px 12px rgba(42,138,69,.3);
 }
-.nav-logo-text{font-family:'Playfair Display',serif;font-size:19px;color:${C.ivory};font-weight:700;letter-spacing:-.3px}
-.nav-logo-text em{color:${C.gold};font-style:italic}
-.nav-tabs{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
-.nav-tabs::-webkit-scrollbar{display:none}
+.nav-logo-text{line-height:1.15;}
+.nav-logo-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:${C.forest};letter-spacing:-.3px;}
+.nav-logo-name em{color:${C.leaf};font-style:italic;}
+.nav-logo-sub{font-size:9px;color:${C.textD};letter-spacing:1.2px;text-transform:uppercase;}
+.nav-search{
+  flex:1;max-width:480px;
+  display:flex;align-items:center;
+  background:${C.parchm};border:1.5px solid ${C.border};border-radius:10px;
+  overflow:hidden;transition:border-color .2s;
+}
+.nav-search:focus-within{border-color:${C.leaf};box-shadow:0 0 0 3px rgba(42,138,69,.1);}
+.nav-search-input{
+  flex:1;border:none;outline:none;background:transparent;
+  padding:10px 14px;font-size:13px;color:${C.text};
+}
+.nav-search-input::placeholder{color:${C.textD};}
+.nav-search-btn{
+  background:${C.leaf};color:#fff;border:none;
+  padding:10px 18px;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:6px;transition:background .15s;
+}
+.nav-search-btn:hover{background:${C.forest};}
+.nav-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.nav-btn-ghost{
+  padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;
+  background:transparent;color:${C.leaf};border:1.5px solid ${C.leaf};
+  transition:all .15s;
+}
+.nav-btn-ghost:hover{background:${C.leaf};color:#fff;}
+.nav-btn-solid{
+  padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,${C.leaf},${C.forest});color:#fff;border:none;
+  box-shadow:0 4px 12px rgba(42,138,69,.3);transition:all .15s;
+}
+.nav-btn-solid:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(42,138,69,.4);}
+
+/* ── NAV TABS ── */
+.nav-tabs{
+  background:${C.forest};border-bottom:1px solid rgba(255,255,255,.08);
+}
+.nav-tabs-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;
+  padding:0 20px;overflow-x:auto;scrollbar-width:none;
+}
+.nav-tabs-inner::-webkit-scrollbar{display:none;}
 .ntab{
-  padding:6px 14px;border-radius:8px;border:none;cursor:pointer;
-  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:500;white-space:nowrap;
-  background:transparent;color:${C.textD};transition:all .18s;
-  display:flex;align-items:center;gap:5px;
+  padding:11px 18px;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.65);border:none;background:transparent;
+  cursor:pointer;white-space:nowrap;border-bottom:2.5px solid transparent;
+  transition:all .15s;display:flex;align-items:center;gap:6px;
 }
-.ntab:hover{background:${C.card};color:${C.cream}}
-.ntab.on{background:linear-gradient(135deg,rgba(240,165,0,.18),rgba(224,123,0,.1));color:${C.gold};border:1px solid rgba(240,165,0,.3)}
-.ntab .badge{
-  background:${C.red};color:#fff;
-  border-radius:10px;padding:1px 6px;font-size:10px;font-weight:700;
-}
-.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.live-pill{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(93,190,90,0.12);border:1px solid rgba(93,190,90,0.3);
-  color:${C.green};padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;
-}
-.lpulse{width:6px;height:6px;background:${C.green};border-radius:50%;animation:pulse 1.4s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.ntab:hover{color:#fff;background:rgba(255,255,255,.06);}
+.ntab.on{color:${C.amberL};border-bottom-color:${C.amber};}
+.ntab .nbadge{background:${C.amber};color:#1a0800;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;}
 
 /* ── TICKER ── */
 .ticker{
-  background:${C.surface};border-bottom:1px solid ${C.border};
-  height:36px;display:flex;align-items:center;overflow:hidden;
-  box-shadow:inset 0 -1px 0 rgba(240,165,0,0.1);
+  background:${C.forest};padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden;
+  display:flex;align-items:center;
 }
-.tlabel{
-  flex-shrink:0;
-  background:linear-gradient(135deg,${C.gold},${C.amber});
-  color:#1a0800;
-  padding:0 14px;height:100%;display:flex;align-items:center;
-  font-size:10px;font-weight:800;letter-spacing:1px;margin-right:16px;
+.ticker-label{
+  flex-shrink:0;background:${C.amber};color:#1a0800;
+  padding:3px 14px;font-size:9px;font-weight:800;letter-spacing:1.2px;
+  margin:0 16px;border-radius:3px;
 }
-.ttrack{overflow:hidden;flex:1;height:100%}
-.tinner{display:flex;animation:tick 30s linear infinite;white-space:nowrap;height:100%;align-items:center}
-.tinner:hover{animation-play-state:paused}
-.ti{display:inline-flex;align-items:center;gap:8px;padding:0 20px;font-size:12px;color:${C.textD};border-right:1px solid ${C.border};height:100%}
-.ti b{color:${C.cream};font-weight:600}
-.tup{color:${C.green};font-weight:700}
-.tdn{color:${C.red};font-weight:700}
-@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-track{overflow:hidden;flex:1;}
+.ticker-inner{display:flex;animation:marquee 28s linear infinite;white-space:nowrap;}
+.ticker-inner:hover{animation-play-state:paused;}
+.ti{display:inline-flex;align-items:center;gap:8px;padding:0 20px;font-size:11.5px;color:rgba(255,255,255,.6);border-right:1px solid rgba(255,255,255,.08);}
+.ti b{color:rgba(255,255,255,.9);font-weight:600;}
+.tup{color:#5EE882;font-weight:700;} .tdn{color:#FF7070;font-weight:700;}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-/* ── HERO ── */
+/* ── HERO BANNER ── */
 .hero{
-  position:relative;padding:60px 24px 70px;overflow:hidden;
-  background:
-    radial-gradient(ellipse 80% 60% at 30% 50%, rgba(240,165,0,0.08) 0%,transparent 65%),
-    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(93,190,90,0.06) 0%,transparent 55%),
-    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(240,165,0,0.05) 0%,transparent 60%),
-    ${C.bg};
+  background:linear-gradient(135deg,${C.forest} 0%,${C.forestM} 50%,#0A2A14 100%);
+  padding:52px 20px 60px;position:relative;overflow:hidden;
 }
-/* Garlic pattern background */
 .hero::before{
   content:'';position:absolute;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F0A500' fill-opacity='0.03'%3E%3Cellipse cx='60' cy='45' rx='12' ry='20'/%3E%3Cellipse cx='45' cy='58' rx='10' ry='17'/%3E%3Cellipse cx='75' cy='58' rx='10' ry='17'/%3E%3Ccircle cx='60' cy='72' r='14'/%3E%3C/g%3E%3C/svg%3E");
-  pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.025'%3E%3Cpath d='M30 5 C30 5 22 18 22 27 C22 36 30 40 30 40 C30 40 38 36 38 27 C38 18 30 5 30 5Z'/%3E%3C/g%3E%3C/svg%3E");
 }
-.hero-garlic-bg{
-  position:absolute;right:-30px;top:50%;transform:translateY(-50%);
-  font-size:300px;opacity:.06;pointer-events:none;line-height:1;
-  filter:sepia(1) saturate(2) hue-rotate(10deg);
-}
-.hero-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:center;position:relative;z-index:1}
-@media(max-width:840px){.hero-inner{grid-template-columns:1fr}}
-.hero-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;
-  color:${C.gold};font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
-  background:rgba(240,165,0,0.12);border:1px solid rgba(240,165,0,0.3);
-  padding:5px 14px;border-radius:20px;
-}
-.hero h1{font-family:'Playfair Display',serif;font-size:52px;line-height:1.06;color:${C.ivory};margin-bottom:14px}
-.hero h1 i{color:${C.gold};font-style:italic}
-.hero-sub{color:${C.textD};font-size:15px;line-height:1.8;margin-bottom:32px;max-width:480px}
-.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
-.btn-G{
-  padding:12px 26px;border-radius:10px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,${C.green},${C.greenD});color:#fff;
-  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:700;
-  box-shadow:0 6px 20px rgba(93,190,90,0.3);transition:all .18s;
-}
-.btn-G:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(93,190,90,0.4)}
-.btn-O{
-  padding:12px 26px;border-radius:10px;cursor:pointer;
-  background:linear-gradient(135deg,${C.gold},${C.amber});color:#1a0800;
-  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:700;border:none;
-  box-shadow:0 6px 20px rgba(240,165,0,0.3);transition:all .18s;
-}
-.btn-O:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(240,165,0,0.4)}
-.btn-N{
-  padding:12px 22px;border-radius:10px;cursor:pointer;
-  background:rgba(255,255,255,0.05);color:${C.cream};
-  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:600;
-  border:1px solid ${C.border};transition:all .18s;
-}
-.btn-N:hover{background:${C.card};border-color:${C.creamD}}
-.hero-kpis{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(240,165,0,0.2);border-radius:14px;overflow:hidden;background:rgba(240,165,0,0.04)}
-.hkpi{padding:16px;text-align:center;border-right:1px solid rgba(240,165,0,0.15)}
-.hkpi:last-child{border-right:none}
-.hkpi-n{font-family:'Playfair Display',serif;font-size:26px;color:${C.gold};display:block}
-.hkpi-l{font-size:10px;color:${C.textD};margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
-.hero-snapshot{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid rgba(240,165,0,0.25);
-  border-radius:20px;padding:22px;
-  position:relative;overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(240,165,0,0.1);
-}
-.hero-snapshot::before{
-  content:'🧄';position:absolute;right:-10px;bottom:-20px;
-  font-size:100px;opacity:.06;pointer-events:none;line-height:1;
-}
-.snap-title{font-size:10px;color:${C.gold};font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px}
-.snap-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(74,52,24,0.6)}
-.snap-row:last-child{border-bottom:none}
-.snap-label{font-size:12px;color:${C.textD};display:flex;align-items:center;gap:5px}
-.snap-dot{width:6px;height:6px;border-radius:50%;background:${C.green};animation:pulse 1.4s infinite}
-.snap-val{font-size:13px;font-weight:600;color:${C.text};text-align:right}
-.snap-pct{font-size:10px;font-weight:700}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:center;position:relative;z-index:1;}
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr;}}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(240,160,48,.15);border:1px solid rgba(240,160,48,.35);color:${C.amberL};font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:52px;line-height:1.05;color:#fff;margin-bottom:12px;font-weight:700;}
+.hero h1 em{color:${C.amberL};font-style:italic;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.65);line-height:1.75;margin-bottom:28px;max-width:520px;}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;}
+.btn-primary{padding:12px 28px;border-radius:10px;border:none;background:linear-gradient(135deg,${C.amber},${C.saffron});color:#fff;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(212,130,10,.4);transition:all .18s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(212,130,10,.5);}
+.btn-outline-w{padding:12px 26px;border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;border:1.5px solid rgba(255,255,255,.25);transition:all .18s;}
+.btn-outline-w:hover{background:rgba(255,255,255,.18);}
+.hero-stats{display:flex;gap:0;border:1px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.04);}
+.hstat{flex:1;padding:16px 14px;text-align:center;border-right:1px solid rgba(255,255,255,.08);}
+.hstat:last-child{border-right:none;}
+.hstat-n{font-family:'Playfair Display',serif;font-size:28px;color:${C.amberL};display:block;font-weight:700;line-height:1;}
+.hstat-l{font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px;margin-top:4px;}
+/* hero card */
+.hero-card{background:rgba(255,255,255,.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:22px;}
+.hcard-hd{font-size:10px;font-weight:700;color:${C.amberL};letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.hpulse{width:6px;height:6px;border-radius:50%;background:${C.leafL};animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.hrow:last-of-type{border-bottom:none;margin-bottom:14px;}
+.hkey{font-size:12px;color:rgba(255,255,255,.55);}
+.hval{font-size:12px;font-weight:600;color:#fff;text-align:right;}
+.hup{font-size:10px;color:#5EE882;font-weight:700;} .hdn{font-size:10px;color:#FF7070;font-weight:700;}
 
 /* ── LAYOUT ── */
-.main{max-width:1080px;margin:0 auto;padding:32px 20px 60px}
-.sec-h{margin-bottom:26px}
-.sec-title{
-  font-family:'Playfair Display',serif;font-size:28px;color:${C.ivory};margin-bottom:5px;
-  display:flex;align-items:center;gap:10px;
-}
-.sec-sub{font-size:13px;color:${C.textD};line-height:1.6}
+.page{max-width:1200px;margin:0 auto;padding:28px 20px 60px;}
+.page-grid{display:grid;grid-template-columns:1fr 300px;gap:24px;}
+@media(max-width:960px){.page-grid{grid-template-columns:1fr;}}
 
-/* ── KPI CARDS ── */
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
-.kpi{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:14px;padding:18px 20px;
-  position:relative;overflow:hidden;
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
-}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--accent,${C.gold})}
-.kpi::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle,rgba(240,165,0,.07) 0%,transparent 70%);border-radius:50%}
-.kpi-icon{font-size:22px;margin-bottom:8px}
-.kpi-val{font-family:'Playfair Display',serif;font-size:28px;color:${C.ivory};display:block;margin-bottom:3px}
-.kpi-label{font-size:11px;color:${C.textD};text-transform:uppercase;letter-spacing:.5px}
-.kpi-delta{font-size:11px;font-weight:700;margin-top:6px;display:flex;align-items:center;gap:3px}
-.delta-up{color:${C.green}}.delta-dn{color:${C.red}}
-
-/* ── CHART CARDS ── */
-.chart-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:24px}
-@media(max-width:700px){.chart-row{grid-template-columns:1fr}}
-.chart-card{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:16px;padding:22px;
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
-}
-.chart-title{font-size:14px;font-weight:700;color:${C.ivory};margin-bottom:4px}
-.chart-sub{font-size:11px;color:${C.textD};margin-bottom:16px}
-.custom-tooltip{background:${C.surface};border:1px solid rgba(240,165,0,0.2);border-radius:10px;padding:10px 14px;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,0.3)}
-.ct-label{color:${C.gold};margin-bottom:6px;font-weight:700}
-.ct-row{display:flex;justify-content:space-between;gap:16px;margin-bottom:2px}
-.ct-k{color:${C.textD}}.ct-v{color:${C.cream};font-weight:600}
+/* ── SECTION HEADS ── */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.sh-left{display:flex;align-items:center;gap:10px;}
+.sh-dot{width:4px;height:22px;background:linear-gradient(to bottom,${C.amber},${C.leaf});border-radius:2px;}
+.sh-title{font-size:17px;font-weight:700;color:${C.forest};}
+.sh-count{font-size:12px;color:${C.textD};background:${C.parchm};border:1px solid ${C.border};padding:2px 10px;border-radius:10px;}
+.sh-link{font-size:12px;font-weight:600;color:${C.leaf};display:flex;align-items:center;gap:3px;}
+.sh-link:hover{color:${C.forest};}
 
 /* ── FILTERS ── */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;align-items:center}
-.search-box{
-  flex:1;min-width:200px;max-width:320px;
-  display:flex;align-items:center;gap:8px;
-  background:${C.card};border:1px solid ${C.border};border-radius:10px;padding:10px 14px;
-  transition:border-color .15s;box-shadow:inset 0 1px 3px rgba(0,0,0,0.2);
-}
-.search-box:focus-within{border-color:${C.gold}}
-.search-box input{border:none;outline:none;background:transparent;font-family:'Noto Sans',sans-serif;font-size:13px;color:${C.text};flex:1}
-.search-box input::placeholder{color:${C.textD}}
-.chip{
-  padding:7px 15px;border-radius:8px;border:1px solid ${C.border};cursor:pointer;
-  font-family:'Noto Sans',sans-serif;font-size:12px;font-weight:500;
-  background:${C.card};color:${C.textD};transition:all .15s;
-}
-.chip:hover{border-color:${C.creamD};color:${C.cream}}
-.chip.on{background:rgba(240,165,0,0.15);border-color:${C.gold};color:${C.gold}}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.filter-chip{padding:6px 14px;border-radius:7px;border:1.5px solid ${C.border};font-size:12px;font-weight:500;background:${C.surface};color:${C.textM};cursor:pointer;transition:all .15s;}
+.filter-chip:hover{border-color:${C.leaf};color:${C.leaf};}
+.filter-chip.on{background:${C.mint};border-color:${C.leaf};color:${C.leaf};font-weight:700;}
+.search-mini{display:flex;align-items:center;gap:6px;background:${C.surface};border:1.5px solid ${C.border};border-radius:8px;padding:7px 12px;flex:1;max-width:280px;transition:border-color .15s;}
+.search-mini:focus-within{border-color:${C.leaf};}
+.search-mini input{border:none;outline:none;background:transparent;font-size:12px;color:${C.text};flex:1;font-family:'Poppins',sans-serif;}
+.search-mini input::placeholder{color:${C.textD};}
 
 /* ── LISTING CARDS ── */
-.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;margin-bottom:40px}
+.listing-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
 .lcard{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:16px;
-  overflow:hidden;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  background:${C.surface};border:1.5px solid ${C.border};border-radius:14px;
+  padding:18px 20px;cursor:pointer;transition:all .2s;
+  display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start;
 }
-.lcard:hover{
-  background:${C.cardH};
-  border-color:rgba(240,165,0,0.45);
-  transform:translateY(-4px);
-  box-shadow:0 16px 40px rgba(0,0,0,0.35),0 0 0 1px rgba(240,165,0,0.15);
+.lcard:hover{border-color:${C.leaf};box-shadow:0 6px 24px rgba(15,61,31,.1);transform:translateY(-1px);}
+.lcard-icon{
+  width:52px;height:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  flex-shrink:0;
 }
-.lc-top{
-  padding:13px 16px 11px;
-  background:linear-gradient(135deg,rgba(240,165,0,0.1),rgba(93,190,90,0.05));
-  border-bottom:1px solid ${C.border};
-  display:flex;justify-content:space-between;align-items:center;
-}
-.lc-grade{font-size:12px;font-weight:700;color:${C.creamD};display:flex;align-items:center;gap:5px}
-.lc-badge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 10px;border-radius:6px;text-transform:uppercase}
-.b-Export{background:rgba(90,158,224,.18);color:${C.blue};border:1px solid rgba(90,158,224,.3)}
-.b-Popular{background:rgba(240,165,0,.18);color:${C.gold};border:1px solid rgba(240,165,0,.3)}
-.b-Organic{background:rgba(93,190,90,.18);color:${C.green};border:1px solid rgba(93,190,90,.3)}
-.b-Bulk{background:rgba(160,128,96,.18);color:${C.creamD};border:1px solid ${C.border}}
-.b-Fresh{background:rgba(240,165,0,.18);color:${C.gold};border:1px solid rgba(240,165,0,.3)}
-.lc-body{padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:9px}
-.lc-farmer{font-size:11px;color:${C.textD}}
-.lc-farmer b{color:${C.creamD};font-weight:600}
-.lc-name{font-family:'Playfair Display',serif;font-size:17px;color:${C.ivory};line-height:1.3}
-.lc-chips{display:flex;gap:6px;flex-wrap:wrap}
-.lc-chip{font-size:10px;color:${C.textD};background:rgba(74,52,24,0.5);border:1px solid ${C.border};padding:2px 8px;border-radius:5px}
-.lc-chip.ok{color:${C.green};background:rgba(93,190,90,.1);border-color:rgba(93,190,90,.25)}
-.lc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:11px;border-top:1px solid ${C.border}}
-.lc-price{font-family:'Playfair Display',serif;font-size:24px;color:${C.gold}}
-.lc-price sub{font-size:11px;color:${C.textD};font-family:'Noto Sans',sans-serif;font-weight:400}
-.lc-btn{
-  background:linear-gradient(135deg,rgba(240,165,0,.2),rgba(224,123,0,.15));
-  color:${C.gold};border:1px solid rgba(240,165,0,.35);
-  padding:8px 16px;border-radius:9px;
-  font-family:'Noto Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;
-}
-.lc-btn:hover{background:linear-gradient(135deg,${C.gold},${C.amber});color:#1a0800;border-color:${C.gold}}
+.lcard-icon.seller{background:${C.mint};} .lcard-icon.buyer{background:#EEF4FF;}
+.lcard-body{min-width:0;}
+.lcard-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.lcard-name{font-size:15px;font-weight:700;color:${C.forest};}
+.lcard-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:5px;text-transform:uppercase;letter-spacing:.4px;}
+.badge-seller{background:${C.mint};color:${C.leaf};border:1px solid rgba(42,138,69,.2);}
+.badge-buyer{background:#EEF4FF;color:${C.blue};border:1px solid rgba(26,96,176,.2);}
+.badge-top{background:rgba(240,160,48,.15);color:${C.saffron};border:1px solid rgba(212,130,10,.25);}
+.badge-org{background:rgba(42,138,69,.12);color:${C.leaf};border:1px solid rgba(42,138,69,.25);}
+.badge-bulk{background:${C.parchm};color:${C.textD};border:1px solid ${C.border};}
+.lcard-verified{font-size:10px;color:${C.leaf};display:flex;align-items:center;gap:2px;font-weight:600;}
+.lcard-loc{font-size:12px;color:${C.textD};margin-bottom:8px;display:flex;align-items:center;gap:4px;}
+.lcard-desc{font-size:12px;color:${C.textM};line-height:1.6;margin-bottom:10px;}
+.lcard-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.ltag{font-size:11px;color:${C.textM};background:${C.parchm};border:1px solid ${C.border};padding:2px 9px;border-radius:5px;}
+.ltag.ok{color:${C.leaf};background:${C.mint};border-color:rgba(42,138,69,.2);}
+.lcard-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.lcard-price{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:${C.saffron};line-height:1;}
+.lcard-price-sub{font-size:10px;color:${C.textD};font-family:'Poppins',sans-serif;font-weight:400;}
+.lcard-qty{font-size:11px;color:${C.textM};background:${C.parchm};padding:3px 10px;border-radius:6px;font-weight:600;}
+.lcard-avail{font-size:10px;color:${C.leaf};font-weight:600;display:flex;align-items:center;gap:3px;}
+.lcard-btn{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;border:none;background:linear-gradient(135deg,${C.leaf},${C.forest});color:#fff;transition:all .15s;}
+.lcard-btn:hover{transform:scale(1.03);}
+.lcard-rating{font-size:11px;color:${C.saffron};font-weight:600;}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+.sbox{background:${C.surface};border:1.5px solid ${C.border};border-radius:14px;overflow:hidden;}
+.sbox-hd{background:${C.forest};padding:13px 18px;display:flex;align-items:center;gap:8px;}
+.sbox-hd-title{font-size:13px;font-weight:700;color:#fff;}
+.sbox-body{padding:16px;}
 
 /* ── MANDI TABLE ── */
-.mtable-wrap{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:16px;overflow:hidden;margin-bottom:28px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.2);
-}
-.mtable-hd{
-  background:linear-gradient(135deg,rgba(240,165,0,0.12),rgba(224,123,0,0.08));
-  padding:15px 22px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${C.border};
-}
-.mtable-hd h3{font-family:'Playfair Display',serif;font-size:19px;color:${C.ivory}}
-.mtable-hd span{font-size:11px;color:${C.textD}}
-table{width:100%;border-collapse:collapse}
-thead th{background:rgba(74,52,24,0.4);padding:10px 18px;text-align:left;font-size:10px;font-weight:700;color:${C.gold};text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid ${C.border}}
-tbody td{padding:13px 18px;font-size:13px;border-bottom:1px solid rgba(74,52,24,0.5)}
-tbody tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:rgba(240,165,0,0.04)}
-.mn{font-weight:700;color:${C.ivory}}
-.mup{color:${C.green};font-weight:700}.mdn{color:${C.red};font-weight:700}
-.marr{color:${C.textD};font-size:11px}
+.mandi-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid ${C.border};font-size:12px;}
+.mandi-row:last-child{border-bottom:none;}
+.mname{font-weight:700;color:${C.forest};} .mprice{font-weight:600;color:${C.textM};}
+.mup{color:${C.leaf};font-weight:700;font-size:11px;} .mdn{color:${C.red};font-weight:700;font-size:11px;}
 
-/* ── STAT CARDS ── */
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:32px}
-.stat-card{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:13px;padding:18px 20px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.2);
-}
-.sc-label{font-size:10px;color:${C.gold};font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
-.sc-val{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:3px}
-.sc-sub{font-size:11px;color:${C.textD}}
+/* ── NEWS ── */
+.news-item{padding:12px 0;border-bottom:1px solid ${C.border};}
+.news-item:last-child{border-bottom:none;}
+.news-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.news-tag.market{background:${C.mint};color:${C.leaf};} .news-tag.export{background:#EEF4FF;color:${C.blue};}
+.news-tag.policy{background:rgba(212,130,10,.12);color:${C.saffron};} .news-tag.mandi{background:${C.parchm};color:${C.textD};}
+.news-title{font-size:13px;font-weight:600;color:${C.forest};line-height:1.4;margin-bottom:3px;}
+.news-sub{font-size:11px;color:${C.textD};line-height:1.5;}
+.news-date{font-size:10px;color:${C.textD};margin-top:4px;}
 
-/* ── FORMS ── */
-.form-wrap{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:18px;padding:28px;margin-bottom:32px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.25);
-}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:560px){.form-grid{grid-template-columns:1fr}}
-.fg{display:flex;flex-direction:column;gap:5px}
-.fl{font-size:10px;font-weight:700;color:${C.gold};text-transform:uppercase;letter-spacing:.6px}
-.fi,.fsel,.fta{
-  background:rgba(28,18,8,0.6);border:1px solid ${C.border};color:${C.text};
-  padding:10px 14px;border-radius:10px;font-family:'Noto Sans',sans-serif;font-size:13px;
-  outline:none;transition:border-color .15s;width:100%;
-}
-.fi:focus,.fsel:focus,.fta:focus{border-color:${C.gold};box-shadow:0 0 0 3px rgba(240,165,0,0.1)}
-.fi::placeholder,.fta::placeholder{color:${C.textD}}
-.fsel option{background:${C.bg}}
-.fta{resize:vertical;min-height:80px;line-height:1.5}
-.fcheck{
-  display:flex;align-items:center;gap:9px;padding:10px 13px;
-  background:rgba(28,18,8,0.5);border:1px solid ${C.border};border-radius:9px;cursor:pointer;transition:all .15s;
-}
-.fcheck:hover{border-color:${C.gold};background:rgba(240,165,0,0.06)}
-.fcheck input{accent-color:${C.gold};width:15px;height:15px}
-.fcheck-label{font-size:12px;color:${C.text}}
-.step-bar{display:flex;gap:0;background:rgba(28,18,8,0.5);border:1px solid ${C.border};border-radius:12px;overflow:hidden;margin-bottom:26px}
-.step{flex:1;padding:13px;text-align:center;font-size:12px;font-weight:500;color:${C.textD};cursor:pointer;transition:all .15s;border-right:1px solid ${C.border}}
-.step:last-child{border-right:none}
-.step.on{background:rgba(240,165,0,0.12);color:${C.gold};font-weight:700}
-.step-n{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${C.border};color:${C.textD};font-size:10px;font-weight:700;margin-right:6px;vertical-align:middle}
-.step.on .step-n{background:${C.gold};color:#1a0800}
-.sec-sep{font-size:10px;color:${C.gold};font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;margin-top:4px;display:flex;align-items:center;gap:8px}
-.sec-sep::after{content:'';flex:1;height:1px;background:rgba(240,165,0,0.2)}
+/* ── FULL TABLE ── */
+.ftable-wrap{background:${C.surface};border:1.5px solid ${C.border};border-radius:14px;overflow:hidden;margin-bottom:24px;}
+.ftable-hd{background:${C.forest};padding:14px 20px;display:flex;justify-content:space-between;align-items:center;}
+.ftable-hd h3{font-family:'Playfair Display',serif;font-size:18px;color:#fff;font-weight:700;}
+.ftable-hd span{font-size:11px;color:rgba(255,255,255,.45);}
+table{width:100%;border-collapse:collapse;}
+thead th{background:${C.parchm};padding:10px 18px;text-align:left;font-size:10px;font-weight:700;color:${C.saffron};text-transform:uppercase;letter-spacing:.7px;border-bottom:1.5px solid ${C.border};}
+tbody td{padding:12px 18px;font-size:13px;border-bottom:1px solid ${C.border};color:${C.textM};}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:${C.parchm};}
+.tmn{font-weight:700;color:${C.forest};}
+.tup{color:${C.leaf};font-weight:700;} .tdn{color:${C.red};font-weight:700;}
+.tarr{color:${C.textD};font-size:11px;}
 
-/* ── TRANSPORTERS ── */
-.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:26px}
-.tcard{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:14px;padding:18px;cursor:pointer;transition:all .18s;
-  box-shadow:0 4px 14px rgba(0,0,0,0.2);
-}
-.tcard:hover{border-color:rgba(240,165,0,.4);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3)}
-.tcard.sel{border-color:${C.gold};background:rgba(240,165,0,0.06)}
-.tc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.tc-name{font-size:14px;font-weight:700;color:${C.ivory}}
-.tc-rating{display:flex;align-items:center;gap:3px;background:rgba(240,165,0,.14);color:${C.gold};padding:2px 9px;border-radius:6px;font-size:11px;font-weight:700}
-.tc-loc{font-size:11px;color:${C.textD};margin-bottom:10px}
-.tc-route{font-size:11px;color:${C.textD};padding:2px 0;display:flex;align-items:center;gap:5px}
-.tc-route::before{content:'→';color:${C.gold}}
-.tc-spec{margin-top:9px;font-size:11px;color:${C.green};background:rgba(93,190,90,.08);border:1px solid rgba(93,190,90,.2);padding:5px 10px;border-radius:7px}
+/* ── CHART ── */
+.chart-card{background:${C.surface};border:1.5px solid ${C.border};border-radius:14px;padding:20px;margin-bottom:24px;}
+.chart-title{font-size:14px;font-weight:700;color:${C.forest};margin-bottom:4px;}
+.chart-sub{font-size:11px;color:${C.textD};margin-bottom:16px;}
+.ct{background:${C.ivory};border:1px solid ${C.border};border-radius:8px;padding:10px 14px;font-size:12px;}
+.ctl{color:${C.saffron};font-weight:700;margin-bottom:5px;}
+.ctr{display:flex;justify-content:space-between;gap:12px;margin-bottom:2px;}
+.ctk{color:${C.textD};} .ctv{font-weight:700;color:${C.text};}
 
-/* ── TRACKER ── */
-.tracker{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:14px;padding:22px;margin-bottom:28px;
-}
-.track-steps{display:flex;justify-content:space-between;position:relative;margin:22px 0 8px}
-.track-steps::before{content:'';position:absolute;top:15px;left:8%;right:8%;height:2px;background:${C.border};z-index:0}
-.tstep{display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;z-index:1}
-.tdot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid ${C.border};background:${C.surface};transition:all .3s}
-.tdot.done{background:${C.gold};border-color:${C.gold};color:#1a0800}
-.tdot.cur{background:rgba(240,165,0,.18);border-color:${C.gold};color:${C.gold};box-shadow:0 0 14px rgba(240,165,0,.3)}
-.tlabel{font-size:10px;color:${C.textD};text-align:center;font-weight:500}
-.tlabel.done{color:${C.gold}}
+/* ── EXPORT FORM ── */
+.export-wrap{background:${C.surface};border:1.5px solid ${C.border};border-radius:16px;padding:28px;margin-bottom:24px;}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.exp-grid{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fl{font-size:10px;font-weight:700;color:${C.saffron};text-transform:uppercase;letter-spacing:.5px;}
+.fi,.fsel,.fta{background:${C.parchm};border:1.5px solid ${C.border};color:${C.text};padding:10px 13px;border-radius:9px;font-size:13px;outline:none;transition:border-color .15s;width:100%;}
+.fi:focus,.fsel:focus,.fta:focus{border-color:${C.leaf};box-shadow:0 0 0 3px rgba(42,138,69,.1);}
+.fi::placeholder,.fta::placeholder{color:${C.textD};}
+.fsel option{background:${C.surface};}
+.fta{resize:vertical;min-height:80px;line-height:1.5;}
+.fcheck{display:flex;align-items:center;gap:8px;padding:8px 12px;background:${C.parchm};border:1.5px solid ${C.border};border-radius:8px;cursor:pointer;transition:all .15s;}
+.fcheck:hover{border-color:${C.leaf};}
+.fcheck input{accent-color:${C.leaf};width:14px;height:14px;}
+.fcheck-lbl{font-size:12px;color:${C.text};}
+.fsep{font-size:10px;font-weight:700;color:${C.leaf};text-transform:uppercase;letter-spacing:.6px;margin:4px 0;display:flex;align-items:center;gap:8px;}
+.fsep::after{content:'';flex:1;height:1px;background:${C.border};}
+.submit-btn{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,${C.leaf},${C.forest});color:#fff;font-size:14px;font-weight:700;box-shadow:0 6px 20px rgba(15,61,31,.25);transition:all .2s;margin-top:4px;}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(15,61,31,.35);}
+.wa-submit{width:100%;padding:12px;border-radius:10px;border:none;background:#25D366;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;margin-top:8px;}
+.wa-submit:hover{background:#1db954;}
 
-/* ── PAYMENT ── */
-.pay-row{display:grid;grid-template-columns:1fr 320px;gap:14px;margin-bottom:28px}
-@media(max-width:780px){.pay-row{grid-template-columns:1fr}}
-.pay-table-wrap{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:14px;overflow:hidden;
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
-}
-.pay-hd{background:linear-gradient(135deg,rgba(240,165,0,0.1),rgba(224,123,0,0.07));padding:13px 18px;border-bottom:1px solid ${C.border};display:flex;justify-content:space-between;align-items:center}
-.pay-hd h3{font-family:'Playfair Display',serif;font-size:17px;color:${C.ivory}}
-.ptable td{padding:12px 16px}
-.ptable th{padding:9px 16px}
-.pstatus{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:5px;font-size:11px;font-weight:700}
-.ps-Received{background:rgba(93,190,90,.15);color:${C.green}}
-.ps-Pending{background:rgba(240,165,0,.15);color:${C.gold}}
-.ps-Processing{background:rgba(90,158,224,.15);color:${C.blue}}
-.pay-card{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:14px;padding:20px;
-}
-.pay-method{display:flex;align-items:center;gap:10px;background:rgba(28,18,8,0.5);border:1px solid ${C.border};border-radius:10px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:all .15s}
-.pay-method:hover{border-color:${C.gold}}
-.pay-method.sel{border-color:${C.gold};background:rgba(240,165,0,0.07)}
-.pm-icon{font-size:22px;width:36px;text-align:center}
-.pm-info{flex:1}
-.pm-name{font-size:13px;font-weight:700;color:${C.ivory};margin-bottom:2px}
-.pm-sub{font-size:11px;color:${C.textD}}
-.pm-radio{width:14px;height:14px;accent-color:${C.gold}}
-.pay-detail-box{background:rgba(28,18,8,0.5);border:1px solid ${C.border};border-radius:10px;padding:13px;margin:13px 0;font-size:12px;line-height:2.1;color:${C.textD}}
-.pay-detail-box b{color:${C.cream}}
-
-/* ── WHATSAPP HUB ── */
-.wa-layout{display:grid;grid-template-columns:260px 1fr;gap:0;
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:16px;overflow:hidden;min-height:520px;margin-bottom:28px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.3);
-}
-.wa-sidebar{border-right:1px solid ${C.border};display:flex;flex-direction:column}
-.wa-sidebar-hd{padding:14px 16px;border-bottom:1px solid ${C.border};background:rgba(240,165,0,0.05)}
-.wa-sidebar-hd h3{font-size:13px;font-weight:700;color:${C.ivory};margin-bottom:2px}
-.wa-sidebar-hd span{font-size:10px;color:${C.textD}}
-.wa-contact{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(74,52,24,0.5)}
-.wa-contact:hover{background:rgba(240,165,0,0.04)}
-.wa-contact.sel{background:rgba(240,165,0,0.07);border-left:2px solid ${C.gold}}
-.wa-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,${C.gold},${C.amber});display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.wa-cname{font-size:13px;font-weight:600;color:${C.ivory};margin-bottom:2px}
-.wa-cpreview{font-size:11px;color:${C.textD};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
-.wa-ctime{font-size:10px;color:${C.textD}}
-.wa-unread{width:16px;height:16px;background:${C.green};border-radius:50%;font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.wa-chat{display:flex;flex-direction:column;flex:1}
-.wa-chat-hd{padding:13px 16px;border-bottom:1px solid ${C.border};background:rgba(240,165,0,0.05);display:flex;align-items:center;gap:10px}
-.wa-chat-hd-name{font-size:14px;font-weight:700;color:${C.ivory}}
-.wa-chat-hd-sub{font-size:11px;color:${C.textD}}
-.wa-msgs{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;min-height:300px}
-.wa-bubble{max-width:75%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
-.wa-bubble.recv{background:rgba(74,52,24,0.6);border:1px solid ${C.border};align-self:flex-start;color:${C.text};border-radius:4px 12px 12px 12px}
-.wa-bubble.sent{background:linear-gradient(135deg,${C.greenD},rgba(42,122,40,0.8));align-self:flex-end;color:#fff;border-radius:12px 4px 12px 12px}
-.wa-bubble-time{font-size:10px;color:${C.textD};margin-top:3px;text-align:right}
-.wa-input-area{padding:12px 14px;border-top:1px solid ${C.border};display:flex;gap:8px;align-items:flex-end}
-.wa-input{flex:1;background:rgba(28,18,8,0.6);border:1px solid ${C.border};color:${C.text};padding:10px 13px;border-radius:10px;font-family:'Noto Sans',sans-serif;font-size:13px;outline:none;transition:border-color .15s;resize:none;max-height:120px}
-.wa-input:focus{border-color:${C.gold}}
-.wa-send{width:38px;height:38px;border-radius:9px;border:none;cursor:pointer;background:linear-gradient(135deg,${C.gold},${C.amber});color:#1a0800;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.wa-send:hover{transform:scale(1.08)}
-.wa-tmpl-list{padding:12px 14px;border-top:1px solid ${C.border};background:rgba(28,18,8,0.3)}
-.wa-tmpl-title{font-size:10px;color:${C.gold};font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
-.wa-tmpl-btns{display:flex;gap:6px;flex-wrap:wrap}
-.wa-tmpl-btn{padding:5px 12px;border-radius:6px;border:1px solid ${C.border};cursor:pointer;font-family:'Noto Sans',sans-serif;font-size:11px;font-weight:600;background:rgba(240,165,0,0.08);color:${C.gold};transition:all .15s}
-.wa-tmpl-btn:hover{border-color:${C.gold};background:rgba(240,165,0,0.15)}
+/* ── POST LISTING FORM ── */
+.step-bar{display:flex;background:${C.parchm};border:1.5px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:22px;}
+.step{flex:1;padding:11px;text-align:center;font-size:12px;font-weight:500;color:${C.textD};cursor:pointer;transition:all .15s;border-right:1px solid ${C.border};}
+.step:last-child{border-right:none;}
+.step.on{background:${C.mint};color:${C.leaf};font-weight:700;}
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${C.border};color:${C.textD};font-size:10px;font-weight:700;margin-right:5px;vertical-align:middle;}
+.step.on .step-n{background:${C.leaf};color:#fff;}
 
 /* ── MODAL ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{
-  background:linear-gradient(160deg,${C.card} 0%,${C.surface} 100%);
-  border:1px solid rgba(240,165,0,0.2);border-radius:20px;
-  width:100%;max-width:540px;max-height:92vh;overflow-y:auto;
-  box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 1px rgba(240,165,0,0.1);
-}
-.m-hd{padding:20px 24px 16px;border-bottom:1px solid ${C.border};display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:${C.card};z-index:5}
-.m-hd h2{font-family:'Playfair Display',serif;font-size:20px;color:${C.ivory};margin-bottom:3px}
-.m-hd p{font-size:12px;color:${C.textD}}
-.mclose{background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.2);color:${C.gold};width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.mclose:hover{background:rgba(240,165,0,.2)}
-.m-body{padding:20px 24px}
-.m-price{background:linear-gradient(135deg,rgba(240,165,0,.12),rgba(224,123,0,.06));border:1px solid rgba(240,165,0,.28);border-radius:13px;padding:16px 20px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
-.m-price-big{font-family:'Playfair Display',serif;font-size:34px;color:${C.gold}}
-.m-price-sub{font-size:11px;color:${C.textD};margin-top:3px}
-.m-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.m-info{background:rgba(28,18,8,0.5);border:1px solid ${C.border};border-radius:9px;padding:10px 13px}
-.m-info label{font-size:10px;color:${C.gold};text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
-.m-info span{font-size:13px;font-weight:600;color:${C.text}}
-.m-desc{background:rgba(28,18,8,0.5);border:1px solid ${C.border};border-radius:9px;padding:11px 14px;font-size:12px;color:${C.textD};line-height:1.7;margin-bottom:18px}
-.m-tabs{display:flex;gap:6px;margin-bottom:16px}
-.mtab{flex:1;padding:9px;text-align:center;border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;background:rgba(28,18,8,0.5);border:1px solid ${C.border};color:${C.textD};transition:all .15s}
-.mtab.on{background:rgba(240,165,0,.13);border-color:${C.gold};color:${C.gold}}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal{background:${C.surface};border-radius:18px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 28px 70px rgba(0,0,0,.35);}
+.mhd{background:${C.forest};padding:20px 24px;border-radius:18px 18px 0 0;display:flex;justify-content:space-between;align-items:flex-start;}
+.mhd h2{font-family:'Playfair Display',serif;font-size:20px;color:#fff;font-weight:700;margin-bottom:3px;}
+.mhd p{font-size:12px;color:rgba(255,255,255,.55);}
+.mclose{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);width:30px;height:30px;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.mclose:hover{background:rgba(255,255,255,.2);color:#fff;}
+.mbody{padding:22px 24px;}
+.mpricebox{background:${C.parchm};border:1.5px solid ${C.border};border-radius:12px;padding:15px 18px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;}
+.mprice{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:${C.saffron};}
+.mprice-sub{font-size:11px;color:${C.textD};margin-top:3px;}
+.minfo-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+.minfo{background:${C.parchm};border:1px solid ${C.border};border-radius:8px;padding:9px 12px;}
+.minfo label{font-size:9px;color:${C.saffron};text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px;}
+.minfo span{font-size:13px;font-weight:600;color:${C.text};}
+.mdesc{background:${C.parchm};border:1px solid ${C.border};border-radius:9px;padding:11px 14px;font-size:12px;color:${C.textM};line-height:1.65;margin-bottom:18px;}
+.mform{display:flex;flex-direction:column;gap:10px;}
+.mbtn-green{width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,${C.leaf},${C.forest});color:#fff;font-size:14px;font-weight:700;transition:all .18s;}
+.mbtn-green:hover{transform:translateY(-1px);}
+.mbtn-wa{width:100%;padding:11px;border-radius:10px;border:none;background:#25D366;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .18s;margin-top:6px;}
+.mbtn-wa:hover{background:#1db954;}
 
 /* ── DASHBOARD CARDS ── */
-.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:22px}
-.dcard{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:13px;padding:16px 18px;
-  position:relative;overflow:hidden;
-  box-shadow:0 4px 14px rgba(0,0,0,0.2);
-  transition:all .18s;
-}
-.dcard:hover{transform:translateY(-2px);border-color:rgba(240,165,0,0.3)}
-.dcard-accent{position:absolute;top:0;left:0;right:0;height:2.5px}
-.dcard-icon{font-size:22px;margin-bottom:8px}
-.dcard-val{font-family:'Playfair Display',serif;font-size:26px;color:${C.ivory};margin-bottom:2px}
-.dcard-label{font-size:10px;color:${C.textD};text-transform:uppercase;letter-spacing:.5px}
-.dcard-delta{font-size:10px;font-weight:700;margin-top:5px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.dcard{background:${C.surface};border:1.5px solid ${C.border};border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;transition:all .18s;}
+.dcard:hover{border-color:${C.leaf};transform:translateY(-2px);}
+.dcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--acc,${C.leaf});}
+.dcard-icon{font-size:20px;margin-bottom:8px;}
+.dcard-val{font-family:'Playfair Display',serif;font-size:24px;color:${C.forest};margin-bottom:2px;}
+.dcard-lbl{font-size:10px;color:${C.textD};text-transform:uppercase;letter-spacing:.5px;}
+.dcard-delta{font-size:10px;font-weight:700;margin-top:4px;}
 
 /* ── ACTIVITY ── */
-.activity{
-  background:linear-gradient(160deg,${C.card},${C.surface});
-  border:1px solid ${C.border};border-radius:14px;overflow:hidden;margin-bottom:20px;
-}
-.activity-hd{background:rgba(240,165,0,0.07);padding:12px 18px;border-bottom:1px solid ${C.border};display:flex;justify-content:space-between;align-items:center}
-.activity-hd h3{font-size:13px;font-weight:700;color:${C.ivory}}
-.aitem{display:flex;align-items:flex-start;gap:11px;padding:12px 16px;border-bottom:1px solid rgba(74,52,24,0.5)}
-.aitem:last-child{border-bottom:none}
-.aicon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.ainfo-title{font-size:12px;font-weight:600;color:${C.text};margin-bottom:2px}
-.ainfo-sub{font-size:11px;color:${C.textD}}
-.atime{font-size:10px;color:${C.textD};white-space:nowrap;margin-left:auto}
+.activity-item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid ${C.border};}
+.activity-item:last-child{border-bottom:none;}
+.ai-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ai-title{font-size:12px;font-weight:600;color:${C.text};margin-bottom:2px;}
+.ai-sub{font-size:11px;color:${C.textD};}
+.ai-time{font-size:10px;color:${C.textD};white-space:nowrap;margin-left:auto;}
+
+/* ── SELL FORM STEPS ── */
+.sell-card{background:${C.surface};border:1.5px solid ${C.border};border-radius:14px;padding:24px;margin-bottom:16px;}
+
+/* ── WA FLOAT ── */
+.wa-float{position:fixed;bottom:24px;right:24px;z-index:400;width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(37,211,102,.5);text-decoration:none;border:none;animation:ring 2.5s infinite;}
+@keyframes ring{0%{box-shadow:0 6px 22px rgba(37,211,102,.5),0 0 0 0 rgba(37,211,102,.4)}60%{box-shadow:0 6px 22px rgba(37,211,102,.5),0 0 0 11px rgba(37,211,102,0)}100%{box-shadow:0 6px 22px rgba(37,211,102,.5),0 0 0 0 rgba(37,211,102,0)}}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:22px;right:100px;z-index:999;background:linear-gradient(135deg,${C.card},${C.surface});border:1px solid rgba(240,165,0,0.35);color:${C.text};padding:12px 18px;border-radius:13px;font-size:13px;font-weight:500;box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;align-items:center;gap:9px;max-width:320px;animation:toastIn .28s cubic-bezier(.34,1.56,.64,1)}
-@keyframes toastIn{from{transform:translateY(18px) scale(.95);opacity:0}to{transform:none;opacity:1}}
+.toast{position:fixed;bottom:24px;right:96px;z-index:500;background:${C.forest};color:#fff;border:1px solid rgba(240,160,48,.3);padding:12px 18px;border-radius:11px;font-size:13px;font-weight:500;box-shadow:0 12px 36px rgba(0,0,0,.25);display:flex;align-items:center;gap:8px;max-width:300px;animation:sin .28s cubic-bezier(.34,1.56,.64,1);}
+@keyframes sin{from{transform:translateY(16px) scale(.95);opacity:0}to{transform:none;opacity:1}}
 
 /* ── FOOTER ── */
-.footer{
-  background:linear-gradient(180deg,${C.surface},${C.bg});
-  border-top:1px solid rgba(240,165,0,0.15);
-  padding:32px 20px;text-align:center;
-}
-.footer-logo{font-family:'Playfair Display',serif;font-size:22px;color:${C.ivory};margin-bottom:8px}
-.footer-logo em{color:${C.gold};font-style:italic}
-.footer-sub{font-size:12px;color:${C.textD}}
+.footer{background:${C.forest};border-top:2px solid rgba(255,255,255,.07);padding:44px 20px 24px;}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:36px;margin-bottom:36px;}
+@media(max-width:800px){.footer-grid{grid-template-columns:1fr 1fr;gap:24px;}}
+@media(max-width:500px){.footer-grid{grid-template-columns:1fr;}}
+.footer-brand-name{font-family:'Playfair Display',serif;font-size:22px;color:#fff;font-weight:700;margin-bottom:8px;}
+.footer-brand-name em{color:${C.amberL};font-style:italic;}
+.footer-brand-sub{font-size:12px;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:16px;}
+.fcol-title{font-size:11px;font-weight:700;color:${C.amberL};text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.flink{display:block;font-size:13px;color:rgba(255,255,255,.55);margin-bottom:8px;cursor:pointer;transition:color .15s;}
+.flink:hover{color:rgba(255,255,255,.9);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.fcopy{font-size:12px;color:rgba(255,255,255,.35);}
+.footer-wa{display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:all .18s;}
+.footer-wa:hover{background:#1db954;}
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE MOBILE ── */
 @media(max-width:700px){
-  .hero h1{font-size:32px}
-  .hero-kpis{grid-template-columns:1fr 1fr}
-  .wa-layout{grid-template-columns:1fr}
-  .wa-sidebar{max-height:200px;overflow-y:auto}
-  .pay-row{grid-template-columns:1fr}
-  .lgrid{grid-template-columns:1fr}
-  .nav-tabs .ntab span.label{display:none}
+  .hero h1{font-size:34px;}
+  .hero-stats{flex-direction:column;}
+  .hstat{border-right:none;border-bottom:1px solid rgba(255,255,255,.08);}
+  .hstat:last-child{border-bottom:none;}
+  .lcard{grid-template-columns:auto 1fr;grid-template-rows:auto auto;}
+  .lcard-right{grid-column:2;grid-row:2;flex-direction:row;align-items:center;justify-content:space-between;width:100%;text-align:left;}
+  .nav-main .nav-actions{display:none;}
+  .topbar{display:none;}
+  .footer-grid{grid-template-columns:1fr;}
+  .page-grid{grid-template-columns:1fr;}
+}
+@media(max-width:500px){
+  .lcard{grid-template-columns:1fr;}
+  .lcard-icon{display:none;}
 }
 `;
-/* ════════════════════════════════════════════════════════
-   CUSTOM TOOLTIP
-════════════════════════════════════════════════════════ */
-function CTooltip({active,payload,label}){
+
+/* ─────────────────────────────────────────────
+   TOOLTIP
+───────────────────────────────────────────── */
+function CTooltip({active,payload,label}) {
   if(!active||!payload?.length) return null;
   return(
-    <div className="custom-tooltip">
-      <div className="ct-label">{label}</div>
+    <div className="ct">
+      <div className="ctll" style={{color:C.saffron,fontWeight:700,marginBottom:5}}>{label}</div>
       {payload.map((p,i)=>(
-        <div key={i} className="ct-row">
-          <span className="ct-k">{p.name}</span>
-          <span className="ct-v" style={{color:p.color}}>₹{p.value?.toLocaleString()}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-function DTooltip({active,payload,label}){
-  if(!active||!payload?.length) return null;
-  return(
-    <div className="custom-tooltip">
-      <div className="ct-label">{label}</div>
-      {payload.map((p,i)=>(
-        <div key={i} className="ct-row">
-          <span className="ct-k">{p.name}</span>
-          <span className="ct-v" style={{color:p.color}}>{p.value}{p.name==="val"?" Cr":""}</span>
+        <div key={i} className="ctr">
+          <span className="ctk">{p.name}</span>
+          <span className="ctv" style={{color:p.color}}>₹{p.value?.toLocaleString()}/q</span>
         </div>
       ))}
     </div>
   );
 }
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────
+   WA SVG
+───────────────────────────────────────────── */
+function WASvg({sz=26}) {
+  return(
+    <svg viewBox="0 0 48 48" width={sz} height={sz} fill="none">
+      <path d="M24 4C13 4 4 13 4 24c0 3.6 1 7 2.7 9.9L4 44l10.4-2.7C17.2 43 20.5 44 24 44c11 0 20-9 20-20S35 4 24 4z" fill="#fff"/>
+      <path d="M24 7.2C14.8 7.2 7.2 14.8 7.2 24c0 3.3.9 6.4 2.6 9.1l.4.6-1.7 6.2 6.4-1.7.6.3c2.6 1.5 5.5 2.3 8.5 2.3 9.2 0 16.8-7.6 16.8-16.8S33.2 7.2 24 7.2z" fill="#25D366"/>
+      <path d="M33.5 28.1c-.5-.2-2.8-1.4-3.2-1.5-.4-.2-.7-.2-1 .2-.3.5-1.2 1.5-1.4 1.8-.3.3-.5.3-1 .1-.5-.2-2-.7-3.8-2.3-1.4-1.2-2.3-2.8-2.6-3.2-.3-.5 0-.7.2-.9.2-.2.5-.5.7-.8.2-.3.3-.5.4-.8.1-.3 0-.6-.1-.8-.1-.2-1-2.4-1.3-3.3-.3-.8-.7-.7-1-.7h-.8c-.3 0-.8.1-1.2.6-.4.5-1.6 1.5-1.6 3.7s1.6 4.3 1.8 4.6c.2.3 3.2 5 7.8 6.8 1.1.5 2 .7 2.6.9 1.1.3 2.1.3 2.9.2.9-.1 2.8-1.1 3.2-2.2.4-1.1.4-2 .3-2.2-.1-.2-.4-.3-.9-.5z" fill="#fff"/>
+    </svg>
+  );
+}
+
+/* ─────────────────────────────────────────────
    MAIN APP
-════════════════════════════════════════════════════════ */
-export default function App(){
-  const [tab,setTab]=useState("dashboard");
-  const [search,setSearch]=useState("");
-  const [gradeF,setGradeF]=useState("All");
-  const [modal,setModal]=useState(null);
-  const [mTab,setMTab]=useState("inquiry");
-  const [selTrans,setSelTrans]=useState(null);
-  const [bookStep,setBookStep]=useState(0);
-  const [toast,setToast]=useState(null);
-  const [userListings,setUserListings]=useState([]);
-  const [sellStep,setSellStep]=useState(0);
-  const [selWA,setSelWA]=useState(WA_MESSAGES[0]);
-  const [waChat,setWaChat]=useState({});
-  const [waInput,setWaInput]=useState("");
-  const [payMethod,setPayMethod]=useState("upi");
-  const [payForm,setPayForm]=useState({amount:"",to:"",ref:""});
+───────────────────────────────────────────── */
+export default function App() {
+  const [tab, setTab]         = useState("home");
+  const [listType, setLType]  = useState("All");
+  const [grade, setGrade]     = useState("All");
+  const [search, setSearch]   = useState("");
+  const [modal, setModal]     = useState(null);
+  const [toast, setToast]     = useState(null);
+  const [sellStep, setSStep]  = useState(0);
+  const [userListings, setUL] = useState([]);
 
-  const [iqF,setIqF]=useState({name:"",phone:"",company:"",country:"India",qty:"",message:""});
-  const [expF,setExpF]=useState({company:"",country:"Bangladesh",name:"",phone:"",email:"",qty:"",grade:"Super",port:"Nhava Sheva (Mumbai)",incoterm:"FOB",certs:[],message:""});
-  const [logF,setLogF]=useState({from:"Mandsaur",to:"",qty:"",date:"",type:"Normal",name:"",contact:""});
-  const [sellF,setSellF]=useState({name:"",phone:"",village:"",dist:"Mandsaur",grade:"A Grade",qty:"",size:"",price:"",cured:false,phyto:false,desc:""});
+  // forms
+  const [iqF, setIqF]   = useState({name:"",phone:"",qty:"",msg:""});
+  const [expF, setExpF] = useState({co:"",country:"Bangladesh",name:"",phone:"",email:"",qty:"",grade:"Super (55mm+)",port:"Nhava Sheva (Mumbai)",inc:"FOB",certs:[],msg:""});
+  const [sellF, setSF]  = useState({type:"seller",name:"",phone:"",loc:"Mandsaur",grade:"A Grade",qty:"",size:"",price:"",phyto:false,desc:""});
+  const [conF, setConF] = useState({name:"",phone:"",msg:""});
 
-  const flash=(msg)=>{setToast(msg);setTimeout(()=>setToast(null),3600)};
-  const allL=[...LISTINGS,...userListings];
-  const filtered=allL.filter(l=>{
-    const q=search.toLowerCase();
-    return(l.name.toLowerCase().includes(q)||l.farmer.toLowerCase().includes(q)||l.dist.toLowerCase().includes(q))
-      &&(gradeF==="All"||l.grade===gradeF);
-  });
-  const toggleCert=(c)=>setExpF(f=>({...f,certs:f.certs.includes(c)?f.certs.filter(x=>x!==c):[...f.certs,c]}));
+  const flash = m => { setToast(m); setTimeout(()=>setToast(null),3400); };
+  const toggleCert = c => setExpF(f=>({...f,certs:f.certs.includes(c)?f.certs.filter(x=>x!==c):[...f.certs,c]}));
 
-  const getChatMsgs=(id)=>waChat[id]||[
-    {role:"recv",text:WA_MESSAGES.find(m=>m.id===id)?.msg||"",time:WA_MESSAGES.find(m=>m.id===id)?.time||""}
-  ];
-  const sendWA=()=>{
-    if(!waInput.trim()) return;
-    const id=selWA.id;
-    const msgs=getChatMsgs(id);
-    setWaChat({...waChat,[id]:[...msgs,{role:"sent",text:waInput,time:"Now"}]});
-    setWaInput("");
-    flash("✅ Message sent!");
-    setTimeout(()=>{
-      const auto="Thank you for your message! We will get back to you shortly. 🧄";
-      setWaChat(p=>({...p,[id]:[...getChatMsgs(id),{role:"recv",text:auto,time:"Just now"}]}));
-    },2000);
-  };
-  const useTemplate=(tmpl)=>setWaInput(tmpl.text);
-
-  const submitIq=(e)=>{e.preventDefault();flash("✅ Inquiry bhej di! Farmer 2-4 hrs mein contact karega.");setModal(null);setIqF({name:"",phone:"",company:"",country:"India",qty:"",message:""})};
-  const submitExp=(e)=>{e.preventDefault();flash("🌍 Export inquiry receive! 24 hrs mein response milega.");setExpF(f=>({...f,message:""}));setTab("dashboard")};
-  const submitLog=(e)=>{e.preventDefault();setBookStep(1);setTimeout(()=>setBookStep(2),1600);setTimeout(()=>{setBookStep(3);flash("🚛 Booking confirmed! Transporter 30 min mein call karega.")},3000)};
-  const submitSell=(e)=>{
+  const submitIq = e => { e.preventDefault(); flash("✅ Inquiry bhej di! 2-4 hrs mein contact karenge."); setModal(null); setIqF({name:"",phone:"",qty:"",msg:""}); };
+  const submitExp = e => { e.preventDefault(); flash("🌍 Export inquiry received! 24 hrs mein response milega."); };
+  const submitSell = e => {
     e.preventDefault();
-    setUserListings(p=>[{id:Date.now(),grade:sellF.grade,farmer:sellF.name,village:sellF.village,dist:sellF.dist,
-      name:`${sellF.village} ${sellF.grade} Garlic`,qty:parseInt(sellF.qty)||50,size:sellF.size||"35-55mm",
-      moisture:"65%",cured:sellF.cured,phyto:sellF.phyto,price:parseInt(sellF.price)||6000,
-      avail:"Immediate",badge:"Fresh",desc:sellF.desc||`${sellF.name} dwara fresh garlic.`},...p]);
-    flash("🧄 Listing live! Buyers dekh sakte hain abhi.");
-    setTab("listings");setSellStep(0);
-    setSellF({name:"",phone:"",village:"",dist:"Mandsaur",grade:"A Grade",qty:"",size:"",price:"",cured:false,phyto:false,desc:""});
+    setUL(p=>[{id:Date.now(),type:sellF.type,verified:false,name:sellF.name,loc:sellF.loc,grade:sellF.grade,size:sellF.size||"35-55mm",qty:sellF.qty+" Quintal",price:parseInt(sellF.price)||6000,avail:"Immediate",rating:0,deals:0,phyto:sellF.phyto,desc:sellF.desc||"Naya listing.",badge:sellF.type==="seller"?"Verified":"Buyer"},...p]);
+    flash("🧄 Listing live ho gayi!"); setSStep(0); setTab("listings");
+    setSF({type:"seller",name:"",phone:"",loc:"Mandsaur",grade:"A Grade",qty:"",size:"",price:"",phyto:false,desc:""});
   };
-  const submitPay=(e)=>{e.preventDefault();flash(`💰 Payment initiated via ${payMethod.toUpperCase()}. Reference: MG-${Math.floor(Math.random()*90000+10000)}`);setPayForm({amount:"",to:"",ref:""})};
+  const submitCon = e => { e.preventDefault(); flash("✅ Message bhej diya! Hum jald contact karenge."); setConF({name:"",phone:"",msg:""}); };
 
-  // SEO meta tags
   useEffect(()=>{
-    document.title="MandsaurGarlic.com — India Ka #1 Garlic B2B Platform | Buy Sell Export Garlic";
-    const setMeta=(name,content,prop=false)=>{
-      let el=document.querySelector(prop?`meta[property='${name}']`:`meta[name='${name}']`);
-      if(!el){el=document.createElement('meta');prop?el.setAttribute('property',name):el.setAttribute('name',name);document.head.appendChild(el);}
-      el.setAttribute('content',content);
-    };
-    setMeta('description','Mandsaur Garlic B2B Platform — India ka sabse bada garlic trading hub. Farmers se seedha buy karo. Export inquiry, live mandi bhav, logistics sab ek jagah. Mandsaur, Neemuch, Ratlam.');
-    setMeta('keywords','mandsaur garlic, garlic wholesale, garlic export india, lahsun mandi bhav, garlic b2b platform, mandsaur mandi, neemuch garlic, garlic price today, garlic buyer seller india');
-    setMeta('author','MandsaurGarlic.com');
-    setMeta('robots','index, follow');
-    setMeta('og:title','MandsaurGarlic.com — India Ka #1 Garlic B2B Platform',true);
-    setMeta('og:description','Mandsaur se seedha garlic kharido. Live mandi bhav, export inquiry, logistics. 2400+ farmers, 14 countries.',true);
-    setMeta('og:url','https://www.mandsaurgarlic.com',true);
-    setMeta('og:type','website',true);
-    setMeta('og:image','https://www.mandsaurgarlic.com/og-image.png',true);
-    setMeta('twitter:card','summary_large_image');
-    setMeta('twitter:title','MandsaurGarlic.com — India Ka #1 Garlic B2B Platform');
-    setMeta('twitter:description','Mandsaur se seedha garlic kharido. Live mandi bhav, export, logistics.');
-    // Canonical
-    let canonical=document.querySelector("link[rel='canonical']");
-    if(!canonical){canonical=document.createElement('link');canonical.setAttribute('rel','canonical');document.head.appendChild(canonical);}
-    canonical.setAttribute('href','https://www.mandsaurgarlic.com');
-    // Schema.org structured data
-    let schema=document.getElementById('schema-org');
-    if(!schema){schema=document.createElement('script');schema.id='schema-org';schema.type='application/ld+json';document.head.appendChild(schema);}
-    schema.text=JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":"MandsaurGarlic","url":"https://www.mandsaurgarlic.com","description":"India Ka #1 Garlic B2B Platform — Mandsaur, Madhya Pradesh","contactPoint":{"@type":"ContactPoint","telephone":"+91-7772993222","contactType":"customer service","availableLanguage":["Hindi","English"]},"sameAs":["https://wa.me/917772993222"]});
+    document.title="MandsaurGarlic.com — India Ka #1 Garlic B2B Marketplace";
+    const sm=(n,c,p=false)=>{let el=document.querySelector(p?`meta[property='${n}']`:`meta[name='${n}']`);if(!el){el=document.createElement('meta');p?el.setAttribute('property',n):el.setAttribute('name',n);document.head.appendChild(el);}el.setAttribute('content',c);};
+    sm('description','MandsaurGarlic.com — India ka #1 garlic B2B marketplace. Verified farmers, live mandi bhav, export buyers, logistics. Mandsaur, Neemuch, Ratlam.');
+    sm('keywords','mandsaur garlic, garlic wholesale india, garlic export, lahsun mandi bhav, garlic b2b marketplace, neemuch garlic, ratlam garlic');
+    sm('og:title','MandsaurGarlic.com — India Ka #1 Garlic B2B Marketplace',true);
+    sm('og:description','Verified garlic sellers & buyers. Live mandi bhav. Export inquiry. 2400+ farmers.',true);
+    sm('og:url','https://www.mandsaurgarlic.com',true);
+    sm('og:type','website',true);
   },[]);
 
-  const TABS=[
-    {key:"dashboard",icon:"📊",label:"Dashboard"},
-    {key:"listings",icon:"🛒",label:"Listings"},
-    {key:"prices",icon:"📈",label:"Bhav"},
-    {key:"export",icon:"🌍",label:"Export"},
-    {key:"logistics",icon:"🚛",label:"Logistics"},
-    {key:"payment",icon:"💰",label:"Payment"},
-    {key:"whatsapp",icon:<svg viewBox="0 0 24 24" width="15" height="15" style={{verticalAlign:"middle",marginRight:2}}><path d="M12 2C6.48 2 2 6.48 2 12c0 1.8.5 3.5 1.35 4.95L2 22l5.25-1.35C8.6 21.55 10.25 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" fill="#25D366"/><path d="M16.75 14.05c-.25-.12-1.4-.69-1.62-.77-.21-.08-.37-.12-.52.12-.16.25-.6.77-.74.92-.14.16-.27.17-.52.06-.25-.12-1.04-.38-1.97-1.21-.73-.64-1.22-1.44-1.37-1.68-.14-.25 0-.38.11-.5.1-.11.25-.27.37-.41.12-.14.16-.25.25-.41.08-.16.04-.29-.02-.41-.06-.12-.52-1.25-.71-1.71-.19-.45-.38-.38-.52-.38-.14 0-.29-.02-.45-.02s-.41.06-.62.29c-.21.23-.81.79-.81 1.93s.83 2.24.95 2.39c.12.16 1.63 2.49 3.95 3.49.55.24 .98.38 1.32.48.55.17 1.05.15 1.45.09.44-.07 1.37-.56 1.56-1.1.19-.54.19-1.01.14-1.1-.06-.1-.21-.16-.46-.27z" fill="#fff"/></svg>,label:"WhatsApp",unread:2},
-    {key:"sell",icon:"➕",label:"Becho"},
+  const allListings = [...LISTINGS,...userListings];
+  const filtered = allListings.filter(l=>{
+    const g = grade==="All" || l.grade===grade;
+    const t = listType==="All" || (listType==="Sellers"&&l.type==="seller") || (listType==="Buyers"&&l.type==="buyer");
+    const s = !search || l.name.toLowerCase().includes(search.toLowerCase()) || l.loc.toLowerCase().includes(search.toLowerCase());
+    return g&&t&&s;
+  });
+
+  const TABS = [
+    {k:"home",    i:"🏠",  l:"Home"},
+    {k:"listings",i:"🛒",  l:"Sellers"},
+    {k:"buyers",  i:"🏢",  l:"Buyers"},
+    {k:"bhav",    i:"📊",  l:"Mandi Bhav"},
+    {k:"export",  i:"🌍",  l:"Export"},
+    {k:"sell",    i:"➕",  l:"Post Listing"},
+    {k:"contact", i:"📞",  l:"Contact"},
   ];
+
+  const badgeClass = b => b==="Top Seller"?"badge-top":b==="Export Buyer"||b==="Premium Buyer"?"badge-buyer":b==="Organic"?"badge-org":b==="Bulk"?"badge-bulk":"badge-seller";
 
   return(
     <>
       <style>{CSS}</style>
 
+      {/* TOP BAR */}
+      <div className="topbar">
+        <div className="topbar-left">
+          <span>🇮🇳 India's #1 Garlic B2B Platform</span>
+          <span>📍 Mandsaur, Madhya Pradesh</span>
+        </div>
+        <div className="topbar-right">
+          <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" className="topbar-phone">
+            📱 +91-7772993222
+          </a>
+          <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <span onClick={()=>setTab("contact")} style={{cursor:"pointer"}}>Contact</span>
+        </div>
+      </div>
+
       {/* NAV */}
-      <nav className="nav">
-        <div className="nav-logo">
-          <div className="nav-logo-icon">🧄</div>
-          <div className="nav-logo-text">Mandsaur<em>Garlic</em></div>
+      <header className="nav">
+        <div className="nav-main">
+          <div className="nav-logo" onClick={()=>setTab("home")} style={{cursor:"pointer"}}>
+            <div className="nav-logo-icon">🧄</div>
+            <div className="nav-logo-text">
+              <div className="nav-logo-name">Mandsaur<em>Garlic</em></div>
+              <div className="nav-logo-sub">B2B Marketplace</div>
+            </div>
+          </div>
+          <div className="nav-search">
+            <input className="nav-search-input" placeholder="Search garlic variety, location, grade..." value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==="Enter"&&setTab("listings")}/>
+            <button className="nav-search-btn" onClick={()=>setTab("listings")}>🔍 Search</button>
+          </div>
+          <div className="nav-actions">
+            <button className="nav-btn-ghost" onClick={()=>setTab("sell")}>+ Post Listing</button>
+            <button className="nav-btn-solid" onClick={()=>{window.open(WA_DEFAULT,'_blank')}}>💬 WhatsApp</button>
+          </div>
         </div>
         <div className="nav-tabs">
-          {TABS.map(t=>(
-            <button key={t.key} className={`ntab ${tab===t.key?"on":""}`} onClick={()=>setTab(t.key)}>
-              {t.icon} <span className="label">{t.label}</span>
-              {t.unread&&<span className="badge">{t.unread}</span>}
-            </button>
-          ))}
+          <div className="nav-tabs-inner">
+            {TABS.map(t=>(
+              <button key={t.k} className={`ntab ${tab===t.k?"on":""}`} onClick={()=>setTab(t.k)}>
+                {t.i} {t.l}
+                {t.k==="listings"&&<span className="nbadge">{allListings.filter(l=>l.type==="seller").length}</span>}
+                {t.k==="buyers"&&<span className="nbadge">{allListings.filter(l=>l.type==="buyer").length}</span>}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="nav-right">
-          <div className="live-pill"><div className="lpulse"/>Live</div>
-        </div>
-      </nav>
+      </header>
 
       {/* TICKER */}
       <div className="ticker">
-        <div className="tlabel">BHAV</div>
-        <div className="ttrack">
-          <div className="tinner">
+        <div className="ticker-label">LIVE BHAV</div>
+        <div className="ticker-track">
+          <div className="ticker-inner">
             {[...MANDI,...MANDI].map((m,i)=>(
               <div key={i} className="ti">
                 <b>{m.name}</b>
+                <span>{m.grade}</span>
                 <span>₹{m.min.toLocaleString()}–{m.max.toLocaleString()}/q</span>
                 <span className={m.ch>0?"tup":"tdn"}>{m.ch>0?"▲+":"▼"}{Math.abs(m.ch)}%</span>
               </div>
@@ -818,661 +623,568 @@ export default function App(){
         </div>
       </div>
 
-      {/* HERO — only on dashboard/listings */}
-      {(tab==="dashboard"||tab==="listings")&&(
+      {/* ══ HOME ══ */}
+      {tab==="home"&&<>
         <div className="hero">
-          <div className="hero-garlic-bg">🧄</div>
           <div className="hero-inner">
             <div>
-              <div className="hero-eyebrow">🇮🇳 India Ka #1 Garlic B2B Platform</div>
-              <h1>Mandsaur Ki <i>Garlic</i><br/>Seedha Khet Se</h1>
-              <p className="hero-sub">Middlemen hatao. Export karo. Sahi daam pao. Dashboard, live bhav, export inquiry, logistics, payments — sab ek jagah.</p>
+              <div className="hero-tag">🇮🇳 Mandsaur Mandi — India's Garlic Capital</div>
+              <h1>India Ka Sabse Bada<br/><em>Garlic B2B</em> Marketplace</h1>
+              <p className="hero-sub">Verified farmers se seedha kharido. Export buyers se seedha milo. Live mandi bhav, full documentation, logistics — sab ek jagah. Zero middlemen.</p>
               <div className="hero-ctas">
-                <button className="btn-G" onClick={()=>setTab("listings")}>🛒 Garlic Kharido</button>
-                <button className="btn-O" onClick={()=>setTab("export")}>🌍 Export Karo</button>
-                <button className="btn-N" onClick={()=>window.open(waGeneral,'_blank')}>💬 WhatsApp</button>
+                <button className="btn-primary" onClick={()=>setTab("listings")}>🛒 Garlic Kharido</button>
+                <button className="btn-outline-w" onClick={()=>setTab("export")}>🌍 Export Inquiry</button>
+                <button className="btn-outline-w" onClick={()=>setTab("sell")}>➕ Listing Daalo</button>
               </div>
-              <div className="hero-kpis">
-                {[["2,400+","Farmers"],["14","Countries"],["₹0","Listing Fee"],["850T","Daily Stock"]].map(([n,l],i)=>(
-                  <div key={i} className="hkpi"><span className="hkpi-n">{n}</span><span className="hkpi-l">{l}</span></div>
+              <div className="hero-stats">
+                {[["2,400+","Farmers"],["850T","Daily Stock"],["14","Countries"],["₹0","Listing Fee"]].map(([n,l],i)=>(
+                  <div key={i} className="hstat"><span className="hstat-n">{n}</span><span className="hstat-l">{l}</span></div>
                 ))}
               </div>
             </div>
-            <div className="hero-snapshot">
-              <div className="snap-title">⚡ Aaj Ka Snapshot — 31 May 2026</div>
-              {[["Mandsaur Super","₹8,200–12,800/q",true,"+12.4%"],["Export FOB Avg","₹9,400/q",true,"+15.3%"],["Organic Premium","₹11,500–14,000/q",true,"+22.1%"],["Neemuch A Grade","₹6,500–9,800/q",true,"+8.1%"],["B Grade / Processing","₹3,800–5,700/q",false,"-1.8%"]].map(([k,v,up,pct],i)=>(
-                <div key={i} className="snap-row">
-                  <span className="snap-label"><span className="snap-dot"/>  {k}</span>
+            <div className="hero-card">
+              <div className="hcard-hd"><span className="hpulse"/>⚡ Aaj Ka Live Snapshot</div>
+              {[["Mandsaur Super","₹8,200–12,800/q",true,"+12.4%"],["Export FOB","₹9,400/q avg",true,"+15.3%"],["Organic Premium","₹11,500–14,000/q",true,"+22.1%"],["Neemuch A Grade","₹6,500–9,800/q",true,"+8.1%"],["Processing Grade","₹3,800–5,700/q",false,"-1.8%"]].map(([k,v,up,p],i)=>(
+                <div key={i} className="hrow">
+                  <span className="hkey">{k}</span>
                   <div style={{textAlign:"right"}}>
-                    <div style={{fontSize:13,fontWeight:600,color:C.text}}>{v}</div>
-                    <div className="snap-pct" style={{color:up?C.green:C.red}}>{pct}</div>
+                    <div className="hval">{v}</div>
+                    <div className={up?"hup":"hdn"}>{p}</div>
                   </div>
                 </div>
               ))}
+              <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
+                <button style={{width:"100%",padding:"10px",background:"#25D366",color:"#fff",border:"none",borderRadius:9,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7}}>
+                  <WASvg sz={16}/> WhatsApp Pe Quote Lo
+                </button>
+              </a>
             </div>
           </div>
         </div>
-      )}
 
-      <div className="main">
-
-        {/* ══ DASHBOARD ══ */}
-        {tab==="dashboard"&&<>
-          <div className="sec-h"><div className="sec-title">📊 Business Dashboard</div><div className="sec-sub">Aapka complete business overview — real-time data</div></div>
+        {/* HOME MAIN */}
+        <div className="page">
+          {/* Dashboard KPIs */}
           <div className="dash-grid">
             {[
-              {icon:"💰",val:"₹2.14 Cr",label:"Total Revenue (May)",delta:"+31% vs Apr",acc:C.gold,dc:C.gold},
-              {icon:"🧄",val:"4,820q",label:"Total Deals (May)",delta:"+38% vs Apr",acc:C.green,dc:C.green},
-              {icon:"🌍",val:"₹1.62 Cr",label:"Export Revenue",delta:"+52% vs Apr",acc:C.blue,dc:C.blue},
-              {icon:"👤",val:"124",label:"Active Buyers",delta:"+18 new this month",acc:C.purple,dc:C.purple},
-              {icon:"📦",val:"6",label:"Pending Orders",delta:"2 export, 4 domestic",acc:C.gold,dc:C.gold},
-              {icon:"🚛",val:"9",label:"Active Shipments",delta:"3 en route to port",acc:C.green,dc:C.green},
-              {icon:"💬",val:"2",label:"Unread Messages",delta:"WhatsApp inquiries",acc:C.red,dc:C.red},
-              {icon:"⭐",val:"4.8",label:"Buyer Rating",delta:"From 89 reviews",acc:C.gold,dc:C.gold},
+              {i:"🧄",v:"4,820q",l:"Today's Listings",d:"+18 new",acc:C.leaf},
+              {i:"🌍",v:"₹1.6Cr",l:"Export Revenue (May)",d:"+52% vs Apr",acc:C.saffron},
+              {i:"👤",v:"124",l:"Active Buyers",d:"+18 this month",acc:C.blue},
+              {i:"📦",v:"6",l:"Pending Orders",d:"2 export",acc:C.orange},
+              {i:"💬",v:"2",l:"New Inquiries",d:"WhatsApp",acc:C.red},
+              {i:"⭐",v:"4.8",l:"Platform Rating",d:"From 89 reviews",acc:C.amber},
             ].map((d,i)=>(
-              <div key={i} className="dcard">
-                <div className="dcard-accent" style={{background:d.acc}}/>
-                <div className="dcard-icon">{d.icon}</div>
-                <div className="dcard-val">{d.val}</div>
-                <div className="dcard-label">{d.label}</div>
-                <div className="dcard-delta" style={{color:d.dc}}>{d.delta}</div>
+              <div key={i} className="dcard" style={{"--acc":d.acc}}>
+                <div className="dcard-icon">{d.i}</div>
+                <div className="dcard-val">{d.v}</div>
+                <div className="dcard-lbl">{d.l}</div>
+                <div className="dcard-delta" style={{color:d.acc}}>{d.d}</div>
               </div>
             ))}
           </div>
 
-          <div className="chart-row">
-            <div className="chart-card">
-              <div className="chart-title">📈 Price Trend 2026</div>
-              <div className="chart-sub">Grade-wise price movement (₹/quintal)</div>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={PRICE_TREND}>
-                  <defs>
-                    <linearGradient id="gs" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={C.green} stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor={C.green} stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="gg" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={C.gold} stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor={C.gold} stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="m" tick={{fill:C.textD,fontSize:11}} axisLine={false} tickLine={false}/>
-                  <YAxis tick={{fill:C.textD,fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`₹${(v/1000).toFixed(0)}k`}/>
-                  <Tooltip content={<CTooltip/>}/>
-                  <Area type="monotone" dataKey="super" name="Super" stroke={C.green} strokeWidth={2} fill="url(#gs)"/>
-                  <Area type="monotone" dataKey="agrade" name="A Grade" stroke={C.gold} strokeWidth={2} fill="url(#gg)"/>
-                  <Area type="monotone" dataKey="bgrade" name="B Grade" stroke={C.creamD} strokeWidth={1.5} fill="none" strokeDasharray="4 2"/>
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="chart-card">
-              <div className="chart-title">🌍 Export Distribution</div>
-              <div className="chart-sub">Country-wise share</div>
-              {EXPORT_DIST.map((e,i)=>(
-                <div key={i} style={{marginBottom:10}}>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                    <span style={{fontSize:12,color:C.text}}>{e.country}</span>
-                    <span style={{fontSize:12,fontWeight:700,color:e.color}}>{e.pct}%</span>
-                  </div>
-                  <div style={{background:C.border,borderRadius:4,height:5,overflow:"hidden"}}>
-                    <div style={{width:`${e.pct}%`,height:"100%",background:e.color,borderRadius:4,transition:"width .5s"}}/>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="chart-card" style={{marginBottom:22}}>
-            <div className="chart-title">📦 Monthly Deals & Revenue</div>
-            <div className="chart-sub">Deals count & value (₹ Crore)</div>
-            <ResponsiveContainer width="100%" height={170}>
-              <BarChart data={MONTHLY_DEALS} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="m" tick={{fill:C.textD,fontSize:11}} axisLine={false} tickLine={false}/>
-                <YAxis yAxisId="l" tick={{fill:C.textD,fontSize:10}} axisLine={false} tickLine={false}/>
-                <YAxis yAxisId="r" orientation="right" tick={{fill:C.textD,fontSize:10}} axisLine={false} tickLine={false}/>
-                <Tooltip content={<DTooltip/>}/>
-                <Bar yAxisId="l" dataKey="deals" name="Deals" fill={C.green} fillOpacity={0.7} radius={[4,4,0,0]}/>
-                <Bar yAxisId="r" dataKey="val" name="val" fill={C.gold} fillOpacity={0.7} radius={[4,4,0,0]}/>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="activity">
-            <div className="activity-hd"><h3>⚡ Recent Activity</h3><span style={{fontSize:11,color:C.textD}}>Last 24 hours</span></div>
-            {[
-              {icon:"🌍",bg:"rgba(64,160,232,.15)",title:"Export inquiry — Al Baraka, Dubai",sub:"500 MT Super Grade • Waiting for FOB quote",time:"9:14 AM"},
-              {icon:"💰",bg:"rgba(60,200,106,.15)",title:"Payment received — ₹47.2 Lakh",sub:"Al Baraka Trading • TXN-2841 • SWIFT",time:"8:50 AM"},
-              {icon:"🚛",bg:"rgba(232,160,32,.15)",title:"Shipment dispatched — 200q to Delhi",sub:"Truck MH-04-AB-1234 • Chouhan Logistics",time:"Yesterday"},
-              {icon:"🧄",bg:"rgba(144,96,232,.15)",title:"New listing posted — Jagdish Malviya",sub:"1000q Super Grade • Garoth, Mandsaur",time:"Yesterday"},
-              {icon:"💬",bg:"rgba(232,64,64,.15)",title:"2 unread WhatsApp messages",sub:"BD Food Imports + Ramesh Broker",time:"Yesterday"},
-            ].map((a,i)=>(
-              <div key={i} className="aitem">
-                <div className="aicon" style={{background:a.bg}}>{a.icon}</div>
-                <div style={{flex:1}}>
-                  <div className="ainfo-title">{a.title}</div>
-                  <div className="ainfo-sub">{a.sub}</div>
-                </div>
-                <div className="atime">{a.time}</div>
+          <div className="page-grid">
+            <div>
+              {/* Latest Listings */}
+              <div className="sh">
+                <div className="sh-left"><div className="sh-dot"/><span className="sh-title">Latest Listings</span><span className="sh-count">{allListings.length} active</span></div>
+                <span className="sh-link" onClick={()=>setTab("listings")} style={{cursor:"pointer"}}>View All →</span>
               </div>
-            ))}
-          </div>
-        </>}
-
-        {/* ══ LISTINGS ══ */}
-        {tab==="listings"&&<>
-          <div className="sec-h"><div className="sec-title">🧄 Available Lots</div><div className="sec-sub">Verified farmers se fresh stock — directly connect karo</div></div>
-          <div className="filters">
-            <div className="search-box">
-              <span style={{color:C.textD}}>🔍</span>
-              <input placeholder="Search farmer, location, grade..." value={search} onChange={e=>setSearch(e.target.value)}/>
-            </div>
-            {["All","Super","A Grade","B Grade","Organic"].map(g=>(
-              <button key={g} className={`chip ${gradeF===g?"on":""}`} onClick={()=>setGradeF(g)}>{g}</button>
-            ))}
-          </div>
-          <div className="lgrid">
-            {filtered.map(l=>(
-              <div key={l.id} className="lcard" onClick={()=>{setModal(l);setMTab("inquiry")}}>
-                <div className="lc-top">
-                  <div className="lc-grade">🧄 {l.grade}{l.phyto&&<span style={{fontSize:10,color:C.blue}}>✈ Export</span>}</div>
-                  <span className={`lc-badge b-${l.badge}`}>{l.badge}</span>
-                </div>
-                <div className="lc-body">
-                  <div className="lc-farmer">👨‍🌾 <b>{l.farmer}</b> · 📍 {l.village}, {l.dist}</div>
-                  <div className="lc-name">{l.name}</div>
-                  <div className="lc-chips">
-                    <span className="lc-chip">📦 {l.qty}q</span>
-                    <span className="lc-chip">📏 {l.size}</span>
-                    <span className="lc-chip">💧 {l.moisture}</span>
-                    {l.cured&&<span className="lc-chip ok">✅ Cured</span>}
-                    {l.phyto&&<span className="lc-chip ok">✈ Phyto</span>}
-                    <span className="lc-chip">🕐 {l.avail}</span>
-                  </div>
-                  <div className="lc-foot">
-                    <div>
-                      <div className="lc-price">₹{l.price.toLocaleString()}<sub>/q</sub></div>
-                      <div style={{fontSize:10,color:C.textD}}>Total: ₹{(l.price*l.qty).toLocaleString()}</div>
+              <div className="listing-grid">
+                {allListings.slice(0,4).map(l=>(
+                  <div key={l.id} className="lcard" onClick={()=>setModal(l)}>
+                    <div className={`lcard-icon ${l.type}`}>{l.type==="seller"?"🧄":"🏢"}</div>
+                    <div className="lcard-body">
+                      <div className="lcard-top">
+                        <span className="lcard-name">{l.name}</span>
+                        <span className={`lcard-badge ${badgeClass(l.badge)}`}>{l.badge}</span>
+                        {l.verified&&<span className="lcard-verified">✅ Verified</span>}
+                      </div>
+                      <div className="lcard-loc">📍 {l.loc}</div>
+                      <p className="lcard-desc">{l.desc}</p>
+                      <div className="lcard-tags">
+                        <span className="ltag">📦 {l.qty}</span>
+                        <span className="ltag">📏 {l.size}</span>
+                        {l.phyto&&<span className="ltag ok">✈ Phyto Ready</span>}
+                        {l.rating>0&&<span className="ltag">⭐ {l.rating} ({l.deals} deals)</span>}
+                      </div>
                     </div>
-                    <button className="lc-btn" onClick={e=>{e.stopPropagation();setModal(l);setMTab("inquiry")}}>Inquiry →</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>}
-
-        {/* ══ MANDI PRICES ══ */}
-        {tab==="prices"&&<>
-          <div className="sec-h"><div className="sec-title">📈 Live Mandi Bhav</div><div className="sec-sub">31 May 2026 · Mandsaur region · Real-time rates</div></div>
-          <div className="stat-row">
-            {[{l:"Top Price",v:"₹14,500/q",s:"Indore Super",c:C.gold},{l:"Export FOB",v:"₹9,400/q",s:"Nhava Sheva",c:C.blue},{l:"Aaj Aawak",v:"~78,000q",s:"All mandis",c:C.green},{l:"YoY Export Growth",v:"+245%",s:"vs 2025",c:C.green}].map((s,i)=>(
-              <div key={i} className="stat-card"><div className="sc-label">{s.l}</div><div className="sc-val" style={{color:s.c}}>{s.v}</div><div className="sc-sub">{s.s}</div></div>
-            ))}
-          </div>
-          <div className="mtable-wrap">
-            <div className="mtable-hd"><h3>🌾 Aaj Ke Rates</h3><span>Updated 9:30 AM · 31 May 2026</span></div>
-            <table>
-              <thead><tr><th>Mandi</th><th>Best Grade</th><th>Min ₹/q</th><th>Max ₹/q</th><th>Aawak</th><th>Change</th></tr></thead>
-              <tbody>
-                {MANDI.map((m,i)=>(
-                  <tr key={i}>
-                    <td><span className="mn">{m.name}</span></td>
-                    <td style={{color:C.textD}}>{m.grade}</td>
-                    <td>₹{m.min.toLocaleString()}</td>
-                    <td style={{fontWeight:700}}>₹{m.max.toLocaleString()}</td>
-                    <td><span className="marr">{m.arr} katte</span></td>
-                    <td><span className={m.ch>0?"mup":"mdn"}>{m.ch>0?"▲ +":"▼ "}{Math.abs(m.ch)}%</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="chart-card">
-            <div className="chart-title">📊 Price Trend Jan–Jun 2026</div>
-            <div className="chart-sub">Super vs A Grade vs B Grade (₹/quintal)</div>
-            <ResponsiveContainer width="100%" height={210}>
-              <LineChart data={PRICE_TREND}>
-                <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="m" tick={{fill:C.textD,fontSize:11}} axisLine={false} tickLine={false}/>
-                <YAxis tick={{fill:C.textD,fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`₹${(v/1000).toFixed(0)}k`}/>
-                <Tooltip content={<CTooltip/>}/>
-                <Line type="monotone" dataKey="super" name="Super" stroke={C.green} strokeWidth={2.5} dot={{r:3,fill:C.green}}/>
-                <Line type="monotone" dataKey="agrade" name="A Grade" stroke={C.gold} strokeWidth={2} dot={{r:3,fill:C.gold}}/>
-                <Line type="monotone" dataKey="bgrade" name="B Grade" stroke={C.creamD} strokeWidth={1.5} strokeDasharray="5 3" dot={false}/>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </>}
-
-        {/* ══ EXPORT ══ */}
-        {tab==="export"&&<>
-          <div className="sec-h"><div className="sec-title">🌍 Export Inquiry</div><div className="sec-sub">Bangladesh, UAE, Malaysia, USA — 14 countries mein export. 24 hrs response guaranteed.</div></div>
-          <div className="form-wrap">
-            <form onSubmit={submitExp}>
-              <div className="sec-sep">📋 Company Information</div>
-              <div className="form-grid" style={{marginBottom:20}}>
-                <div className="fg"><label className="fl">Company Name *</label><input className="fi" placeholder="Aapki company" required value={expF.company} onChange={e=>setExpF({...expF,company:e.target.value})}/></div>
-                <div className="fg"><label className="fl">Import Country *</label><select className="fsel" value={expF.country} onChange={e=>setExpF({...expF,country:e.target.value})}>{COUNTRIES.map(c=><option key={c}>{c}</option>)}</select></div>
-                <div className="fg"><label className="fl">Contact Person *</label><input className="fi" placeholder="Aapka naam" required value={expF.name} onChange={e=>setExpF({...expF,name:e.target.value})}/></div>
-                <div className="fg"><label className="fl">WhatsApp / Phone *</label><input className="fi" placeholder="+country code" required value={expF.phone} onChange={e=>setExpF({...expF,phone:e.target.value})}/></div>
-                <div className="fg" style={{gridColumn:"1/-1"}}><label className="fl">Email</label><input className="fi" type="email" placeholder="business@email.com" value={expF.email} onChange={e=>setExpF({...expF,email:e.target.value})}/></div>
-              </div>
-              <div className="sec-sep">🧄 Order Requirements</div>
-              <div className="form-grid" style={{marginBottom:20}}>
-                <div className="fg"><label className="fl">Quantity (Metric Tonnes) *</label><input className="fi" type="number" placeholder="MT mein" required value={expF.qty} onChange={e=>setExpF({...expF,qty:e.target.value})}/></div>
-                <div className="fg"><label className="fl">Grade</label><select className="fsel" value={expF.grade} onChange={e=>setExpF({...expF,grade:e.target.value})}>{"Super (55mm+),A Grade (45-55mm),B Grade (35-45mm),Organic Certified".split(",").map(g=><option key={g}>{g}</option>)}</select></div>
-                <div className="fg"><label className="fl">Preferred Port</label><select className="fsel" value={expF.port} onChange={e=>setExpF({...expF,port:e.target.value})}>{"Nhava Sheva (Mumbai),Mundra (Gujarat),Kandla (Gujarat),Chennai Port,Air Cargo — Delhi IGI".split(",").map(p=><option key={p}>{p}</option>)}</select></div>
-                <div className="fg"><label className="fl">Incoterms</label><select className="fsel" value={expF.incoterm} onChange={e=>setExpF({...expF,incoterm:e.target.value})}>{"FOB,CIF,CFR,EXW,DDP".split(",").map(t=><option key={t}>{t}</option>)}</select></div>
-              </div>
-              <div className="sec-sep" style={{marginBottom:10}}>📄 Required Certificates</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:20}}>
-                {CERTS.map(c=>(
-                  <label key={c} className="fcheck">
-                    <input type="checkbox" checked={expF.certs.includes(c)} onChange={()=>toggleCert(c)}/>
-                    <span className="fcheck-label">{c}</span>
-                  </label>
-                ))}
-              </div>
-              <div className="fg" style={{marginBottom:20}}><label className="fl">Message / Special Requirements</label><textarea className="fta" placeholder="Size, packaging, monthly requirement, sample request..." value={expF.message} onChange={e=>setExpF({...expF,message:e.target.value})}/></div>
-              <button type="submit" className="btn-O" style={{width:"100%",padding:13,fontSize:15}}>🌍 Export Inquiry Submit Karo</button>
-              <div style={{marginTop:14,background:"rgba(60,200,106,.06)",border:"1px solid rgba(60,200,106,.18)",borderRadius:10,padding:"12px 16px",fontSize:12,color:C.textD,lineHeight:1.7}}>
-                📌 <b style={{color:C.green}}>Aapko milega:</b> FOB quote, phytosanitary guide, container schedule, aur nearest verified exporter contact — 24 hrs mein.
-              </div>
-            </form>
-          </div>
-        </>}
-
-        {/* ══ LOGISTICS ══ */}
-        {tab==="logistics"&&<>
-          <div className="sec-h"><div className="sec-title">🚛 Logistics & Transport</div><div className="sec-sub">Verified transporters, GPS tracking, refrigerated trucks. Farm se port tak.</div></div>
-          {bookStep>0&&(
-            <div className="tracker">
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:17,color:C.cream,marginBottom:3}}>Booking Status</div>
-              <div style={{fontSize:12,color:C.textD,marginBottom:18}}>
-                {bookStep===1?"Processing..."
-                :bookStep===2?"Transporter ko notify kar rahe hain..."
-                :"✅ Confirmed! Transporter 30 min mein call karega."}
-              </div>
-              <div className="track-steps">
-                {["Submitted","Processing","Notified","Confirmed"].map((s,i)=>(
-                  <div key={i} className="tstep">
-                    <div className={`tdot ${i<bookStep?"done":i===bookStep?"cur":""}`}>{i<bookStep?"✓":i+1}</div>
-                    <span className={`tlabel ${i<bookStep?"done":""}`}>{s}</span>
+                    <div className="lcard-right">
+                      <div><div className="lcard-price">₹{l.price.toLocaleString()}<span className="lcard-price-sub">/q</span></div></div>
+                      <div className="lcard-qty">{l.qty}</div>
+                      <div className="lcard-avail">🟢 {l.avail}</div>
+                      <button className="lcard-btn" onClick={e=>{e.stopPropagation();setModal(l);}}>Inquiry →</button>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-          <div style={{fontSize:12,color:C.textD,fontWeight:700,marginBottom:12}}>VERIFIED TRANSPORTERS — {TRANSPORTERS.length} Available</div>
-          <div className="tgrid">
-            {TRANSPORTERS.map(t=>(
-              <div key={t.id} className={`tcard ${selTrans?.id===t.id?"sel":""}`} onClick={()=>setSelTrans(t)}>
-                <div className="tc-top"><div className="tc-name">{t.name}</div><div className="tc-rating">⭐ {t.rating}</div></div>
-                <div className="tc-loc">📍 {t.loc} · 🚛 {t.trucks} trucks · {t.rate}</div>
-                {t.routes.map((r,i)=><div key={i} className="tc-route">{r}</div>)}
-                <div className="tc-spec">✅ {t.special}</div>
-                {selTrans?.id===t.id&&<div style={{marginTop:8,fontSize:11,color:C.green,textAlign:"center",fontWeight:700}}>✓ Selected</div>}
-              </div>
-            ))}
-          </div>
-          {selTrans&&(
-            <div className="form-wrap">
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:20,color:C.cream,marginBottom:18}}>🚛 Book: {selTrans.name}</div>
-              <form onSubmit={submitLog}>
-                <div className="form-grid" style={{marginBottom:14}}>
-                  <div className="fg"><label className="fl">Pickup Location *</label><input className="fi" placeholder="Farm ya mandi address" required value={logF.from} onChange={e=>setLogF({...logF,from:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">Delivery Location *</label><input className="fi" placeholder="City, state ya port" required value={logF.to} onChange={e=>setLogF({...logF,to:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">Quantity (Quintal) *</label><input className="fi" type="number" placeholder="Load kitna hai?" required value={logF.qty} onChange={e=>setLogF({...logF,qty:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">Pickup Date *</label><input className="fi" type="date" required value={logF.date} onChange={e=>setLogF({...logF,date:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">Truck Type</label><select className="fsel" value={logF.type} onChange={e=>setLogF({...logF,type:e.target.value})}>{"Normal Truck,Refrigerated (Reefer),Container 20ft,Container 40ft,Mini Truck (5T)".split(",").map(t=><option key={t}>{t}</option>)}</select></div>
-                  <div className="fg"><label className="fl">Aapka Naam *</label><input className="fi" placeholder="Contact person" required value={logF.name} onChange={e=>setLogF({...logF,name:e.target.value})}/></div>
-                  <div className="fg" style={{gridColumn:"1/-1"}}><label className="fl">Mobile *</label><input className="fi" placeholder="10-digit" required value={logF.contact} onChange={e=>setLogF({...logF,contact:e.target.value})}/></div>
-                </div>
-                <button type="submit" className="btn-G" style={{width:"100%",padding:13,fontSize:14}}>🚛 Booking Confirm Karo</button>
-              </form>
-            </div>
-          )}
-        </>}
 
-        {/* ══ PAYMENT ══ */}
-        {tab==="payment"&&<>
-          <div className="sec-h"><div className="sec-title">💰 Payment Center</div><div className="sec-sub">UPI, NEFT, RTGS, SWIFT, Letter of Credit — sab payment modes ek jagah</div></div>
-          <div className="pay-row">
-            <div className="pay-table-wrap">
-              <div className="pay-hd"><h3>📋 Payment History</h3><span style={{fontSize:11,color:C.textD}}>Last 30 days</span></div>
-              <table className="ptable">
-                <thead><tr><th>TXN ID</th><th>Party</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
-                <tbody>
-                  {PAYMENT_HISTORY.map((p,i)=>(
-                    <tr key={i}>
-                      <td style={{fontSize:11,fontFamily:"monospace",color:C.textD}}>{p.id}</td>
-                      <td>
-                        <div style={{fontSize:12,fontWeight:600,color:C.text}}>{p.party}</div>
-                        <div style={{fontSize:10,color:C.textD}}>{p.date} · {p.type}</div>
-                      </td>
-                      <td style={{fontFamily:"'Fraunces',serif",color:C.gold}}>₹{(p.amt/100000).toFixed(2)}L</td>
-                      <td style={{fontSize:11,color:C.textD}}>{p.method}</td>
-                      <td><span className={`pstatus ps-${p.status}`}>● {p.status}</span></td>
-                    </tr>
+              {/* Price Chart */}
+              <div className="chart-card">
+                <div className="chart-title">📈 7-Day Price Trend — Super vs A Grade</div>
+                <div className="chart-sub">June 3–9, 2026 · Mandsaur Mandi · ₹/quintal</div>
+                <ResponsiveContainer width="100%" height={180}>
+                  <AreaChart data={PRICE_7D}>
+                    <defs>
+                      <linearGradient id="gs" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={C.saffron} stopOpacity={0.2}/><stop offset="95%" stopColor={C.saffron} stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={C.leaf} stopOpacity={0.2}/><stop offset="95%" stopColor={C.leaf} stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+                    <XAxis dataKey="d" tick={{fill:C.textD,fontSize:10}} axisLine={false} tickLine={false}/>
+                    <YAxis tick={{fill:C.textD,fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`₹${(v/1000).toFixed(0)}k`}/>
+                    <Tooltip content={<CTooltip/>}/>
+                    <Area type="monotone" dataKey="s" name="Super" stroke={C.saffron} strokeWidth={2.5} fill="url(#gs)"/>
+                    <Area type="monotone" dataKey="a" name="A Grade" stroke={C.leaf} strokeWidth={2} fill="url(#ga)"/>
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* SIDEBAR */}
+            <div className="sidebar">
+              {/* Mandi Bhav */}
+              <div className="sbox">
+                <div className="sbox-hd"><span style={{fontSize:16}}>📊</span><span className="sbox-hd-title">Live Mandi Bhav</span></div>
+                <div className="sbox-body">
+                  {MANDI.map((m,i)=>(
+                    <div key={i} className="mandi-row">
+                      <div><div className="mname">{m.name}</div><div style={{fontSize:10,color:C.textD}}>{m.grade} · {m.arr.toLocaleString()} katte</div></div>
+                      <div style={{textAlign:"right"}}>
+                        <div className="mprice">₹{m.min.toLocaleString()}–{m.max.toLocaleString()}</div>
+                        <div className={m.ch>0?"mup":"mdn"}>{m.ch>0?"▲+":"▼"}{Math.abs(m.ch)}%</div>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="pay-card">
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:18,color:C.cream,marginBottom:16}}>💳 Send / Receive Payment</div>
-              <div style={{fontSize:10,color:C.textD,fontWeight:700,textTransform:"uppercase",letterSpacing:".5px",marginBottom:10}}>Select Method</div>
-              {[
-                {id:"upi",icon:"📱",name:"UPI / QR Code",sub:"Instant · Free · Up to ₹1L"},
-                {id:"neft",icon:"🏦",name:"NEFT / RTGS",sub:"2-4 hrs · Bank charges"},
-                {id:"swift",icon:"🌍",name:"SWIFT Wire Transfer",sub:"Export payments · USD/EUR/AED"},
-                {id:"lc",icon:"📄",name:"Letter of Credit (LC)",sub:"Export · Bank guarantee"},
-              ].map(m=>(
-                <div key={m.id} className={`pay-method ${payMethod===m.id?"sel":""}`} onClick={()=>setPayMethod(m.id)}>
-                  <div className="pm-icon">{m.icon}</div>
-                  <div className="pm-info"><div className="pm-name">{m.name}</div><div className="pm-sub">{m.sub}</div></div>
-                  <input type="radio" className="pm-radio" checked={payMethod===m.id} onChange={()=>setPayMethod(m.id)}/>
+                  <button onClick={()=>setTab("bhav")} style={{width:"100%",marginTop:12,padding:"9px",background:C.mint,color:C.leaf,border:`1.5px solid ${C.leaf}`,borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer"}}>View Full Bhav Table →</button>
                 </div>
-              ))}
-              <div className="pay-detail-box">
-                {payMethod==="upi"&&<>UPI ID: <b>mandsaurgarlic@upi</b><br/>Scan QR ya ID se send karo<br/>Limit: <b>₹1 Lakh/transaction</b></>}
-                {payMethod==="neft"&&<>Bank: <b>State Bank of India</b><br/>A/C: <b>XXXXXXXX1234</b><br/>IFSC: <b>SBIN0001234</b><br/>Name: <b>MandsaurGarlic Pvt Ltd</b></>}
-                {payMethod==="swift"&&<>Bank: <b>HDFC Bank</b><br/>SWIFT: <b>HDFCINBB001</b><br/>Currency: USD / EUR / AED accepted<br/>Correspondent: <b>CITIBANK NA</b></>}
-                {payMethod==="lc"&&<>LC Type: <b>Irrevocable SBLC / DLC</b><br/>Currency: USD preferred<br/>Issuing Bank: Buyer's bank<br/>Contact us for LC draft terms</>}
               </div>
-              <form onSubmit={submitPay} style={{display:"flex",flexDirection:"column",gap:10}}>
-                <div className="fg"><label className="fl">Amount (₹) *</label><input className="fi" type="number" placeholder="Amount enter karo" required value={payForm.amount} onChange={e=>setPayForm({...payForm,amount:e.target.value})}/></div>
-                <div className="fg"><label className="fl">Recipient / Party</label><input className="fi" placeholder="Farmer/buyer naam" value={payForm.to} onChange={e=>setPayForm({...payForm,to:e.target.value})}/></div>
-                <div className="fg"><label className="fl">Reference (Order / TXN)</label><input className="fi" placeholder="Order ID ya note" value={payForm.ref} onChange={e=>setPayForm({...payForm,ref:e.target.value})}/></div>
-                <button type="submit" className="btn-G" style={{padding:12,fontSize:14}}>💰 Payment Initiate Karo</button>
-              </form>
-            </div>
-          </div>
-        </>}
 
-        {/* ══ WHATSAPP ══ */}
-        {tab==="whatsapp"&&<>
-          <div className="sec-h"><div className="sec-title">💬 WhatsApp Business</div><div className="sec-sub">Buyers se directly baat karo • Templates use karo • Automated responses</div></div>
-          <div className="wa-layout">
-            <div className="wa-sidebar">
-              <div className="wa-sidebar-hd"><h3>💬 Conversations</h3><span>{WA_MESSAGES.filter(m=>m.unread).length} unread</span></div>
-              {WA_MESSAGES.map(m=>(
-                <div key={m.id} className={`wa-contact ${selWA?.id===m.id?"sel":""}`} onClick={()=>setSelWA(m)}>
-                  <div className="wa-avatar">{m.country}</div>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:2}}>
-                      <span className="wa-cname">{m.from}</span>
-                      <span className="wa-ctime">{m.time}</span>
-                    </div>
-                    <div className="wa-cpreview">{m.msg}</div>
-                  </div>
-                  {m.unread&&<div className="wa-unread">1</div>}
-                </div>
-              ))}
-            </div>
-            {selWA?(
-              <div className="wa-chat">
-                <div className="wa-chat-hd">
-                  <div className="wa-avatar" style={{width:36,height:36,fontSize:18}}>{selWA.country}</div>
-                  <div>
-                    <div className="wa-chat-hd-name">{selWA.from}</div>
-                    <div className="wa-chat-hd-sub">{selWA.phone} · Online</div>
-                  </div>
-                </div>
-                <div className="wa-msgs">
-                  {getChatMsgs(selWA.id).map((msg,i)=>(
-                    <div key={i}>
-                      <div className={`wa-bubble ${msg.role}`}>{msg.text}</div>
-                      <div className="wa-bubble-time" style={{textAlign:msg.role==="sent"?"right":"left"}}>{msg.time}</div>
+              {/* Agri News */}
+              <div className="sbox">
+                <div className="sbox-hd"><span style={{fontSize:16}}>📰</span><span className="sbox-hd-title">Agri Updates</span></div>
+                <div className="sbox-body">
+                  {NEWS.map((n,i)=>(
+                    <div key={i} className="news-item">
+                      <span className={`news-tag ${n.tag.toLowerCase()}`}>{n.tag}</span>
+                      <div className="news-title">{n.title}</div>
+                      <div className="news-sub">{n.sub}</div>
+                      <div className="news-date">📅 {n.date}</div>
                     </div>
                   ))}
                 </div>
-                <div className="wa-tmpl-list">
-                  <div className="wa-tmpl-title">⚡ Quick Templates</div>
-                  <div className="wa-tmpl-btns">
-                    {WA_TEMPLATES.map((t,i)=>(
-                      <button key={i} className="wa-tmpl-btn" onClick={()=>useTemplate(t)}>{t.name}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="wa-input-area">
-                  <textarea className="wa-input" rows={2} placeholder="Message likho..." value={waInput} onChange={e=>setWaInput(e.target.value)}
-                    onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendWA()}}}/>
-                  <button className="wa-send" onClick={sendWA}>➤</button>
+              </div>
+
+              {/* Quick WA */}
+              <div className="sbox">
+                <div className="sbox-hd"><WASvg sz={16}/><span className="sbox-hd-title" style={{marginLeft:6}}>Quick Contact</span></div>
+                <div className="sbox-body">
+                  <p style={{fontSize:12,color:C.textM,lineHeight:1.65,marginBottom:14}}>Seedha WhatsApp pe baat karo — 2 ghante mein response guaranteed.</p>
+                  <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
+                    <button style={{width:"100%",padding:"11px",background:"#25D366",color:"#fff",border:"none",borderRadius:9,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+                      <WASvg sz={16}/> +91-7772993222
+                    </button>
+                  </a>
+                  <button onClick={()=>setTab("export")} style={{width:"100%",marginTop:8,padding:"10px",background:C.mint,color:C.leaf,border:`1.5px solid ${C.leaf}`,borderRadius:9,fontSize:13,fontWeight:700,cursor:"pointer"}}>🌍 Export Inquiry Form</button>
                 </div>
               </div>
-            ):(
-              <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:C.textD,fontSize:13}}>
-                Koi conversation select karo
-              </div>
-            )}
-          </div>
-          <div className="form-wrap">
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:18,color:C.cream,marginBottom:16}}>🤖 WhatsApp Bot — Auto Responses</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              {[
-                {trigger:"Price puchha",response:"Auto price quote bhejta hai",status:"Active",color:C.green},
-                {trigger:"Export inquiry",response:"Export form ka link bhejta hai",status:"Active",color:C.green},
-                {trigger:"Transport",response:"Logistics booking link bhejta hai",status:"Active",color:C.green},
-                {trigger:"Hello / Hi",response:"Welcome message + menu bhejta hai",status:"Active",color:C.green},
-                {trigger:"Payment",response:"Payment details + QR code",status:"Active",color:C.green},
-                {trigger:"Sample request",response:"Sample form ka link",status:"Inactive",color:C.textD},
-              ].map((bot,i)=>(
-                <div key={i} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,padding:"12px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <div>
-                    <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:3}}>"{bot.trigger}"</div>
-                    <div style={{fontSize:11,color:C.textD}}>{bot.response}</div>
-                  </div>
-                  <span style={{fontSize:10,fontWeight:700,color:bot.color,background:`${bot.color}18`,border:`1px solid ${bot.color}30`,padding:"2px 8px",borderRadius:5}}>{bot.status}</span>
-                </div>
-              ))}
             </div>
           </div>
-        </>}
+        </div>
+      </>}
 
-        {/* ══ SELL ══ */}
-        {tab==="sell"&&<>
-          <div className="sec-h"><div className="sec-title">➕ Apni Garlic Becho</div><div className="sec-sub">Free listing · 2,400+ buyers tak seedha pahuncho · Export buyers bhi dekhte hain</div></div>
-          <div className="form-wrap">
+      {/* ══ LISTINGS & BUYERS ══ */}
+      {(tab==="listings"||tab==="buyers")&&<div className="page">
+        <div className="sh">
+          <div className="sh-left">
+            <div className="sh-dot"/>
+            <span className="sh-title">{tab==="listings"?"🧄 Garlic Sellers":"🏢 Garlic Buyers"}</span>
+            <span className="sh-count">{filtered.length} results</span>
+          </div>
+          <button className="nav-btn-solid" style={{padding:"8px 16px",fontSize:12}} onClick={()=>setTab("sell")}>+ Post Listing</button>
+        </div>
+        <div className="filters">
+          <div className="search-mini">
+            <span style={{color:C.textD}}>🔍</span>
+            <input placeholder="Name, location..." value={search} onChange={e=>setSearch(e.target.value)}/>
+          </div>
+          {(tab==="listings"?["All","Sellers","Buyers"]:["All","Buyers","Sellers"]).map(t=>(
+            <button key={t} className={`filter-chip ${listType===t?"on":""}`} onClick={()=>setLType(t)}>{t}</button>
+          ))}
+          {GRADES.map(g=>(
+            <button key={g} className={`filter-chip ${grade===g?"on":""}`} onClick={()=>setGrade(g)}>{g}</button>
+          ))}
+        </div>
+        <div className="page-grid">
+          <div>
+            <div className="listing-grid">
+              {filtered.map(l=>(
+                <div key={l.id} className="lcard" onClick={()=>setModal(l)}>
+                  <div className={`lcard-icon ${l.type}`}>{l.type==="seller"?"🧄":"🏢"}</div>
+                  <div className="lcard-body">
+                    <div className="lcard-top">
+                      <span className="lcard-name">{l.name}</span>
+                      <span className={`lcard-badge ${badgeClass(l.badge)}`}>{l.badge}</span>
+                      {l.verified&&<span className="lcard-verified">✅ Verified</span>}
+                    </div>
+                    <div className="lcard-loc">📍 {l.loc}</div>
+                    <p className="lcard-desc">{l.desc}</p>
+                    <div className="lcard-tags">
+                      <span className="ltag">📦 {l.qty}</span>
+                      <span className="ltag">🌾 {l.grade}</span>
+                      <span className="ltag">📏 {l.size}</span>
+                      {l.phyto&&<span className="ltag ok">✈ Phyto</span>}
+                      {l.rating>0&&<span className="ltag">⭐{l.rating} · {l.deals} deals</span>}
+                    </div>
+                  </div>
+                  <div className="lcard-right">
+                    <div><div className="lcard-price">₹{l.price.toLocaleString()}<span className="lcard-price-sub">/q</span></div></div>
+                    <div className="lcard-avail">🟢 {l.avail}</div>
+                    <button className="lcard-btn" onClick={e=>{e.stopPropagation();setModal(l);}}>Inquiry →</button>
+                  </div>
+                </div>
+              ))}
+              {filtered.length===0&&<div style={{textAlign:"center",padding:"40px",color:C.textD}}>No listings found. <span style={{color:C.leaf,cursor:"pointer"}} onClick={()=>{setSearch("");setGrade("All");setLType("All");}}>Clear filters</span></div>}
+            </div>
+          </div>
+          <div className="sidebar">
+            <div className="sbox">
+              <div className="sbox-hd"><span style={{fontSize:16}}>📊</span><span className="sbox-hd-title">Live Bhav</span></div>
+              <div className="sbox-body">
+                {MANDI.slice(0,4).map((m,i)=>(
+                  <div key={i} className="mandi-row">
+                    <div><div className="mname">{m.name}</div><div style={{fontSize:10,color:C.textD}}>{m.grade}</div></div>
+                    <div style={{textAlign:"right"}}>
+                      <div className="mprice" style={{fontSize:12}}>₹{m.min.toLocaleString()}–{m.max.toLocaleString()}</div>
+                      <div className={m.ch>0?"mup":"mdn"}>{m.ch>0?"▲+":"▼"}{Math.abs(m.ch)}%</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="sbox">
+              <div className="sbox-hd"><span style={{fontSize:16}}>📰</span><span className="sbox-hd-title">Latest News</span></div>
+              <div className="sbox-body">
+                {NEWS.slice(0,3).map((n,i)=>(
+                  <div key={i} className="news-item">
+                    <span className={`news-tag ${n.tag.toLowerCase()}`}>{n.tag}</span>
+                    <div className="news-title">{n.title}</div>
+                    <div className="news-date">📅 {n.date}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>}
+
+      {/* ══ MANDI BHAV ══ */}
+      {tab==="bhav"&&<div className="page">
+        <div className="sh"><div className="sh-left"><div className="sh-dot"/><span className="sh-title">📊 Live Mandi Bhav</span></div><span style={{fontSize:12,color:C.textD}}>Updated: Jun 9, 2026 · 9:30 AM</span></div>
+        <div className="dash-grid" style={{marginBottom:20}}>
+          {[{l:"Highest Today",v:"₹14,500/q",s:"Indore Super",c:C.saffron},{l:"Export FOB Avg",v:"₹9,400/q",s:"Nhava Sheva",c:C.blue},{l:"Total Arrivals",v:"~78,000q",s:"All Mandis",c:C.leaf},{l:"Export Growth",v:"+245%",s:"vs Last Year",c:C.leaf}].map((s,i)=>(
+            <div key={i} style={{background:C.surface,border:`1.5px solid ${C.border}`,borderRadius:12,padding:"16px 18px"}}>
+              <div style={{fontSize:10,color:C.saffron,fontWeight:700,textTransform:"uppercase",letterSpacing:".6px",marginBottom:7}}>{s.l}</div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:s.c,marginBottom:3}}>{s.v}</div>
+              <div style={{fontSize:11,color:C.textD}}>{s.s}</div>
+            </div>
+          ))}
+        </div>
+        <div className="ftable-wrap">
+          <div className="ftable-hd"><h3>🌾 Aaj Ke Mandi Rates</h3><span>Jun 9, 2026 · Real-time</span></div>
+          <table>
+            <thead><tr><th>Mandi</th><th>Best Grade</th><th>Min (₹/q)</th><th>Max (₹/q)</th><th>Arrivals</th><th>Change</th></tr></thead>
+            <tbody>
+              {MANDI.map((m,i)=>(
+                <tr key={i}>
+                  <td><span className="tmn">{m.name}</span></td>
+                  <td>{m.grade}</td>
+                  <td>₹{m.min.toLocaleString()}</td>
+                  <td style={{fontWeight:700}}>₹{m.max.toLocaleString()}</td>
+                  <td><span className="tarr">{m.arr.toLocaleString()} katte</span></td>
+                  <td><span className={m.ch>0?"tup":"tdn"}>{m.ch>0?"▲ +":"▼ "}{Math.abs(m.ch)}%</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="chart-card">
+          <div className="chart-title">📈 7-Day Price Trend</div>
+          <div className="chart-sub">Super Grade vs A Grade · Jun 3-9, 2026</div>
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={PRICE_7D}>
+              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+              <XAxis dataKey="d" tick={{fill:C.textD,fontSize:10}} axisLine={false} tickLine={false}/>
+              <YAxis tick={{fill:C.textD,fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`₹${(v/1000).toFixed(0)}k`}/>
+              <Tooltip content={<CTooltip/>}/>
+              <Line type="monotone" dataKey="s" name="Super" stroke={C.saffron} strokeWidth={2.5} dot={{r:4,fill:C.saffron}}/>
+              <Line type="monotone" dataKey="a" name="A Grade" stroke={C.leaf} strokeWidth={2} dot={{r:3,fill:C.leaf}}/>
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>}
+
+      {/* ══ EXPORT ══ */}
+      {tab==="export"&&<div className="page">
+        <div className="sh"><div className="sh-left"><div className="sh-dot"/><span className="sh-title">🌍 Export Inquiry</span></div></div>
+        <div className="page-grid">
+          <div>
+            <div className="export-wrap">
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:C.forest,marginBottom:6}}>Export Quote Request</div>
+              <p style={{fontSize:13,color:C.textM,marginBottom:22,lineHeight:1.6}}>Bangladesh, UAE, Malaysia, USA — 14 countries mein export. 24 hrs mein response guaranteed.</p>
+              <form onSubmit={submitExp} style={{display:"flex",flexDirection:"column",gap:12}}>
+                <div className="fsep">📋 Company Information</div>
+                <div className="exp-grid">
+                  <div className="fg"><label className="fl">Company Name *</label><input className="fi" placeholder="Your company" required value={expF.co} onChange={e=>setExpF({...expF,co:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">Import Country *</label><select className="fsel" value={expF.country} onChange={e=>setExpF({...expF,country:e.target.value})}>{COUNTRIES.map(c=><option key={c}>{c}</option>)}</select></div>
+                  <div className="fg"><label className="fl">Contact Person *</label><input className="fi" placeholder="Your name" required value={expF.name} onChange={e=>setExpF({...expF,name:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">WhatsApp *</label><input className="fi" placeholder="+country code" required value={expF.phone} onChange={e=>setExpF({...expF,phone:e.target.value})}/></div>
+                  <div className="fg" style={{gridColumn:"1/-1"}}><label className="fl">Email</label><input className="fi" type="email" placeholder="business@email.com" value={expF.email} onChange={e=>setExpF({...expF,email:e.target.value})}/></div>
+                </div>
+                <div className="fsep">🧄 Order Details</div>
+                <div className="exp-grid">
+                  <div className="fg"><label className="fl">Quantity (MT) *</label><input className="fi" type="number" placeholder="Metric tonnes" required value={expF.qty} onChange={e=>setExpF({...expF,qty:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">Grade</label><select className="fsel" value={expF.grade} onChange={e=>setExpF({...expF,grade:e.target.value})}>{"Super (55mm+),A Grade (45-55mm),B Grade,Organic Certified".split(",").map(g=><option key={g}>{g}</option>)}</select></div>
+                  <div className="fg"><label className="fl">Port</label><select className="fsel" value={expF.port} onChange={e=>setExpF({...expF,port:e.target.value})}>{"Nhava Sheva (Mumbai),Mundra (Gujarat),Kandla,Chennai".split(",").map(p=><option key={p}>{p}</option>)}</select></div>
+                  <div className="fg"><label className="fl">Incoterms</label><select className="fsel" value={expF.inc} onChange={e=>setExpF({...expF,inc:e.target.value})}>{"FOB,CIF,CFR,EXW,DDP".split(",").map(t=><option key={t}>{t}</option>)}</select></div>
+                </div>
+                <div className="fsep">📄 Certificates Required</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+                  {CERTS.map(c=>(
+                    <label key={c} className="fcheck">
+                      <input type="checkbox" checked={expF.certs.includes(c)} onChange={()=>toggleCert(c)}/>
+                      <span className="fcheck-lbl">{c}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="fg"><label className="fl">Additional Message</label><textarea className="fta" placeholder="Special requirements, sample request..." value={expF.msg} onChange={e=>setExpF({...expF,msg:e.target.value})}/></div>
+                <button type="submit" className="submit-btn">🌍 Submit Export Inquiry</button>
+                <a href={wa(`Hi! Export inquiry from MandsaurGarlic.com\nCompany: ${expF.co||'[company]'}\nCountry: ${expF.country}\nQty: ${expF.qty||'[qty]'} MT\nGrade: ${expF.grade}\nIncoterms: ${expF.inc}\nPlease send FOB quote.`)} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
+                  <button type="button" className="wa-submit"><WASvg sz={17}/> WhatsApp Pe Direct Quote Lo</button>
+                </a>
+              </form>
+            </div>
+          </div>
+          <div className="sidebar">
+            <div className="sbox">
+              <div className="sbox-hd"><span style={{fontSize:16}}>🏆</span><span className="sbox-hd-title">Why Export From Us?</span></div>
+              <div className="sbox-body">
+                {[["🌾","India's Largest Hub","Mandsaur — #1 garlic trading center. Best prices, highest volume."],["✅","High Allicin","Indian garlic has higher allicin vs Chinese. International buyers prefer."],["📋","Full Docs","Phyto, COO, FSSAI, Lab Report — all within 3-5 days."],["🚢","Multiple Ports","Nhava Sheva, Mundra, Kandla — export from nearest port."],["💰","Best FOB Price","Farm-direct sourcing = 15-20% better than market rates."]].map(([i,t,s],k)=>(
+                  <div key={k} style={{display:"flex",gap:12,paddingBottom:12,marginBottom:12,borderBottom:k<4?`1px solid ${C.border}`:"none"}}>
+                    <span style={{fontSize:20,flexShrink:0}}>{i}</span>
+                    <div><div style={{fontSize:13,fontWeight:700,color:C.forest,marginBottom:2}}>{t}</div><div style={{fontSize:11,color:C.textM,lineHeight:1.6}}>{s}</div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="sbox">
+              <div className="sbox-hd"><span style={{fontSize:16}}>📊</span><span className="sbox-hd-title">Export Rates</span></div>
+              <div className="sbox-body">
+                {[["Super Grade FOB","USD 850-950/MT"],["A Grade FOB","USD 650-750/MT"],["Container (20ft)","~18-20 MT"],["Min Order","1 Container"],["Dispatch","7 days"]].map(([k,v],i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<4?`1px solid ${C.border}`:"none",fontSize:13}}>
+                    <span style={{color:C.textM}}>{k}</span>
+                    <span style={{fontWeight:700,color:C.forest}}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>}
+
+      {/* ══ POST LISTING ══ */}
+      {tab==="sell"&&<div className="page">
+        <div className="sh"><div className="sh-left"><div className="sh-dot"/><span className="sh-title">➕ Post a Listing</span></div><span style={{fontSize:12,color:C.textD}}>Free · 2,400+ buyers dekh sakte hain</span></div>
+        <div className="page-grid">
+          <div className="sell-card">
             <div className="step-bar">
-              {["Farmer Details","Garlic Info","Pricing & Publish"].map((s,i)=>(
-                <div key={i} className={`step ${sellStep===i?"on":""}`} onClick={()=>setSellStep(i)}>
+              {["Basic Info","Product Details","Publish"].map((s,i)=>(
+                <div key={i} className={`step ${sellStep===i?"on":""}`} onClick={()=>setSStep(i)}>
                   <span className="step-n">{sellStep>i?"✓":i+1}</span>{s}
                 </div>
               ))}
             </div>
             <form onSubmit={submitSell}>
               {sellStep===0&&(
-                <div className="form-grid">
-                  <div className="fg"><label className="fl">Poora Naam *</label><input className="fi" placeholder="Jaise: Ramesh Patidar" required value={sellF.name} onChange={e=>setSellF({...sellF,name:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">Mobile *</label><input className="fi" placeholder="10-digit" required value={sellF.phone} onChange={e=>setSellF({...sellF,phone:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">Gaon / Village *</label><input className="fi" placeholder="Jaise: Malhargarh" required value={sellF.village} onChange={e=>setSellF({...sellF,village:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">District</label><select className="fsel" value={sellF.dist} onChange={e=>setSellF({...sellF,dist:e.target.value})}>{"Mandsaur,Neemuch,Ratlam,Ujjain,Other".split(",").map(d=><option key={d}>{d}</option>)}</select></div>
-                  <div style={{gridColumn:"1/-1"}}>
-                    <button type="button" className="btn-G" onClick={()=>setSellStep(1)}>Aage Badho →</button>
+                <div className="exp-grid" style={{gap:14}}>
+                  <div className="fg" style={{gridColumn:"1/-1"}}>
+                    <label className="fl">Listing Type</label>
+                    <div style={{display:"flex",gap:10,marginTop:4}}>
+                      {["seller","buyer"].map(t=>(
+                        <label key={t} className="fcheck" style={{flex:1}}>
+                          <input type="radio" name="type" checked={sellF.type===t} onChange={()=>setSF({...sellF,type:t})}/>
+                          <span className="fcheck-lbl">{t==="seller"?"🧄 Seller (Main bechna chahta hoon)":"🏢 Buyer (Mujhe kharidna hai)"}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
+                  <div className="fg"><label className="fl">Aapka Naam / Company *</label><input className="fi" placeholder="Full name ya company" required value={sellF.name} onChange={e=>setSF({...sellF,name:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">Phone / WhatsApp *</label><input className="fi" placeholder="10-digit" required value={sellF.phone} onChange={e=>setSF({...sellF,phone:e.target.value})}/></div>
+                  <div className="fg" style={{gridColumn:"1/-1"}}><label className="fl">Location *</label><input className="fi" placeholder="Village, District, State" required value={sellF.loc} onChange={e=>setSF({...sellF,loc:e.target.value})}/></div>
+                  <div style={{gridColumn:"1/-1"}}><button type="button" className="submit-btn" onClick={()=>setSStep(1)}>Next: Product Details →</button></div>
                 </div>
               )}
               {sellStep===1&&(
-                <div className="form-grid">
-                  <div className="fg"><label className="fl">Grade *</label><select className="fsel" value={sellF.grade} onChange={e=>setSellF({...sellF,grade:e.target.value})}>{"Super,A Grade,B Grade,Organic".split(",").map(g=><option key={g}>{g}</option>)}</select></div>
-                  <div className="fg"><label className="fl">Quantity (Quintal) *</label><input className="fi" type="number" placeholder="Kitna hai?" required value={sellF.qty} onChange={e=>setSellF({...sellF,qty:e.target.value})}/></div>
-                  <div className="fg"><label className="fl">Bulb Size (mm)</label><input className="fi" placeholder="Jaise: 40-55mm" value={sellF.size} onChange={e=>setSellF({...sellF,size:e.target.value})}/></div>
-                  <div className="fg" style={{gridColumn:"1/-1"}}><label className="fl">Description</label><textarea className="fta" placeholder="Quality ke baare mein batao..." value={sellF.desc} onChange={e=>setSellF({...sellF,desc:e.target.value})}/></div>
-                  <label className="fcheck"><input type="checkbox" checked={sellF.cured} onChange={e=>setSellF({...sellF,cured:e.target.checked})}/><span className="fcheck-label">✅ Properly Cured</span></label>
-                  <label className="fcheck"><input type="checkbox" checked={sellF.phyto} onChange={e=>setSellF({...sellF,phyto:e.target.checked})}/><span className="fcheck-label">✈️ Phyto Certificate Done</span></label>
-                  <div style={{gridColumn:"1/-1",display:"flex",gap:10}}>
-                    <button type="button" className="btn-N" onClick={()=>setSellStep(0)}>← Wapas</button>
-                    <button type="button" className="btn-G" onClick={()=>setSellStep(2)}>Aage →</button>
-                  </div>
-                </div>
-              )}
-              {sellStep===2&&(
-                <div className="form-grid">
-                  <div className="fg" style={{gridColumn:"1/-1"}}>
-                    <label className="fl">Price (₹/quintal) *</label>
-                    <input className="fi" type="number" placeholder="Aap kya rate chahte ho?" required value={sellF.price} onChange={e=>setSellF({...sellF,price:e.target.value})}/>
-                    <div style={{fontSize:11,color:C.textD,marginTop:5}}>💡 Aaj: Super ₹8,200–12,800 · A Grade ₹6,500–9,800 · B Grade ₹3,800–5,700</div>
-                  </div>
+                <div className="exp-grid" style={{gap:14}}>
+                  <div className="fg"><label className="fl">Grade *</label><select className="fsel" value={sellF.grade} onChange={e=>setSF({...sellF,grade:e.target.value})}>{"Super,A Grade,B Grade,Organic".split(",").map(g=><option key={g}>{g}</option>)}</select></div>
+                  <div className="fg"><label className="fl">Quantity (Quintal) *</label><input className="fi" type="number" placeholder="Kitna?" required value={sellF.qty} onChange={e=>setSF({...sellF,qty:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">Bulb Size (mm)</label><input className="fi" placeholder="e.g. 40-55mm" value={sellF.size} onChange={e=>setSF({...sellF,size:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">Price (₹/quintal) *</label><input className="fi" type="number" placeholder="Aapka rate" required value={sellF.price} onChange={e=>setSF({...sellF,price:e.target.value})}/></div>
                   {sellF.price&&sellF.qty&&(
-                    <div style={{gridColumn:"1/-1",background:"rgba(232,160,32,.08)",border:"1px solid rgba(232,160,32,.22)",borderRadius:11,padding:"14px 18px"}}>
-                      <div style={{fontSize:10,color:C.textD,marginBottom:6,fontWeight:700,textTransform:"uppercase"}}>Estimated Total Value</div>
-                      <div style={{fontFamily:"'Fraunces',serif",fontSize:32,color:C.gold}}>₹{((parseInt(sellF.price)||0)*(parseInt(sellF.qty)||0)).toLocaleString()}</div>
-                      <div style={{fontSize:11,color:C.textD,marginTop:3}}>{sellF.qty}q × ₹{parseInt(sellF.price)||0}/q</div>
+                    <div style={{gridColumn:"1/-1",background:C.mint,border:`1.5px solid ${C.leaf}`,borderRadius:10,padding:"12px 16px"}}>
+                      <div style={{fontSize:10,color:C.leaf,fontWeight:700,textTransform:"uppercase"}}>Estimated Total</div>
+                      <div style={{fontFamily:"'Playfair Display',serif",fontSize:28,color:C.saffron}}>₹{((parseInt(sellF.price)||0)*(parseInt(sellF.qty)||0)).toLocaleString()}</div>
                     </div>
                   )}
+                  <label className="fcheck" style={{gridColumn:"1/-1"}}>
+                    <input type="checkbox" checked={sellF.phyto} onChange={e=>setSF({...sellF,phyto:e.target.checked})}/>
+                    <span className="fcheck-lbl">✈️ Phytosanitary Certificate Available (Export Ready)</span>
+                  </label>
+                  <div className="fg" style={{gridColumn:"1/-1"}}><label className="fl">Description</label><textarea className="fta" placeholder="Quality details, availability, special features..." value={sellF.desc} onChange={e=>setSF({...sellF,desc:e.target.value})}/></div>
                   <div style={{gridColumn:"1/-1",display:"flex",gap:10}}>
-                    <button type="button" className="btn-N" onClick={()=>setSellStep(1)}>← Wapas</button>
-                    <button type="submit" className="btn-O" style={{flex:1,padding:13,fontSize:14}}>🚀 Listing Publish Karo — FREE</button>
+                    <button type="button" style={{padding:"12px 20px",border:`1.5px solid ${C.border}`,borderRadius:9,background:C.surface,color:C.textM,fontSize:13,fontWeight:600,cursor:"pointer"}} onClick={()=>setSStep(0)}>← Back</button>
+                    <button type="submit" className="submit-btn" style={{flex:1}}>🚀 Publish Listing — FREE</button>
                   </div>
                 </div>
               )}
             </form>
           </div>
-        </>}
+          <div className="sidebar">
+            <div className="sbox">
+              <div className="sbox-hd"><span style={{fontSize:16}}>✅</span><span className="sbox-hd-title">Listing Benefits</span></div>
+              <div className="sbox-body">
+                {["2,400+ verified buyers tak seedha reach","Export buyers bhi dekhte hain","WhatsApp pe direct inquiry aayegi","Live mandi bhav se price compare karo","Phyto badge se zyada buyers attract karo","Free listing — koi hidden charge nahi"].map((b,i)=>(
+                  <div key={i} style={{display:"flex",gap:8,padding:"7px 0",borderBottom:i<5?`1px solid ${C.border}`:"none",fontSize:12,color:C.textM,alignItems:"flex-start"}}>
+                    <span style={{color:C.leaf,fontWeight:700,flexShrink:0}}>✅</span>{b}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>}
 
-      </div>
+      {/* ══ CONTACT ══ */}
+      {tab==="contact"&&<div className="page">
+        <div className="sh"><div className="sh-left"><div className="sh-dot"/><span className="sh-title">📞 Contact Us</span></div></div>
+        <div className="page-grid">
+          <div>
+            <div className="export-wrap">
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:C.forest,marginBottom:20}}>Quick Inquiry</div>
+              <form onSubmit={submitCon} style={{display:"flex",flexDirection:"column",gap:12}}>
+                <div className="fg"><label className="fl">Aapka Naam *</label><input className="fi" placeholder="Full name" required value={conF.name} onChange={e=>setConF({...conF,name:e.target.value})}/></div>
+                <div className="fg"><label className="fl">WhatsApp / Phone *</label><input className="fi" placeholder="Mobile number" required value={conF.phone} onChange={e=>setConF({...conF,phone:e.target.value})}/></div>
+                <div className="fg"><label className="fl">Message *</label><textarea className="fta" style={{minHeight:100}} placeholder="Grade, quantity, destination batao..." required value={conF.msg} onChange={e=>setConF({...conF,msg:e.target.value})}/></div>
+                <button type="submit" className="submit-btn">📩 Message Bhejo</button>
+                <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
+                  <button type="button" className="wa-submit"><WASvg sz={17}/> WhatsApp Pe Seedha Baat Karo</button>
+                </a>
+              </form>
+            </div>
+          </div>
+          <div className="sidebar">
+            <div className="sbox">
+              <div className="sbox-hd"><span style={{fontSize:16}}>📍</span><span className="sbox-hd-title">Contact Info</span></div>
+              <div className="sbox-body">
+                {[["📍","Address","New Krishi Upaj Mandi\nMandsaur, MP 458001"],["📱","WhatsApp / Call","+91-7772993222"],["✉️","Email","info@mandsaurgarlic.com"],["🕐","Working Hours","Mon–Sat: 8 AM – 8 PM\nSun: 10 AM – 4 PM"]].map(([i,t,v],k)=>(
+                  <div key={k} style={{display:"flex",gap:12,padding:"12px 0",borderBottom:k<3?`1px solid ${C.border}`:"none"}}>
+                    <span style={{fontSize:20,flexShrink:0}}>{i}</span>
+                    <div><div style={{fontSize:13,fontWeight:700,color:C.forest,marginBottom:3}}>{t}</div><div style={{fontSize:12,color:C.textM,lineHeight:1.65,whiteSpace:"pre-line"}}>{v}</div></div>
+                  </div>
+                ))}
+                <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
+                  <button style={{width:"100%",marginTop:14,padding:"11px",background:"#25D366",color:"#fff",border:"none",borderRadius:9,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+                    <WASvg sz={15}/> +91-7772993222
+                  </button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>}
 
-      {/* ══ LISTING MODAL ══ */}
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="footer-inner">
+          <div className="footer-grid">
+            <div>
+              <div className="footer-brand-name">Mandsaur<em>Garlic</em></div>
+              <p className="footer-brand-sub">India Ka #1 Garlic B2B Marketplace. Mandsaur · Neemuch · Ratlam · Madhya Pradesh, India.</p>
+              <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" className="footer-wa"><WASvg sz={15}/> +91-7772993222</a>
+            </div>
+            <div>
+              <div className="fcol-title">Platform</div>
+              {[["listings","🛒 Sellers"],["buyers","🏢 Buyers"],["bhav","📊 Mandi Bhav"],["export","🌍 Export"],["sell","➕ Post Listing"]].map(([k,l])=><span key={k} className="flink" onClick={()=>setTab(k)}>{l}</span>)}
+            </div>
+            <div>
+              <div className="fcol-title">Garlic Grades</div>
+              {["Super Grade (55mm+)","A Grade (45-55mm)","B Grade (28-40mm)","Organic Certified","Desi Garlic","Single Clove (Kali)"].map(g=><span key={g} className="flink" onClick={()=>{setGrade(g.split(" ")[0]);setTab("listings");}}>{g}</span>)}
+            </div>
+            <div>
+              <div className="fcol-title">Export Markets</div>
+              {["Bangladesh","UAE / Dubai","Malaysia","Indonesia","USA","UK"].map(c=><span key={c} className="flink">{c}</span>)}
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <span className="fcopy">© 2026 MandsaurGarlic.com · All Rights Reserved · Mandsaur, Madhya Pradesh, India</span>
+            <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" className="footer-wa"><WASvg sz={14}/> WhatsApp Us</a>
+          </div>
+        </div>
+      </footer>
+
+      {/* LISTING MODAL */}
       {modal&&(
         <div className="overlay" onClick={e=>e.target===e.currentTarget&&setModal(null)}>
           <div className="modal">
-            <div className="m-hd">
-              <div><h2>{modal.name}</h2><p>👨‍🌾 {modal.farmer} · 📍 {modal.village}, {modal.dist}</p></div>
+            <div className="mhd">
+              <div>
+                <h2>{modal.type==="seller"?"🧄":"🏢"} {modal.name}</h2>
+                <p>📍 {modal.loc} · {modal.badge} {modal.verified?"· ✅ Verified":""}</p>
+              </div>
               <button className="mclose" onClick={()=>setModal(null)}>✕</button>
             </div>
-            <div className="m-body">
-              <div className="m-price">
+            <div className="mbody">
+              <div className="mpricebox">
                 <div>
-                  <div style={{fontSize:11,color:C.textD,marginBottom:3}}>Asking Price</div>
-                  <div className="m-price-big">₹{modal.price.toLocaleString()}</div>
-                  <div className="m-price-sub">per quintal · {modal.qty}q · Total ₹{(modal.price*modal.qty).toLocaleString()}</div>
+                  <div style={{fontSize:11,color:C.textD,marginBottom:4}}>{modal.type==="seller"?"Asking Price":"Buying Price"}</div>
+                  <div className="mprice">₹{modal.price.toLocaleString()}</div>
+                  <div className="mprice-sub">per quintal · {modal.qty} available</div>
                 </div>
-                <div style={{fontSize:42}}>🧄</div>
+                <div style={{fontSize:44}}>{modal.type==="seller"?"🧄":"🏢"}</div>
               </div>
-              <div className="m-info-grid">
-                {[["Grade",modal.grade],["Size",modal.size],["Quantity",modal.qty+"q"],["Moisture",modal.moisture],["Cured",modal.cured?"Yes ✅":"No"],["Phyto",modal.phyto?"Yes ✅":"No"],["Avail",modal.avail],["Dist",modal.dist]].map(([l,v],i)=>(
-                  <div key={i} className="m-info"><label>{l}</label><span>{v}</span></div>
+              <div className="minfo-grid">
+                {[["Grade",modal.grade],["Size",modal.size],["Quantity",modal.qty],["Availability",modal.avail],["Phyto",modal.phyto?"Yes ✅":"Available on request"],["Rating",modal.rating>0?`⭐ ${modal.rating} (${modal.deals} deals)`:"New"]].map(([l,v],i)=>(
+                  <div key={i} className="minfo"><label>{l}</label><span>{v}</span></div>
                 ))}
               </div>
-              <div className="m-desc">💬 {modal.desc}</div>
-              <div className="m-tabs">
-                {[["inquiry","📩 Inquiry"],["export","🌍 Export"],["logistics","🚛 Transport"],["whatsapp","💬 WhatsApp"]].map(([k,l])=>(
-                  <button key={k} className={`mtab ${mTab===k?"on":""}`} onClick={()=>setMTab(k)}>{l}</button>
-                ))}
-              </div>
-              {mTab==="inquiry"&&(
-                <form onSubmit={submitIq} style={{display:"flex",flexDirection:"column",gap:10}}>
-                  <div className="form-grid" style={{gap:10}}>
-                    <div className="fg"><label className="fl">Naam *</label><input className="fi" placeholder="Aapka naam" required value={iqF.name} onChange={e=>setIqF({...iqF,name:e.target.value})}/></div>
-                    <div className="fg"><label className="fl">Phone *</label><input className="fi" placeholder="Mobile" required value={iqF.phone} onChange={e=>setIqF({...iqF,phone:e.target.value})}/></div>
-                    <div className="fg"><label className="fl">Company</label><input className="fi" placeholder="Firm naam" value={iqF.company} onChange={e=>setIqF({...iqF,company:e.target.value})}/></div>
-                    <div className="fg"><label className="fl">Qty (Quintal)</label><input className="fi" type="number" value={iqF.qty} onChange={e=>setIqF({...iqF,qty:e.target.value})}/></div>
-                  </div>
-                  <div className="fg"><label className="fl">Message</label><textarea className="fta" placeholder="Special requirements..." value={iqF.message} onChange={e=>setIqF({...iqF,message:e.target.value})}/></div>
-                  <button type="submit" className="btn-O" style={{padding:12,fontSize:14}}>📩 Inquiry Bhejo</button>
-                  <button type="button" className="btn-G" style={{padding:11,fontSize:13}} onClick={()=>window.open(waLink(`Namaskar! 🧄 Listing inquiry: *${modal?.name}*\nPrice: ₹${modal?.price}/q | Qty: ${modal?.qty}q\nKya yeh available hai? Mujhe quote chahiye.`),'_blank')}>💬 WhatsApp Pe Direct Baat Karo</button>
-                </form>
-              )}
-              {mTab==="export"&&(
-                <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                  <div style={{background:"rgba(64,160,232,.08)",border:"1px solid rgba(64,160,232,.2)",borderRadius:9,padding:"11px 14px",fontSize:12,color:C.textD,lineHeight:1.7}}>
-                    🌍 Is lot ke liye export inquiry. {modal.phyto?"✅ Phyto ready.":"Phyto ke baad export-ready ho sakta hai."}
-                  </div>
-                  <div className="form-grid" style={{gap:10}}>
-                    <div className="fg"><label className="fl">Destination</label><select className="fsel">{COUNTRIES.map(c=><option key={c}>{c}</option>)}</select></div>
-                    <div className="fg"><label className="fl">Qty (MT)</label><input className="fi" type="number" placeholder="Metric tonnes"/></div>
-                  </div>
-                  <button className="btn-O" style={{padding:11}} onClick={()=>{flash("🌍 Export quote request bhej di!");setModal(null)}}>🌍 Export Quote Request</button>
-                  <button className="btn-N" style={{padding:10,width:"100%"}} onClick={()=>{setModal(null);setTab("export")}}>📋 Detailed Export Form</button>
+              <div className="mdesc">💬 {modal.desc}</div>
+              <form className="mform" onSubmit={submitIq}>
+                <div className="exp-grid" style={{gap:10}}>
+                  <div className="fg"><label className="fl">Aapka Naam *</label><input className="fi" placeholder="Name" required value={iqF.name} onChange={e=>setIqF({...iqF,name:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">Phone *</label><input className="fi" placeholder="Mobile" required value={iqF.phone} onChange={e=>setIqF({...iqF,phone:e.target.value})}/></div>
+                  <div className="fg"><label className="fl">Quantity (q)</label><input className="fi" type="number" placeholder="Kitna?" value={iqF.qty} onChange={e=>setIqF({...iqF,qty:e.target.value})}/></div>
                 </div>
-              )}
-              {mTab==="logistics"&&(
-                <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                  <div style={{fontSize:12,color:C.textD,marginBottom:4}}>Is lot ke liye transport book karo:</div>
-                  {TRANSPORTERS.slice(0,2).map(t=>(
-                    <div key={t.id} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:9,padding:"11px 14px",cursor:"pointer"}}
-                      onClick={()=>{setModal(null);setTab("logistics");setSelTrans(t)}}>
-                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
-                        <span style={{fontWeight:700,color:C.cream,fontSize:13}}>{t.name}</span>
-                        <span style={{color:C.gold,fontSize:11}}>⭐ {t.rating}</span>
-                      </div>
-                      <div style={{fontSize:11,color:C.textD}}>{t.routes[0]} · {t.rate}</div>
-                    </div>
-                  ))}
-                  <button className="btn-G" style={{padding:11}} onClick={()=>{setModal(null);setTab("logistics")}}>🚛 Sab Transporters Dekho</button>
-                </div>
-              )}
-              {mTab==="whatsapp"&&(
-                <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                  <div style={{fontSize:12,color:C.textD,lineHeight:1.7}}>Seedha WhatsApp pe message bhejo — ek click mein:</div>
-                  <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:9,padding:"14px",fontSize:13,lineHeight:1.7,color:C.textD}}>
-                    Namaskar! 🧄<br/><br/>
-                    Aapki listing dekhne ke baad inquiry kar raha/rahi hoon:<br/><br/>
-                    <b style={{color:C.cream}}>Lot:</b> {modal.name}<br/>
-                    <b style={{color:C.cream}}>Price:</b> ₹{modal.price}/q<br/>
-                    <b style={{color:C.cream}}>Qty:</b> {modal.qty}q<br/><br/>
-                    Kya aap price discuss kar sakte hain?
-                  </div>
-                  <a href={waLink(`Namaskar! 🧄 MandsaurGarlic.com pe aapki listing dekhi:\n\n*${modal.name}*\nPrice: ₹${modal.price}/q\nQty: ${modal.qty}q\n\nKya yeh available hai? Price discuss kar sakte hain?`)}
-                    target="_blank" rel="noopener noreferrer"
-                    style={{textDecoration:"none"}}>
-                    <button className="btn-G" style={{padding:11,fontSize:13,width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:7}}>
-                      💬 WhatsApp Pe Seedha Message Bhejo
-                    </button>
-                  </a>
-                  <a href={waGeneral} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
-                    <button className="btn-N" style={{padding:10,width:"100%"}}>📱 General Inquiry — +91-7772993222</button>
-                  </a>
-                </div>
-              )}
+                <div className="fg"><label className="fl">Message</label><textarea className="fta" style={{minHeight:65}} placeholder="Special requirement?" value={iqF.msg} onChange={e=>setIqF({...iqF,msg:e.target.value})}/></div>
+                <button type="submit" className="mbtn-green">📩 Inquiry Bhejo</button>
+              </form>
+              <a href={wa(`Namaskar! 🧄 MandsaurGarlic.com pe aapki listing dekhi:\n\n*${modal.name}*\nGrade: ${modal.grade} | Size: ${modal.size}\nPrice: ₹${modal.price}/q | Qty: ${modal.qty}\n\nKya available hai? Quote dijiye.`)} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
+                <button className="mbtn-wa"><WASvg sz={17}/> WhatsApp Pe Direct Quote Lo</button>
+              </a>
             </div>
           </div>
         </div>
       )}
 
-      {/* FOOTER */}
-      <div className="footer">
-        <div className="footer-logo">Mandsaur<em>Garlic</em>.com</div>
-        <div className="footer-sub">India Ka #1 Garlic B2B Platform · Mandsaur · Neemuch · Ratlam · Dalauda<br/>
-          <span style={{fontSize:12,color:C.green,marginTop:6,display:"inline-block"}}>
-            📱 WhatsApp: +91-7772993222 &nbsp;|&nbsp;
-            <a href={waGeneral} target="_blank" rel="noopener noreferrer"
-              style={{color:C.green,textDecoration:"none",fontWeight:700}}>
-              💬 Click to Chat
-            </a>
-          </span><br/>
-          <span style={{fontSize:11,marginTop:4,display:"block",color:C.textD}}>© 2026 · Free Listings · 1-3% Commission on Export Deals</span>
-        </div>
-      </div>
-
-      {/* WHATSAPP FLOATING BUTTON */}
-      <a href={waGeneral} target="_blank" rel="noopener noreferrer" style={{
-        position:"fixed",bottom:28,right:28,zIndex:400,
-        width:62,height:62,borderRadius:"50%",
-        background:"#25D366",
-        display:"flex",alignItems:"center",justifyContent:"center",
-        boxShadow:"0 6px 24px rgba(37,211,102,0.55)",
-        textDecoration:"none",
-        animation:"waPulse 2.2s infinite",
-      }}>
-        <svg viewBox="0 0 48 48" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M24 4C13 4 4 13 4 24c0 3.6 1 7 2.7 9.9L4 44l10.4-2.7C17.2 43 20.5 44 24 44c11 0 20-9 20-20S35 4 24 4z" fill="#fff"/>
-          <path d="M24 7.2C14.8 7.2 7.2 14.8 7.2 24c0 3.3.9 6.4 2.6 9.1l.4.6-1.7 6.2 6.4-1.7.6.3c2.6 1.5 5.5 2.3 8.5 2.3 9.2 0 16.8-7.6 16.8-16.8S33.2 7.2 24 7.2z" fill="#25D366"/>
-          <path d="M33.5 28.1c-.5-.2-2.8-1.4-3.2-1.5-.4-.2-.7-.2-1 .2-.3.5-1.2 1.5-1.4 1.8-.3.3-.5.3-1 .1-.5-.2-2-.7-3.8-2.3-1.4-1.2-2.3-2.8-2.6-3.2-.3-.5 0-.7.2-.9.2-.2.5-.5.7-.8.2-.3.3-.5.4-.8.1-.3 0-.6-.1-.8-.1-.2-1-2.4-1.3-3.3-.3-.8-.7-.7-1-.7h-.8c-.3 0-.8.1-1.2.6-.4.5-1.6 1.5-1.6 3.7s1.6 4.3 1.8 4.6c.2.3 3.2 5 7.8 6.8 1.1.5 2 .7 2.6.9 1.1.3 2.1.3 2.9.2.9-.1 2.8-1.1 3.2-2.2.4-1.1.4-2 .3-2.2-.1-.2-.4-.3-.9-.5z" fill="#fff"/>
-        </svg>
+      {/* WA FLOAT */}
+      <a href={WA_DEFAULT} target="_blank" rel="noopener noreferrer" className="wa-float">
+        <WASvg sz={30}/>
       </a>
-      <style>{`
-        @keyframes waPulse {
-          0%{box-shadow:0 6px 24px rgba(37,211,102,0.55),0 0 0 0 rgba(37,211,102,0.4)}
-          50%{box-shadow:0 6px 32px rgba(37,211,102,0.7),0 0 0 10px rgba(37,211,102,0.0)}
-          100%{box-shadow:0 6px 24px rgba(37,211,102,0.55),0 0 0 0 rgba(37,211,102,0)}
-        }
-      `}</style>
 
       {/* TOAST */}
-      {toast&&<div className="toast">{toast}</div>}
+      {toast&&<div className="toast">✅ {toast}</div>}
     </>
   );
 }
