@@ -1170,7 +1170,7 @@ export default function App() {
                 <div className="fg"><label className="fl">Message</label><textarea className="fta" style={{minHeight:65}} placeholder="Special requirement?" value={iqF.msg} onChange={e=>setIqF({...iqF,msg:e.target.value})}/></div>
                 <button type="submit" className="mbtn-green">📩 Inquiry Bhejo</button>
               </form>
-              <a href={wa(`Namaskar! 🧄 MandsaurGarlic.com pe aapki listing dekhi:\n\n*${modal.name}*\nGrade: ${modal.grade} | Size: ${modal.size}\nPrice: ₹${modal.price}/q | Qty: ${modal.qty}\n\nKya available hai? Quote dijiye.`)} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
+              <a href={wa(`Namaskar! 🧄MandsaurGarlic.com pe aapki listing dekhi:\n\n*${modal.name}*\nGrade: ${modal.grade} | Size: ${modal.size}\nPrice: ₹${modal.price}/q | Qty: ${modal.qty}\n\nKya available hai? Quote dijiye.`)} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
                 <button className="mbtn-wa"><WASvg sz={17}/> WhatsApp Pe Direct Quote Lo</button>
               </a>
             </div>
