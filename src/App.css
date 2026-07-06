@@ -1,0 +1,153 @@
+  min-height: 48px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
+input:focus,
+select:focus,
+.btn:focus-visible,
+.nav-cta:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(215, 119, 45, 0.35);
+  outline-offset: 3px;
+}
+
+.form-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px clamp(18px, 5vw, 72px);
+  color: #eaf4ec;
+  background: #141a17;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer a {
+  color: #fff;
+  font-weight: 900;
+}
+
+.footer-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.floating-whatsapp {
+  position: fixed;
+  z-index: 30;
+  right: 18px;
+  bottom: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 52px;
+  padding: 0 16px 0 10px;
+  color: #fff;
+  background: var(--green);
+  border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(16, 82, 46, 0.34);
+}
+
+.floating-whatsapp .whatsapp-icon {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+  background: #fff;
+  border-radius: 999px;
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    min-height: 66px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .hero {
+    min-height: 94vh;
+    padding-top: 110px;
+  }
+
+  .hero-overlay {
+    background:
+      linear-gradient(90deg, rgba(251, 250, 245, 0.98), rgba(251, 250, 245, 0.74)),
+      linear-gradient(180deg, rgba(251, 250, 245, 0.2), rgba(251, 250, 245, 0.65));
+  }
+
+  .intro-grid,
+  .product-grid,
+  .steps,
+  .enquiry {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-header {
+    padding: 10px 14px;
+  }
+
+  .brand {
+    min-width: 0;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .nav-cta {
+    min-height: 40px;
+    padding: 0 12px;
+  }
+
+  h1 {
+    font-size: 40px;
+  }
+
+  .hero-copy {
+    font-size: 17px;
+  }
+
+  .hero-actions,
+  .site-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .hero-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  section {
+    padding: 54px 16px;
+  }
+
+  .floating-whatsapp strong {
+    display: none;
+  }
+
+  .floating-whatsapp {
+    padding-right: 10px;
+  }
+}
