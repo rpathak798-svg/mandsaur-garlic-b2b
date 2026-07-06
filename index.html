@@ -1,1483 +1,217 @@
 
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MandsaurGarlic.com | Dedicated Garlic B2B Platform</title>
-  <meta name="description" content="MandsaurGarlic.com is a dedicated B2B platform for verified Mandsaur garlic buyers, suppliers, exporters, processors, logistics teams, and mandi-linked procurement.">
-  <meta name="theme-color" content="#14352a">
-  <meta property="og:title" content="MandsaurGarlic.com">
-  <meta property="og:description" content="India's dedicated B2B garlic platform from the Mandsaur mandi belt.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://pub-96fc23e925cc43ea97c90df889f8d99c.r2.dev/mandsaur-mandi.jpg">
-  <style>
-    :root {
-      --ink: #13201d;
-      --muted: #65726e;
-      --line: rgba(19, 32, 29, .12);
-      --leaf: #167149;
-      --leaf-dark: #0d3d2c;
-      --chilli: #b73426;
-      --saffron: #e7a12f;
-      --cream: #fbf8ef;
-      --paper: #fffdf7;
-      --steel: #eaf0ed;
-      --shadow: 0 24px 70px rgba(10, 35, 26, .16);
-      --radius: 8px;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--ink);
-      background: var(--paper);
-      letter-spacing: 0;
-    }
-
-    img { max-width: 100%; display: block; }
-    a { color: inherit; text-decoration: none; }
-    button, input, select, textarea { font: inherit; }
-
-    .shell {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(255, 253, 247, .9);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav {
-      height: 76px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 246px;
-    }
-
-    .brand-mark {
-      width: 52px;
-      height: 52px;
-      flex: 0 0 auto;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      background: #fffaf0;
-      border: 2px solid #fff;
-      box-shadow: 0 12px 24px rgba(22, 113, 73, .2);
-      overflow: hidden;
-    }
-
-    .brand-mark img {
-      width: 39px;
-      height: 39px;
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scale(1.18);
-    }
-
-    .brand-wordmark {
-      display: grid;
-      justify-items: center;
-      line-height: 1;
-    }
-
-    .brand-title {
-      display: block;
-      font-size: 1.2rem;
-      font-weight: 950;
-      line-height: .98;
-      letter-spacing: 0;
-    }
-
-    .brand-title .soft { color: #167149; }
-    .brand-title .earth { color: #6e593e; }
-
-    .brand-dotcom {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      margin-top: 5px;
-      color: #6e593e;
-      font-size: .72rem;
-      font-weight: 800;
-      letter-spacing: .02em;
-    }
-
-    .brand-dotcom::before,
-    .brand-dotcom::after {
-      content: "";
-      width: 26px;
-      height: 1px;
-      background: rgba(22, 113, 73, .45);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      color: #34423f;
-      font-size: .93rem;
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .icon-btn,
-    .primary-btn,
-    .ghost-btn {
-      min-height: 44px;
-      border: 0;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      cursor: pointer;
-      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-      white-space: nowrap;
-    }
-
-    .icon-btn {
-      width: 44px;
-      color: var(--ink);
-      background: var(--steel);
-    }
-
-    .primary-btn {
-      padding: 0 18px;
-      color: white;
-      background: var(--leaf);
-      box-shadow: 0 14px 26px rgba(22, 113, 73, .2);
-    }
-
-    .ghost-btn {
-      padding: 0 16px;
-      color: var(--leaf-dark);
-      background: #eef6f1;
-    }
-
-    .icon-btn:hover,
-    .primary-btn:hover,
-    .ghost-btn:hover { transform: translateY(-2px); }
-
-    .mobile-menu { display: none; }
-
-    .hero {
-      min-height: calc(100svh - 76px);
-      color: white;
-      background:
-        linear-gradient(90deg, rgba(9, 31, 23, .88) 0%, rgba(9, 31, 23, .58) 48%, rgba(9, 31, 23, .18) 100%),
-        url("https://pub-96fc23e925cc43ea97c90df889f8d99c.r2.dev/mandsaur-mandi.jpg") center / cover no-repeat;
-      display: grid;
-      align-items: end;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.06fr) minmax(320px, .72fr);
-      gap: 42px;
-      padding: 72px 0 38px;
-      align-items: end;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      color: #173026;
-      background: rgba(255, 255, 255, .86);
-      font-weight: 750;
-      font-size: .82rem;
-    }
-
-    .hero h1 {
-      max-width: 820px;
-      margin: 18px 0 18px;
-      font-size: clamp(3.1rem, 8vw, 7rem);
-      line-height: .88;
-      letter-spacing: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .hero p {
-      max-width: 670px;
-      margin: 0;
-      color: rgba(255,255,255,.86);
-      font-size: clamp(1rem, 2vw, 1.26rem);
-      line-height: 1.65;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    .hero-actions .ghost-btn {
-      color: white;
-      background: rgba(255,255,255,.14);
-      border: 1px solid rgba(255,255,255,.28);
-    }
-
-    .market-panel {
-      background: rgba(255, 253, 247, .95);
-      color: var(--ink);
-      border: 1px solid rgba(255,255,255,.48);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-head {
-      padding: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .panel-head strong { font-size: 1rem; }
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      color: var(--leaf-dark);
-      font-size: .8rem;
-      font-weight: 750;
-    }
-
-    .pulse {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: #18a762;
-      box-shadow: 0 0 0 7px rgba(24, 167, 98, .13);
-    }
-
-    .rate-list { padding: 10px 18px 18px; }
-    .rate {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .rate:last-child { border-bottom: 0; }
-    .rate span { color: var(--muted); font-size: .82rem; }
-    .rate strong { display: block; margin-bottom: 4px; }
-    .rate b { color: var(--leaf); font-size: 1.08rem; }
-
-    .next-strip {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: rgba(255,255,255,.32);
-      margin-bottom: -1px;
-    }
-
-    .next-strip div {
-      padding: 18px;
-      min-height: 96px;
-      background: rgba(255, 253, 247, .94);
-      color: var(--ink);
-    }
-    .next-strip strong { display: block; font-size: 1.35rem; margin-bottom: 4px; }
-    .next-strip span { color: var(--muted); font-size: .8rem; line-height: 1.35; }
-
-    section { padding: 86px 0; }
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 30px;
-      margin-bottom: 32px;
-    }
-    .section-head h2 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 3.6rem);
-      line-height: .98;
-      letter-spacing: 0;
-      max-width: 770px;
-    }
-    .section-head p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 430px;
-    }
-
-    .partner-band {
-      padding: 22px 0;
-      background: #14352a;
-      color: white;
-      overflow: hidden;
-    }
-    .partner-track {
-      display: flex;
-      gap: 28px;
-      align-items: center;
-      justify-content: space-between;
-      color: rgba(255,255,255,.78);
-      font-size: .86rem;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-    .partner-track strong { color: white; letter-spacing: 0; text-transform: none; font-size: 1rem; }
-
-    .console-section {
-      background: #f7faf6;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .console-grid {
-      display: grid;
-      grid-template-columns: minmax(0, .95fr) minmax(360px, 1.05fr);
-      gap: 22px;
-      align-items: stretch;
-    }
-
-    .command-panel,
-    .trade-ticket,
-    .workflow-card,
-    .quality-card,
-    .supplier-card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      box-shadow: 0 14px 38px rgba(19, 32, 29, .07);
-    }
-
-    .command-panel { padding: 22px; }
-    .command-panel h2 {
-      margin: 0 0 12px;
-      font-size: clamp(2rem, 4vw, 3.4rem);
-      line-height: .98;
-    }
-    .command-panel p { margin: 0; color: var(--muted); line-height: 1.7; }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 22px;
-    }
-    .kpi {
-      min-height: 112px;
-      padding: 16px;
-      border-radius: var(--radius);
-      background: #f1f6f3;
-      display: grid;
-      align-content: space-between;
-    }
-    .kpi strong { font-size: 1.55rem; }
-    .kpi span { color: #53615d; font-size: .86rem; line-height: 1.4; }
-
-    .trade-ticket { overflow: hidden; }
-    .ticket-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 16px;
-      align-items: center;
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--line);
-    }
-    .ticket-row:last-child { border-bottom: 0; }
-    .ticket-row small { display: block; color: var(--muted); margin-top: 4px; }
-    .ticket-row b { color: var(--leaf); }
-    .ticket-pill {
-      padding: 7px 9px;
-      border-radius: 999px;
-      background: #eef6f1;
-      color: var(--leaf-dark);
-      font-size: .76rem;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .market-tools {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 18px;
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-    }
-
-    .market-tools label { font-size: .76rem; }
-
-    .lot-actions {
-      display: flex;
-      gap: 9px;
-      margin-top: 18px;
-    }
-    .lot-actions .ghost-btn,
-    .lot-actions .primary-btn {
-      min-height: 38px;
-      padding: 0 12px;
-      font-size: .86rem;
-      flex: 1;
-    }
-
-    .workflow-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-    .workflow-card {
-      padding: 20px;
-      min-height: 240px;
-      display: grid;
-      align-content: space-between;
-    }
-    .workflow-card b {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border-radius: 8px;
-      color: white;
-      background: var(--leaf);
-    }
-    .workflow-card h3 { margin: 20px 0 10px; }
-    .workflow-card p { margin: 0; color: var(--muted); line-height: 1.6; }
-
-    .quality-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(320px, .75fr);
-      gap: 18px;
-      align-items: start;
-    }
-    .quality-card { overflow: hidden; }
-    .quality-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .92rem;
-    }
-    .quality-table th,
-    .quality-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
-    }
-    .quality-table th {
-      color: #47534f;
-      background: #f4f7f5;
-      font-size: .78rem;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .quality-table td:last-child { color: var(--leaf-dark); font-weight: 800; }
-
-    .supplier-section {
-      background: #f2f6f3;
-    }
-    .supplier-wrap {
-      display: grid;
-      grid-template-columns: minmax(0, .85fr) minmax(360px, 1fr);
-      gap: 28px;
-      align-items: start;
-    }
-    .supplier-card { padding: 22px; }
-    .check-list {
-      list-style: none;
-      padding: 0;
-      margin: 22px 0 0;
-      display: grid;
-      gap: 12px;
-      color: #41504b;
-    }
-    .check-list li {
-      display: grid;
-      grid-template-columns: 24px 1fr;
-      gap: 10px;
-      align-items: start;
-    }
-    .check-list li::before {
-      content: "✓";
-      width: 24px;
-      height: 24px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      color: white;
-      background: var(--leaf);
-      font-size: .8rem;
-      font-weight: 900;
-    }
-
-    .desk-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .desk-console {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 18px;
-    }
-
-    .desk-box {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      overflow: hidden;
-    }
-
-    .desk-box header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: #f4f7f5;
-    }
-
-    .desk-box header strong { font-size: .98rem; }
-
-    .desk-count {
-      min-width: 28px;
-      height: 28px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      color: white;
-      background: var(--leaf);
-      font-size: .82rem;
-      font-weight: 900;
-    }
-
-    .desk-list {
-      min-height: 144px;
-      display: grid;
-      align-content: start;
-    }
-
-    .desk-empty,
-    .desk-record {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .desk-record:last-child,
-    .desk-empty:last-child { border-bottom: 0; }
-
-    .desk-record strong {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .desk-record span,
-    .desk-empty {
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.5;
-    }
-
-    .lot-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-    }
-
-    .lot-card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      overflow: hidden;
-      box-shadow: 0 12px 34px rgba(19,32,29,.06);
-    }
-    .lot-card img {
-      height: 210px;
-      width: 100%;
-      object-fit: cover;
-      background: var(--steel);
-    }
-    .lot-body { padding: 18px; }
-    .lot-body h3 { margin: 0 0 10px; font-size: 1.15rem; }
-    .specs {
-      display: grid;
-      gap: 9px;
-      margin: 16px 0 18px;
-      color: #47534f;
-      font-size: .9rem;
-    }
-    .specs div {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px dashed rgba(19,32,29,.16);
-      padding-bottom: 8px;
-    }
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-    .tag {
-      padding: 6px 8px;
-      border-radius: 7px;
-      background: #f0f4f2;
-      color: #4a5854;
-      font-size: .76rem;
-      font-weight: 700;
-    }
-
-    .split {
-      display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
-      gap: 42px;
-      align-items: center;
-    }
-
-    .photo-stack {
-      display: grid;
-      grid-template-columns: 1fr .78fr;
-      gap: 14px;
-      align-items: end;
-    }
-    .photo-stack img {
-      width: 100%;
-      object-fit: cover;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .photo-stack img:first-child { height: 520px; }
-    .photo-stack img:last-child { height: 360px; }
-
-    .system-list {
-      display: grid;
-      gap: 14px;
-    }
-    .system-item {
-      display: grid;
-      grid-template-columns: 44px 1fr;
-      gap: 14px;
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-    }
-    .system-item svg {
-      width: 44px;
-      height: 44px;
-      padding: 10px;
-      border-radius: 8px;
-      color: var(--leaf-dark);
-      background: #eaf6ef;
-    }
-    .system-item h3 { margin: 0 0 5px; font-size: 1rem; }
-    .system-item p { margin: 0; color: var(--muted); line-height: 1.55; }
-
-    .dark-section {
-      background: #101d1a;
-      color: white;
-    }
-    .dark-section .section-head p,
-    .dark-section .muted { color: rgba(255,255,255,.68); }
-
-    .trade-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-    .trade-card {
-      min-height: 290px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--radius);
-      padding: 22px;
-      background: rgba(255,255,255,.06);
-    }
-    .trade-card h3 { margin: 0 0 12px; font-size: 1.35rem; }
-    .trade-card p { color: rgba(255,255,255,.72); line-height: 1.6; margin: 0; }
-    .trade-card ul {
-      list-style: none;
-      padding: 0;
-      margin: 18px 0 0;
-      display: grid;
-      gap: 10px;
-      color: rgba(255,255,255,.82);
-    }
-    .trade-card li::before {
-      content: "";
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      border-radius: 99px;
-      margin-right: 9px;
-      background: var(--saffron);
-    }
-
-    .rfq-section {
-      background:
-        linear-gradient(90deg, rgba(251,248,239,.96), rgba(251,248,239,.84)),
-        url("https://www.mandsaurmandibhav.in/garlic/mandsaur-mandi-garlic-08.webp") center / cover no-repeat;
-    }
-
-    .rfq-wrap {
-      display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(340px, 1fr);
-      gap: 34px;
-      align-items: start;
-    }
-
-    .rfq-copy h2 {
-      margin: 0 0 18px;
-      font-size: clamp(2.2rem, 5vw, 4.2rem);
-      line-height: .96;
-    }
-    .rfq-copy p {
-      margin: 0;
-      color: #4d5b56;
-      line-height: 1.7;
-      max-width: 520px;
-    }
-
-    .rfq-form {
-      padding: 22px;
-      border-radius: var(--radius);
-      background: white;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      display: grid;
-      gap: 14px;
-    }
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    label {
-      display: grid;
-      gap: 7px;
-      font-size: .82rem;
-      color: #44524e;
-      font-weight: 750;
-    }
-    input, select, textarea {
-      width: 100%;
-      min-height: 46px;
-      border: 1px solid rgba(19,32,29,.16);
-      border-radius: 8px;
-      padding: 11px 12px;
-      color: var(--ink);
-      background: #fbfcfb;
-      outline: none;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 106px;
-      grid-column: 1 / -1;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--leaf);
-      box-shadow: 0 0 0 4px rgba(22, 113, 73, .12);
-    }
-
-    .insight-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 18px;
-    }
-    .insight {
-      border-top: 3px solid var(--leaf);
-      padding: 20px;
-      background: #fff;
-      border-radius: 0 0 var(--radius) var(--radius);
-      box-shadow: 0 12px 34px rgba(19,32,29,.06);
-    }
-    .insight:nth-child(2) { border-color: var(--saffron); }
-    .insight:nth-child(3) { border-color: var(--chilli); }
-    .insight h3 { margin: 0 0 8px; }
-    .insight p { margin: 0; color: var(--muted); line-height: 1.6; }
-
-    footer {
-      background: #07110f;
-      color: white;
-      padding: 48px 0;
-    }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 28px;
-      align-items: end;
-    }
-    footer p { max-width: 590px; color: rgba(255,255,255,.65); line-height: 1.65; }
-    footer .brand-title .earth,
-    footer .brand-dotcom { color: #eadfce; }
-    footer .brand-dotcom::before,
-    footer .brand-dotcom::after { background: rgba(234, 223, 206, .52); }
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      justify-content: flex-end;
-      color: rgba(255,255,255,.76);
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      z-index: 40;
-      transform: translate(-50%, 120px);
-      opacity: 0;
-      padding: 14px 18px;
-      border-radius: 8px;
-      color: white;
-      background: #14352a;
-      box-shadow: var(--shadow);
-      transition: transform .25s ease, opacity .25s ease;
-    }
-    .toast.show {
-      transform: translate(-50%, 0);
-      opacity: 1;
-    }
-
-    .whatsapp-float {
-      position: fixed;
-      right: 18px;
-      bottom: 92px;
-      z-index: 35;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 54px;
-      padding: 0 16px 0 13px;
-      border-radius: 999px;
-      color: white;
-      background: #25d366;
-      box-shadow: 0 18px 42px rgba(18, 140, 126, .34);
-      font-weight: 800;
-      transition: transform .2s ease, box-shadow .2s ease;
-    }
-
-    .whatsapp-float:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 24px 52px rgba(18, 140, 126, .42);
-    }
-
-    .whatsapp-float svg {
-      width: 30px;
-      height: 30px;
-      flex: 0 0 auto;
-    }
-
-    .whatsapp-float span {
-      line-height: 1.1;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 980px) {
-      .nav-links { display: none; }
-      .mobile-menu { display: inline-flex; }
-      .hero-grid,
-      .split,
-      .console-grid,
-      .quality-grid,
-      .supplier-wrap,
-      .rfq-wrap {
-        grid-template-columns: 1fr;
-      }
-      .market-panel { max-width: 620px; }
-      .next-strip,
-      .lot-grid,
-      .trade-grid,
-      .workflow-grid,
-      .insight-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .market-tools { grid-template-columns: repeat(2, 1fr); }
-      .desk-console { grid-template-columns: 1fr; }
-      .section-head {
-        display: grid;
-      }
-    }
-
-    @media (max-width: 680px) {
-      .shell { width: min(100% - 22px, 1180px); }
-      .nav { height: 68px; }
-      .brand { min-width: 0; gap: 8px; }
-      .brand-mark { width: 48px; height: 46px; }
-      .brand-title { font-size: .98rem; }
-      .brand-dotcom { display: none; }
-      .nav-actions .ghost-btn { display: none; }
-      .hero { min-height: auto; }
-      .hero-grid { padding: 58px 0 28px; gap: 30px; }
-      .hero h1 { font-size: clamp(2.7rem, 13vw, 4rem); }
-      .hero-actions .primary-btn,
-      .hero-actions .ghost-btn { flex: 1 1 168px; }
-      .market-panel { min-width: 0; }
-      .next-strip,
-      .lot-grid,
-      .trade-grid,
-      .workflow-grid,
-      .insight-grid,
-      .kpi-grid,
-      .market-tools,
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      .ticket-row { grid-template-columns: 1fr; gap: 8px; }
-      section { padding: 62px 0; }
-      .photo-stack { grid-template-columns: 1fr; }
-      .photo-stack img:first-child,
-      .photo-stack img:last-child { height: 320px; }
-      .footer-grid { grid-template-columns: 1fr; }
-      .footer-links { justify-content: flex-start; }
-      .whatsapp-float {
-        right: 12px;
-        bottom: 78px;
-        width: 56px;
-        height: 56px;
-        min-height: 56px;
-        padding: 0;
-        justify-content: center;
-      }
-      .whatsapp-float span { display: none; }
-    }
-  </style>
-</head>
-<body>
-  <header class="topbar">
-    <nav class="shell nav" aria-label="Primary navigation">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mandsaur Garlic | B2B Garlic Supplier</title>
+    <meta
+      name="description"
+      content="Mandsaur Garlic B2B wholesale supplier for bulk garlic, graded garlic, mandi sourcing, packaging, and dispatch enquiries."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" aria-label="Main navigation">
       <a class="brand" href="#top" aria-label="Mandsaur Garlic home">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 64 64" fill="none">
-            <path d="M32 5c3 6 3 11 0 16" stroke="#6e593e" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M28 18c-4-3-7-7-8-13 6 1 10 5 12 11" fill="#7fb342" stroke="#6e593e" stroke-width="2.6" stroke-linejoin="round"/>
-            <path d="M36 18c2-6 6-10 12-12-1 7-4 11-10 14" fill="#167149" stroke="#6e593e" stroke-width="2.6" stroke-linejoin="round"/>
-            <path d="M32 15c-8 9-17 17-17 29 0 9 7 15 17 15s17-6 17-15c0-12-9-20-17-29Z" fill="#fff7e8" stroke="#6e593e" stroke-width="3.4" stroke-linejoin="round"/>
-            <path d="M32 20v36M24 30c-4 7-6 14-4 21M40 30c4 7 6 14 4 21M27 55c3 2 7 3 10 0" stroke="#c7a978" stroke-width="2.2" stroke-linecap="round"/>
-            <path d="M18 47c5 4 9 6 14 6s10-2 14-6" stroke="#6e593e" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-        </span>
-        <span class="brand-wordmark">
-          <strong class="brand-title"><span class="soft">Mandsaur</span><span class="earth">Garlic</span></strong>
-          <span class="brand-dotcom">.com</span>
+        <span class="brand-mark">MG</span>
+        <span>
+          <strong>Mandsaur Garlic</strong>
+          <small>B2B Wholesale</small>
         </span>
       </a>
-      <div class="nav-links">
-        <a href="#dashboard">Desk</a>
-        <a href="#lots">Maal</a>
-        <a href="#quality">Quality</a>
-        <a href="#supplier">Kisan/Vyapari</a>
-        <a href="#platform">Platform</a>
-        <a href="#rfq">RFQ</a>
-      </div>
-      <div class="nav-actions">
-        <a class="ghost-btn" href="tel:+917772993222">Call / WhatsApp</a>
-        <a class="primary-btn" href="#rfq">Maal Chahiye?</a>
-        <button class="icon-btn mobile-menu" type="button" aria-label="Open menu" data-scroll="#lots">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-    </nav>
-  </header>
+      <nav class="nav-links" aria-label="Page sections">
+        <a href="#products">Products</a>
+        <a href="#process">Process</a>
+        <a href="#enquiry">Enquiry</a>
+      </nav>
+      <a class="nav-cta" data-whatsapp-link href="#" aria-label="Talk on WhatsApp">
+        <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
+        WhatsApp
+      </a>
+    </header>
 
-  <main id="top">
-    <section class="hero">
-      <div class="shell hero-grid">
-        <div>
-          <span class="eyebrow">Mandsaur mandi belt • Lahsun ka dedicated B2B network</span>
-          <h1>MandsaurGarlic.com</h1>
-          <p>Kisan, mandi vyapari aur kharidar ke liye simple platform: lahsun ka maal dekho, bhav pucho, quality check karo, packing aur transport support ke saath direct WhatsApp par baat karo.</p>
+    <main id="top">
+      <section class="hero" aria-label="Mandsaur Garlic B2B enquiry">
+        <img class="hero-image" src="assets/garlic-b2b-hero.png" alt="Fresh garlic sacks ready for bulk trade">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Mandsaur, Madhya Pradesh | मंडी से सीधा B2B Supply</p>
+          <h1>Bulk Garlic Supply for Traders, Exporters & Food Businesses</h1>
+          <p class="hero-copy">
+            Fresh Mandsaur garlic in graded lots, mandi sourcing, jute/net bag packing,
+            and dispatch support. Rate, quality aur quantity ke liye WhatsApp pe baat karo.
+          </p>
           <div class="hero-actions">
-            <a class="primary-btn" href="#rfq">Buyer Requirement Bhejo</a>
-            <a class="ghost-btn" href="#lots">Lahsun Maal Dekho</a>
+            <a class="btn primary" data-whatsapp-link href="#">
+              <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
+              WhatsApp Pe Baat Karo
+            </a>
+            <a class="btn secondary" href="#enquiry">Send B2B Enquiry</a>
           </div>
+          <dl class="hero-metrics" aria-label="Business highlights">
+            <div>
+              <dt>10kg-50kg</dt>
+              <dd>Packaging options</dd>
+            </div>
+            <div>
+              <dt>Graded</dt>
+              <dd>Size & quality sorting</dd>
+            </div>
+            <div>
+              <dt>Bulk</dt>
+              <dd>Trader-ready lots</dd>
+            </div>
+          </dl>
         </div>
-        <aside class="market-panel" aria-label="Indicative garlic trade board">
-          <div class="panel-head">
-            <strong>Mandi Bhav & Maal Board</strong>
-            <span class="status"><i class="pulse" aria-hidden="true"></i> Desk active hai</span>
-          </div>
-          <div class="rate-list">
-            <div class="rate"><div><strong>G-2 Export Super</strong><span>5.5 cm+ gathiya • tight skin</span></div><b>Demand high</b></div>
-            <div class="rate"><div><strong>Riyavan Silver</strong><span>Safed chamak • acchi teekhapann</span></div><b>Export ready</b></div>
-            <div class="rate"><div><strong>Desi A Grade</strong><span>Paste, masala, hotel supply</span></div><b>Bulk maal</b></div>
-            <div class="rate"><div><strong>Beej Lahsun</strong><span>Kisan ke liye bowaai wala maal</span></div><b>Seasonal</b></div>
-          </div>
-        </aside>
-      </div>
-      <div class="shell next-strip" aria-label="Platform highlights">
-        <div><strong>10K+</strong><span>MT lahsun supply visibility Mandsaur-Neemuch belt se</span></div>
-        <div><strong>24h</strong><span>Buyer requirement aur supplier matching</span></div>
-        <div><strong>4-way</strong><span>Quality, grade, packing, transport check</span></div>
-        <div><strong>Desh + Export</strong><span>India, Gulf, processor aur mandi demand</span></div>
-      </div>
-    </section>
+      </section>
 
-    <div class="partner-band">
-      <div class="shell partner-track">
-        <strong>Ek crop. Ek origin. Lahsun ke liye dedicated platform.</strong>
-        <span>Kisan</span>
-        <span>Mandi Vyapari</span>
-        <span>Exporter</span>
-        <span>Processor</span>
-        <span>Transport</span>
-      </div>
-    </div>
-
-    <section id="dashboard" class="console-section">
-      <div class="shell console-grid">
-        <div class="command-panel">
-          <span class="eyebrow">Mandi desk / kaam ka dashboard</span>
-          <h2>Buyer, kisan, vyapari aur transport ka kaam ek jagah.</h2>
-          <p>Yeh sirf contact form nahi hai. Yahan daily maal, buyer demand, quality check, packing, loading aur WhatsApp follow-up ek simple desk flow mein dikhaya gaya hai.</p>
-          <div class="kpi-grid">
-            <div class="kpi"><strong>148</strong><span>Active buyer requirement: wholesale, export, processing aur beej demand</span></div>
-            <div class="kpi"><strong>63</strong><span>Verified supplier lots: Mandsaur origin se ready maal</span></div>
-            <div class="kpi"><strong>12</strong><span>Quote, sample, loading aur dispatch se pehle quality points</span></div>
-            <div class="kpi"><strong>7</strong><span>Truck, ICD, port aur export route support</span></div>
-          </div>
-        </div>
-        <div class="trade-ticket" aria-label="Buyer RFQ pipeline">
-          <div class="panel-head">
-            <strong>Live Buyer Demand</strong>
-            <span class="status"><i class="pulse" aria-hidden="true"></i> Matching chal raha hai</span>
-          </div>
-          <div class="ticket-row"><div><strong>Dubai buyer ko G-2 Super chahiye</strong><small>25 MT, carton pack, Mundra route, quote se pehle sample</small></div><span class="ticket-pill">Export</span><b>Hot</b></div>
-          <div class="ticket-row"><div><strong>Indore factory ko Desi A Grade chahiye</strong><small>40 MT monthly, loose bag, paste factory delivery</small></div><span class="ticket-pill">Processing</span><b>Open</b></div>
-          <div class="ticket-row"><div><strong>Jaipur wholesaler ko Riyavan Silver chahiye</strong><small>12 MT, 20 kg mesh bag, 48 ghante mein truck dispatch</small></div><span class="ticket-pill">Wholesale</span><b>Matched</b></div>
-          <div class="ticket-row"><div><strong>Kisan ko bowaai wala beej lahsun chahiye</strong><small>8 MT, farmer-grade sorting, season booking</small></div><span class="ticket-pill">Beej</span><b>New</b></div>
-        </div>
-      </div>
-      <div class="desk-console" aria-label="Captured platform records">
-        <section class="desk-box" aria-labelledby="rfqInboxTitle">
-          <header><strong id="rfqInboxTitle">Buyer Requirement Aayi</strong><span class="desk-count" id="rfqCount">0</span></header>
-          <div class="desk-list" id="rfqList"><div class="desk-empty">Abhi buyer requirement nahi aayi. Neeche RFQ form bharne par yahan record dikhega.</div></div>
-        </section>
-        <section class="desk-box" aria-labelledby="supplierInboxTitle">
-          <header><strong id="supplierInboxTitle">Kisan/Vyapari Leads</strong><span class="desk-count" id="supplierCount">0</span></header>
-          <div class="desk-list" id="supplierList"><div class="desk-empty">Abhi supplier lead nahi aayi. Kisan/Vyapari form bharne par yahan record dikhega.</div></div>
-        </section>
-      </div>
-    </section>
-
-    <section id="lots">
-      <div class="shell">
+      <section class="intro band">
         <div class="section-head">
-          <h2>Lahsun ka maal seedha compare karo.</h2>
-          <p>Buyer ko gathiya size, nami, packing, dispatch aur use ke hisab se maal samajh aaye. Kisan/Vyapari apna lot clear details ke saath dikha sake.</p>
+          <p class="eyebrow">Why Mandsaur Garlic</p>
+          <h2>Hindi + English B2B communication, simple buying process.</h2>
         </div>
-        <div class="market-tools" aria-label="Marketplace filters">
-          <label>Grade / Quality<select id="gradeFilter"><option value="all">Sab grade</option><option value="export">Export maal</option><option value="processing">Factory / processing</option><option value="seed">Beej lahsun</option></select></label>
-          <label>Destination<select><option>India domestic</option><option>Gulf export</option><option>Southeast Asia</option><option>Factory / processor</option></select></label>
-          <label>Quantity / Matra<input placeholder="Example: 25 MT"></label>
-          <label>Dispatch<select><option>Abhi ready</option><option>24-48 ghante</option><option>Is hafte</option><option>Season booking</option></select></label>
-        </div>
-        <div class="lot-grid">
-          <article class="lot-card" data-grade="export">
-            <img src="https://www.mandsaurmandibhav.in/garlic/mandsaur-mandi-g2-garlic-fresh.webp" alt="Fresh G-2 export garlic bulbs from Mandsaur mandi">
-            <div class="lot-body">
-              <h3>G-2 Export Super</h3>
-              <div class="specs">
-                <div><span>Bulb</span><strong>5.5-6.5 cm</strong></div>
-                <div><span>Moisture</span><strong>62-64%</strong></div>
-                <div><span>Pack</span><strong>Mesh / carton</strong></div>
-              </div>
-              <div class="tag-row"><span class="tag">UAE</span><span class="tag">Saudi</span><span class="tag">Premium retail</span></div>
-              <div class="lot-actions"><button class="ghost-btn lot-rfq" type="button" data-lot="G-2 Export Super">Add to RFQ</button><a class="primary-btn" href="#rfq">Quote</a></div>
-            </div>
+        <div class="intro-grid">
+          <article>
+            <span class="mini-icon" aria-hidden="true"></span>
+            <h3>Direct Mandi Sourcing</h3>
+            <p>मंदसौर मंडी से fresh garlic sourcing, daily availability aur rate discussion.</p>
           </article>
-          <article class="lot-card" data-grade="export">
-            <img src="https://www.mandsaurmandibhav.in/garlic/mandsaur-mandi-riyavan-silver-garlic.webp" alt="Riyavan Silver garlic bulbs from Mandsaur mandi">
-            <div class="lot-body">
-              <h3>Riyavan Silver</h3>
-              <div class="specs">
-                <div><span>Bulb</span><strong>5-5.5 cm</strong></div>
-                <div><span>Moisture</span><strong>64-66%</strong></div>
-                <div><span>Pack</span><strong>10 / 20 kg</strong></div>
-              </div>
-              <div class="tag-row"><span class="tag">Qatar</span><span class="tag">Oman</span><span class="tag">Institutions</span></div>
-              <div class="lot-actions"><button class="ghost-btn lot-rfq" type="button" data-lot="Riyavan Silver">Add to RFQ</button><a class="primary-btn" href="#rfq">Quote</a></div>
-            </div>
+          <article>
+            <span class="mini-icon" aria-hidden="true"></span>
+            <h3>Bulk Buyer Focus</h3>
+            <p>Traders, wholesalers, exporters, processors, hotels aur food brands ke liye lots.</p>
           </article>
-          <article class="lot-card" data-grade="processing">
-            <img src="https://www.mandsaurmandibhav.in/garlic/mandsaur-mandi-desi-garlic.webp" alt="Desi A grade garlic bulbs for wholesale processing">
-            <div class="lot-body">
-              <h3>Desi A Grade</h3>
-              <div class="specs">
-                <div><span>Bulb</span><strong>4.5-5 cm</strong></div>
-                <div><span>Moisture</span><strong>66-68%</strong></div>
-                <div><span>Pack</span><strong>Loose / bag</strong></div>
-              </div>
-              <div class="tag-row"><span class="tag">Paste</span><span class="tag">Spice</span><span class="tag">HoReCa</span></div>
-              <div class="lot-actions"><button class="ghost-btn lot-rfq" type="button" data-lot="Desi A Grade">Add to RFQ</button><a class="primary-btn" href="#rfq">Quote</a></div>
-            </div>
-          </article>
-          <article class="lot-card" data-grade="seed">
-            <img src="https://www.mandsaurmandibhav.in/garlic/mandsaur-mandi-garlic-08.webp" alt="Seed garlic bulbs from Mandsaur mandi">
-            <div class="lot-body">
-              <h3>Seed Garlic</h3>
-              <div class="specs">
-                <div><span>Bulb</span><strong>3.5-4 cm</strong></div>
-                <div><span>Moisture</span><strong>67-69%</strong></div>
-                <div><span>Use</span><strong>Replanting</strong></div>
-              </div>
-              <div class="tag-row"><span class="tag">Farmers</span><span class="tag">Agri inputs</span><span class="tag">Seasonal</span></div>
-              <div class="lot-actions"><button class="ghost-btn lot-rfq" type="button" data-lot="Seed Garlic">Add to RFQ</button><a class="primary-btn" href="#rfq">Quote</a></div>
-            </div>
+          <article>
+            <span class="mini-icon" aria-hidden="true"></span>
+            <h3>Dispatch Support</h3>
+            <p>Packaging, loading, transport coordination aur buyer location ke hisab se planning.</p>
           </article>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <div class="shell">
+      <section id="products" class="products">
         <div class="section-head">
-          <h2>Requirement se dispatch tak simple process.</h2>
-          <p>Buyer aur seller dono ko clear path milta hai: pehle demand, phir maal matching, quality check, aur last mein loading/transport.</p>
+          <p class="eyebrow">Products | प्रोडक्ट</p>
+          <h2>Garlic lots for wholesale and commercial buying.</h2>
         </div>
-        <div class="workflow-grid">
-          <article class="workflow-card"><div><b>1</b><h3>Demand bhejo</h3><p>Buyer grade, matra, destination, packing aur delivery time batata hai.</p></div><span class="tag">Buyer desk</span></article>
-          <article class="workflow-card"><div><b>2</b><h3>Maal matching</h3><p>Desk size, nami, stock, photo aur loading readiness ke hisab se supplier lot match karta hai.</p></div><span class="tag">Mandi desk</span></article>
-          <article class="workflow-card"><div><b>3</b><h3>Quality pakki</h3><p>Sample, wastage, packing aur dispatch terms deal se pehle confirm hote hain.</p></div><span class="tag">QC check</span></article>
-          <article class="workflow-card"><div><b>4</b><h3>Truck / dispatch</h3><p>Truck, cold store, port, document aur WhatsApp update ek hi flow mein manage hota hai.</p></div><span class="tag">Transport</span></article>
+        <div class="product-grid">
+          <article class="product-card">
+            <p class="tag">Fresh Garlic</p>
+            <h3>Whole Garlic Bulbs</h3>
+            <p>Clean, dry, market-ready garlic bulbs for traders and retailers.</p>
+            <span>Size: Small / Medium / Large</span>
+          </article>
+          <article class="product-card">
+            <p class="tag">Sorted Lots</p>
+            <h3>Graded Garlic</h3>
+            <p>Buyer requirement ke according size sorting and quality separation.</p>
+            <span>Use: Exporters, processors, wholesalers</span>
+          </article>
+          <article class="product-card">
+            <p class="tag">Packing</p>
+            <h3>Jute & Net Bags</h3>
+            <p>Bulk packing options for transport, storage and mandi trade.</p>
+            <span>Options: 10kg, 20kg, 25kg, 50kg</span>
+          </article>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="quality" class="dark-section">
-      <div class="shell">
+      <section id="process" class="process band">
         <div class="section-head">
-          <h2>Payment se pehle quality clear honi chahiye.</h2>
-          <p>Lahsun trade mein confusion tab hota hai jab size, nami, packing aur wastage clear nahi hota. Yahan sab points simple table mein dikhte hain.</p>
+          <p class="eyebrow">Buying Process | खरीद प्रक्रिया</p>
+          <h2>Inquiry se dispatch tak clear B2B workflow.</h2>
         </div>
-        <div class="quality-grid">
-          <div class="quality-card">
-            <table class="quality-table">
-              <thead><tr><th>Check point</th><th>Kya check hoga</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td>Gathiya size</td><td>3.5 cm beej, 4.5 cm factory, 5.5 cm+ export lot</td><td>Measure</td></tr>
-                <tr><td>Nami / moisture</td><td>Nami, skin tightness, sprouting risk, storage readiness</td><td>Jaruri</td></tr>
-                <tr><td>Dekhne ki quality</td><td>Color, tuti gathiya, mitti, skin, kaliyan, wastage</td><td>Photo proof</td></tr>
-                <tr><td>Packing</td><td>Mesh bag, loose bag, carton, buyer label, export mark</td><td>Confirm</td></tr>
-                <tr><td>Dispatch</td><td>Loading date, wajan, truck route, bill/document</td><td>Track</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="quality-card supplier-card">
-            <h3>Inspection pack</h3>
-            <p class="muted">Har serious lot ke liye photo, short video, grade sheet, supplier detail, loading weight aur dispatch commitment collect ho sakta hai.</p>
-            <ul class="check-list">
-              <li>Mandi ya godown se lot photo</li>
-              <li>Bulk quote se pehle sample approval</li>
-              <li>Nami aur size declaration</li>
-              <li>Buyer ke hisab se packing confirmation</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
+        <ol class="steps">
+          <li>
+            <strong>1. Requirement Share Karein</strong>
+            <span>Quantity, size, packing, delivery city aur buyer type WhatsApp par bhejein.</span>
+          </li>
+          <li>
+            <strong>2. Rate & Quality Confirm</strong>
+            <span>Current mandi rate, available lot, photos/video and packing details share honge.</span>
+          </li>
+          <li>
+            <strong>3. Loading & Dispatch</strong>
+            <span>Payment terms, transport and loading schedule final karke maal dispatch hoga.</span>
+          </li>
+        </ol>
+      </section>
 
-    <section id="supplier" class="supplier-section">
-      <div class="shell supplier-wrap">
-        <div>
-          <span class="eyebrow">Kisan / Vyapari registration</span>
-          <div class="section-head" style="display:block;margin:18px 0 0">
-            <h2>Apna lahsun maal upload karo, buyer lead pao.</h2>
-            <p style="margin-top:18px">Kisan, mandi vyapari, commission agent, aggregator, cold store aur pack house apna lot photo, grade, matra aur dispatch capacity ke saath desk par register kar sakte hain.</p>
+      <section id="enquiry" class="enquiry">
+        <div class="enquiry-copy">
+          <p class="eyebrow">WhatsApp Pe Baat Karo Format</p>
+          <h2>Send a clean B2B garlic enquiry in one tap.</h2>
+          <p>
+            Form bharte hi WhatsApp message ready ho jayega. Isse rate, availability,
+            packing aur dispatch details jaldi confirm ho sakte hain.
+          </p>
+          <div class="contact-strip">
+            <strong>mandsaurgarlic.com</strong>
+            <span>Wholesale | Export | Processing | Trading</span>
           </div>
-          <ul class="check-list">
-            <li>Daily lot upload: grade, size, nami, packing aur photo</li>
-            <li>Destination aur matra ke hisab se buyer matching</li>
-            <li>WhatsApp par fast quote request aur follow-up</li>
-            <li>Domestic aur export shipment support Mandsaur se</li>
-          </ul>
         </div>
-        <form class="rfq-form supplier-card" id="supplierForm">
-          <div class="form-grid">
-            <label>Kisan / Vyapari naam<input name="supplierName" required placeholder="Naam / firm / company"></label>
-            <label>WhatsApp<input name="supplierPhone" required placeholder="+91"></label>
-            <label>Aap kaun hain?<select name="supplierType"><option>Kisan</option><option>Mandi vyapari</option><option>Commission agent</option><option>Aggregator</option><option>Cold store / pack house</option></select></label>
-            <label>Kitna maal hai?<input name="supplierQty" placeholder="Example: 10 MT"></label>
-            <label>Main grade<select name="supplierGrade"><option>G-2 Export Super</option><option>Riyavan Silver</option><option>Desi A Grade</option><option>Beej Lahsun</option><option>Mixed lots</option></select></label>
-            <label>Location<input name="supplierLocation" placeholder="Mandsaur / gaon / mandi"></label>
-            <textarea name="supplierNotes" placeholder="Size, nami, packing, maal kab ready hai, photo available hai ya nahi, dispatch capacity"></textarea>
-          </div>
-          <button class="primary-btn" type="submit">Maal Register Karo</button>
+
+        <form class="enquiry-form" id="enquiryForm">
+          <label>
+            Buyer Type
+            <select id="buyerType" required>
+              <option value="Wholesaler / Trader">Wholesaler / Trader</option>
+              <option value="Exporter">Exporter</option>
+              <option value="Food Processor">Food Processor</option>
+              <option value="Hotel / Restaurant Supplier">Hotel / Restaurant Supplier</option>
+              <option value="Retail Chain">Retail Chain</option>
+            </select>
+          </label>
+
+          <label>
+            Required Quantity
+            <input id="quantity" type="text" placeholder="Example: 5 ton / 200 bags" required>
+          </label>
+
+          <label>
+            Garlic Requirement
+            <select id="requirement" required>
+              <option value="Fresh whole garlic">Fresh whole garlic</option>
+              <option value="Graded garlic">Graded garlic</option>
+              <option value="Large size garlic">Large size garlic</option>
+              <option value="Medium size garlic">Medium size garlic</option>
+              <option value="Custom packing garlic">Custom packing garlic</option>
+            </select>
+          </label>
+
+          <label>
+            Delivery Location
+            <input id="location" type="text" placeholder="City, State / Port" required>
+          </label>
+
+          <label>
+            Name / Company
+            <input id="name" type="text" placeholder="Your name or company">
+          </label>
+
+          <button class="btn primary full" type="submit">
+            <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
+            Open WhatsApp Enquiry
+          </button>
+          <p class="form-note">Note: WhatsApp number script.js me update karein.</p>
         </form>
-      </div>
-    </section>
+      </section>
+    </main>
 
-    <section id="platform" style="background:#f2f6f3">
-      <div class="shell split">
-        <div class="photo-stack" aria-label="Mandsaur garlic market photos">
-          <img src="https://pub-96fc23e925cc43ea97c90df889f8d99c.r2.dev/mandsaur-mandi.jpg" alt="Mandsaur mandi garlic trading floor with bags">
-          <img src="https://www.mandsaurmandibhav.in/garlic/mandsaur-mandi-g2-garlic-fresh.webp" alt="Close up of fresh Mandsaur garlic bulbs">
-        </div>
-        <div>
-          <div class="section-head" style="display:block;margin-bottom:24px">
-            <h2>Lahsun trade ke liye simple control room.</h2>
-            <p style="margin-top:18px">Yeh platform onion, grain aur dusre maal ka noise mix nahi karta. Sirf lahsun procurement, quality, packing aur shipment par focus hai.</p>
-          </div>
-          <div class="system-list">
-            <article class="system-item">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M6 12h12M8 17h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              <div><h3>Grade ke hisab se maal</h3><p>Buyer size, nami, variety, packing, destination aur use ke hisab se lot filter kar sakta hai.</p></div>
-            </article>
-            <article class="system-item">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 4v5c0 4.5-2.8 7.5-7 9-4.2-1.5-7-4.5-7-9V7l7-4Z" stroke="currentColor" stroke-width="2"/><path d="m8.5 12 2.2 2.2 4.8-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <div><h3>Verification / bharosa</h3><p>Supplier detail, lot photo, mandi link, packing commitment, sample check aur loading readiness deal se pehle capture hota hai.</p></div>
-            </article>
-            <article class="system-item">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h11v10H3V7Zm11 3h4l3 3v4h-7v-7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="currentColor"/></svg>
-              <div><h3>Transport support</h3><p>Mandsaur pickup, cold storage, loading, container planning, domestic truck route aur export document partner support.</p></div>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
+    <footer class="site-footer">
+      <p>© 2026 Mandsaur Garlic. B2B garlic wholesale and sourcing.</p>
+      <a class="footer-whatsapp" data-whatsapp-link href="#">
+        <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
+        WhatsApp Pe Baat Karo
+      </a>
+    </footer>
 
-    <section id="trade" class="dark-section">
-      <div class="shell">
-        <div class="section-head">
-          <h2>Teen desk: Buyer, Kisan/Vyapari, Export.</h2>
-          <p>Platform ko day one se useful banaya gaya hai: buyer demand, supplier maal, aur dispatch follow-up ek flow mein.</p>
-        </div>
-        <div class="trade-grid">
-          <article class="trade-card">
-            <div>
-              <h3>Buyer Desk</h3>
-              <p>Wholesaler, exporter, factory, retail aur hotel supply buyer ke liye reliable Mandsaur origin sourcing.</p>
-              <ul><li>Requirement bhejo</li><li>Maal compare karo</li><li>Sample aur inspection</li></ul>
-            </div>
-          </article>
-          <article class="trade-card">
-            <div>
-              <h3>Kisan/Vyapari Desk</h3>
-              <p>Kisan, mandi vyapari, aggregator, cold store aur pack house apna verified lahsun lot dikha sakte hain.</p>
-              <ul><li>Daily lot upload</li><li>Grade sheet</li><li>Buyer lead matching</li></ul>
-            </div>
-          </article>
-          <article class="trade-card">
-            <div>
-              <h3>Export Desk</h3>
-              <p>Export packing, fumigation, route coordination aur document checklist ke liye desk support.</p>
-              <ul><li>GCC / SEA market</li><li>Container planning</li><li>Document checklist</li></ul>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
+    <a class="floating-whatsapp" data-whatsapp-link href="#" aria-label="Open WhatsApp enquiry">
+      <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
+      <strong>WhatsApp</strong>
+    </a>
 
-    <section>
-      <div class="shell">
-        <div class="section-head">
-          <h2>Mandsaur lahsun alag pehchan kyu rakhta hai?</h2>
-          <p>Mandsaur-Neemuch belt mein lahsun arrival strong hai, varieties known hain, teekhapann accha hai, aur bhav par India bhar ke buyers nazar rakhte hain.</p>
-        </div>
-        <div class="insight-grid">
-          <article class="insight"><h3>Origin ka bharosa</h3><p>Marketplace Mandsaur-Neemuch belt par focused hai, random India-wide listing par nahi.</p></article>
-          <article class="insight"><h3>Grade clear</h3><p>Size, nami, kaliyan, skin, packing, wastage aur market use clear card mein dikhta hai.</p></article>
-          <article class="insight"><h3>Fast trade</h3><p>Buyer demand ko available lot aur transport window se jaldi match kiya ja sakta hai.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section id="rfq" class="rfq-section">
-      <div class="shell rfq-wrap">
-        <div class="rfq-copy">
-          <span class="eyebrow">Buyer requirement / maal chahiye</span>
-          <h2>Aapko lahsun chahiye? Requirement bhejo.</h2>
-          <p>Form bharte hi desk ko buyer requirement milti hai. Isko WhatsApp, CRM, email ya full marketplace dashboard se connect kiya ja sakta hai.</p>
-        </div>
-        <form class="rfq-form" id="rfqForm">
-          <div class="form-grid">
-            <label>Buyer naam<input name="name" required placeholder="Company / naam"></label>
-            <label>Phone / WhatsApp<input name="phone" required placeholder="+91"></label>
-            <label>Buyer type<select name="type"><option>Wholesaler</option><option>Exporter</option><option>Factory / processor</option><option>Retail chain</option><option>Kisan / beej buyer</option></select></label>
-            <label>Kaunsa grade chahiye?<select name="grade"><option>G-2 Export Super</option><option>Riyavan Silver</option><option>Desi A Grade</option><option>Beej Lahsun</option><option>Mixed lots</option></select></label>
-            <label>Kitna maal chahiye?<input name="quantity" placeholder="Example: 25 MT"></label>
-            <label>Kahan chahiye?<input name="destination" placeholder="City / port / country"></label>
-            <textarea name="notes" placeholder="Packing, nami, delivery time, payment preference, inspection notes"></textarea>
-          </div>
-          <button class="primary-btn" type="submit">Requirement Bhejo</button>
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="shell footer-grid">
-      <div>
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 64 64" fill="none"><path d="M32 5c3 6 3 11 0 16" stroke="#6e593e" stroke-width="3.2" stroke-linecap="round"/><path d="M28 18c-4-3-7-7-8-13 6 1 10 5 12 11" fill="#7fb342" stroke="#6e593e" stroke-width="2.6" stroke-linejoin="round"/><path d="M36 18c2-6 6-10 12-12-1 7-4 11-10 14" fill="#167149" stroke="#6e593e" stroke-width="2.6" stroke-linejoin="round"/><path d="M32 15c-8 9-17 17-17 29 0 9 7 15 17 15s17-6 17-15c0-12-9-20-17-29Z" fill="#fff7e8" stroke="#6e593e" stroke-width="3.4" stroke-linejoin="round"/><path d="M32 20v36M24 30c-4 7-6 14-4 21M40 30c4 7 6 14 4 21M27 55c3 2 7 3 10 0" stroke="#c7a978" stroke-width="2.2" stroke-linecap="round"/><path d="M18 47c5 4 9 6 14 6s10-2 14-6" stroke="#6e593e" stroke-width="2.2" stroke-linecap="round"/></svg>
-          </span>
-          <span class="brand-wordmark"><strong class="brand-title"><span class="soft">Mandsaur</span><span class="earth">Garlic</span></strong><span class="brand-dotcom">.com</span></span>
-        </div>
-        <p>Mandsaur origin lahsun ke liye buyer, kisan, vyapari, exporter, processor aur transport partner ko connect karne wala simple B2B platform.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#dashboard">Dashboard</a>
-        <a href="#lots">Lots</a>
-        <a href="#quality">Quality</a>
-        <a href="#supplier">Supplier</a>
-        <a href="#platform">Platform</a>
-        <a href="#rfq">RFQ</a>
-      </div>
-    </div>
-  </footer>
-
-  <a
-    class="whatsapp-float"
-    href="https://wa.me/917772993222?text=Namaste%20MandsaurGarlic.com%2C%20mujhe%20Mandsaur%20lahsun%20ka%20maal%20chahiye.%20Kripya%20available%20lot%2C%20bhav%2C%20packing%20aur%20dispatch%20detail%20share%20karein."
-    target="_blank"
-    rel="noopener"
-    aria-label="Chat on WhatsApp for Mandsaur garlic B2B inquiry"
-  >
-    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path d="M16.02 3.2C8.98 3.2 3.24 8.86 3.24 15.82c0 2.36.66 4.58 1.82 6.47L3.2 28.8l6.72-1.76a12.9 12.9 0 0 0 6.1 1.56c7.04 0 12.78-5.66 12.78-12.64S23.06 3.2 16.02 3.2Z" fill="white"/>
-      <path d="M23.48 19.68c-.34.95-1.7 1.74-2.72 1.97-.72.15-1.66.28-4.82-1.03-4.04-1.67-6.64-5.78-6.84-6.05-.2-.27-1.64-2.18-1.64-4.16s1.04-2.95 1.41-3.36c.34-.37.75-.47 1-.47h.72c.22.01.54-.08.84.64.32.77 1.08 2.64 1.17 2.83.09.19.15.43.03.7-.11.27-.17.43-.35.66-.17.22-.37.49-.52.66-.17.2-.35.41-.15.78.2.37.89 1.47 1.92 2.38 1.32 1.18 2.43 1.55 2.8 1.74.37.18.58.15.8-.09.22-.26.92-1.08 1.17-1.45.25-.37.49-.31.84-.18.34.12 2.17 1.02 2.54 1.2.37.19.62.28.71.43.1.17.1.98-.24 1.93Z" fill="#25d366"/>
-    </svg>
-    <span>WhatsApp</span>
-  </a>
-
-  <div class="toast" id="toast" role="status" aria-live="polite">Requirement save ho gayi. WhatsApp message ready hai.</div>
-
-  <script>
-    const form = document.querySelector("#rfqForm");
-    const supplierForm = document.querySelector("#supplierForm");
-    const toast = document.querySelector("#toast");
-    const menu = document.querySelector("[data-scroll]");
-    const gradeFilter = document.querySelector("#gradeFilter");
-    const whatsapp = document.querySelector(".whatsapp-float");
-    const lotButtons = document.querySelectorAll(".lot-rfq");
-    const rfqCount = document.querySelector("#rfqCount");
-    const supplierCount = document.querySelector("#supplierCount");
-    const rfqList = document.querySelector("#rfqList");
-    const supplierList = document.querySelector("#supplierList");
-
-    const showToast = (message) => {
-      toast.textContent = message;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 3200);
-    };
-
-    const setWhatsAppMessage = (message) => {
-      whatsapp.href = `https://wa.me/917772993222?text=${encodeURIComponent(message)}`;
-    };
-
-    const recordHtml = (title, details) => `
-      <div class="desk-record">
-        <strong>${title}</strong>
-        <span>${details}</span>
-      </div>
-    `;
-
-    const renderDesk = () => {
-      const rfqs = JSON.parse(localStorage.getItem("mandsaurGarlicRfqs") || "[]");
-      const suppliers = JSON.parse(localStorage.getItem("mandsaurGarlicSuppliers") || "[]");
-
-      rfqCount.textContent = rfqs.length;
-      supplierCount.textContent = suppliers.length;
-
-      rfqList.innerHTML = rfqs.length
-        ? rfqs.slice(-4).reverse().map((item) => recordHtml(
-            `${item.grade || "Garlic"} - ${item.quantity || "Quantity open"}`,
-            `${item.name || "Buyer"} | ${item.destination || "Destination open"} | ${item.phone || "Phone open"}`
-          )).join("")
-        : `<div class="desk-empty">Abhi buyer requirement nahi aayi. Neeche RFQ form bharne par yahan record dikhega.</div>`;
-
-      supplierList.innerHTML = suppliers.length
-        ? suppliers.slice(-4).reverse().map((item) => recordHtml(
-            `${item.supplierGrade || "Garlic lot"} - ${item.supplierQty || "Quantity open"}`,
-            `${item.supplierName || "Supplier"} | ${item.supplierType || "Type open"} | ${item.supplierLocation || "Location open"}`
-          )).join("")
-        : `<div class="desk-empty">Abhi supplier lead nahi aayi. Kisan/Vyapari form bharne par yahan record dikhega.</div>`;
-    };
-
-    gradeFilter.addEventListener("change", () => {
-      const value = gradeFilter.value;
-      document.querySelectorAll(".lot-card[data-grade]").forEach((card) => {
-        card.style.display = value === "all" || card.dataset.grade === value ? "" : "none";
-      });
-    });
-
-    lotButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const gradeSelect = form.elements.grade;
-        const lot = button.dataset.lot;
-        [...gradeSelect.options].forEach((option) => {
-          option.selected = option.textContent === lot;
-        });
-        document.querySelector("#rfq").scrollIntoView({ behavior: "smooth" });
-        setWhatsAppMessage(`Namaste MandsaurGarlic.com, mujhe ${lot} ka bhav chahiye. Available maal, rate, packing, photo aur dispatch time share karein.`);
-        showToast(`${lot} RFQ mein add ho gaya. WhatsApp message ready hai.`);
-      });
-    });
-
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      const rfqs = JSON.parse(localStorage.getItem("mandsaurGarlicRfqs") || "[]");
-      rfqs.push({ ...data, createdAt: new Date().toISOString() });
-      localStorage.setItem("mandsaurGarlicRfqs", JSON.stringify(rfqs));
-      setWhatsAppMessage(`Namaste MandsaurGarlic.com, buyer requirement: ${data.grade}, matra ${data.quantity || "not specified"}, destination ${data.destination || "not specified"}. Buyer: ${data.name}, phone: ${data.phone}. Notes: ${data.notes || "none"}`);
-      renderDesk();
-      showToast("Buyer requirement save ho gayi. WhatsApp message ready hai.");
-      form.reset();
-    });
-
-    supplierForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const data = Object.fromEntries(new FormData(supplierForm).entries());
-      const suppliers = JSON.parse(localStorage.getItem("mandsaurGarlicSuppliers") || "[]");
-      suppliers.push({ ...data, createdAt: new Date().toISOString() });
-      localStorage.setItem("mandsaurGarlicSuppliers", JSON.stringify(suppliers));
-      setWhatsAppMessage(`Namaste MandsaurGarlic.com, main lahsun supplier ke roop mein judna chahta hoon. Naam: ${data.supplierName}, phone: ${data.supplierPhone}, type: ${data.supplierType}, quantity: ${data.supplierQty || "not specified"}, grade: ${data.supplierGrade}, location: ${data.supplierLocation || "not specified"}.`);
-      renderDesk();
-      showToast("Kisan/Vyapari profile save ho gayi. WhatsApp message ready hai.");
-      supplierForm.reset();
-    });
-
-    menu.addEventListener("click", () => {
-      document.querySelector(menu.dataset.scroll).scrollIntoView({ behavior: "smooth" });
-    });
-
-    renderDesk();
-  </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
