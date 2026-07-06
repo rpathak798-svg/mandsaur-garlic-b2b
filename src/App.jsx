@@ -1,217 +1,154 @@
-
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mandsaur Garlic | B2B Garlic Supplier</title>
-    <meta
-      name="description"
-      content="Mandsaur Garlic B2B wholesale supplier for bulk garlic, graded garlic, mandi sourcing, packaging, and dispatch enquiries."
-    >
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <header class="site-header" aria-label="Main navigation">
-      <a class="brand" href="#top" aria-label="Mandsaur Garlic home">
-        <span class="brand-mark">MG</span>
-        <span>
-          <strong>Mandsaur Garlic</strong>
-          <small>B2B Wholesale</small>
-        </span>
-      </a>
-      <nav class="nav-links" aria-label="Page sections">
-        <a href="#products">Products</a>
-        <a href="#process">Process</a>
-        <a href="#enquiry">Enquiry</a>
-      </nav>
-      <a class="nav-cta" data-whatsapp-link href="#" aria-label="Talk on WhatsApp">
-        <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
-        WhatsApp
-      </a>
-    </header>
-
-    <main id="top">
-      <section class="hero" aria-label="Mandsaur Garlic B2B enquiry">
-        <img class="hero-image" src="assets/garlic-b2b-hero.png" alt="Fresh garlic sacks ready for bulk trade">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <p class="eyebrow">Mandsaur, Madhya Pradesh | मंडी से सीधा B2B Supply</p>
-          <h1>Bulk Garlic Supply for Traders, Exporters & Food Businesses</h1>
-          <p class="hero-copy">
-            Fresh Mandsaur garlic in graded lots, mandi sourcing, jute/net bag packing,
-            and dispatch support. Rate, quality aur quantity ke liye WhatsApp pe baat karo.
-          </p>
-          <div class="hero-actions">
-            <a class="btn primary" data-whatsapp-link href="#">
-              <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
-              WhatsApp Pe Baat Karo
-            </a>
-            <a class="btn secondary" href="#enquiry">Send B2B Enquiry</a>
+                <dd>Trader-ready lots</dd>
+              </div>
+            </dl>
           </div>
-          <dl class="hero-metrics" aria-label="Business highlights">
-            <div>
-              <dt>10kg-50kg</dt>
-              <dd>Packaging options</dd>
-            </div>
-            <div>
-              <dt>Graded</dt>
-              <dd>Size & quality sorting</dd>
-            </div>
-            <div>
-              <dt>Bulk</dt>
-              <dd>Trader-ready lots</dd>
-            </div>
-          </dl>
-        </div>
-      </section>
+        </section>
 
-      <section class="intro band">
-        <div class="section-head">
-          <p class="eyebrow">Why Mandsaur Garlic</p>
-          <h2>Hindi + English B2B communication, simple buying process.</h2>
-        </div>
-        <div class="intro-grid">
-          <article>
-            <span class="mini-icon" aria-hidden="true"></span>
-            <h3>Direct Mandi Sourcing</h3>
-            <p>मंदसौर मंडी से fresh garlic sourcing, daily availability aur rate discussion.</p>
-          </article>
-          <article>
-            <span class="mini-icon" aria-hidden="true"></span>
-            <h3>Bulk Buyer Focus</h3>
-            <p>Traders, wholesalers, exporters, processors, hotels aur food brands ke liye lots.</p>
-          </article>
-          <article>
-            <span class="mini-icon" aria-hidden="true"></span>
-            <h3>Dispatch Support</h3>
-            <p>Packaging, loading, transport coordination aur buyer location ke hisab se planning.</p>
-          </article>
-        </div>
-      </section>
-
-      <section id="products" class="products">
-        <div class="section-head">
-          <p class="eyebrow">Products | प्रोडक्ट</p>
-          <h2>Garlic lots for wholesale and commercial buying.</h2>
-        </div>
-        <div class="product-grid">
-          <article class="product-card">
-            <p class="tag">Fresh Garlic</p>
-            <h3>Whole Garlic Bulbs</h3>
-            <p>Clean, dry, market-ready garlic bulbs for traders and retailers.</p>
-            <span>Size: Small / Medium / Large</span>
-          </article>
-          <article class="product-card">
-            <p class="tag">Sorted Lots</p>
-            <h3>Graded Garlic</h3>
-            <p>Buyer requirement ke according size sorting and quality separation.</p>
-            <span>Use: Exporters, processors, wholesalers</span>
-          </article>
-          <article class="product-card">
-            <p class="tag">Packing</p>
-            <h3>Jute & Net Bags</h3>
-            <p>Bulk packing options for transport, storage and mandi trade.</p>
-            <span>Options: 10kg, 20kg, 25kg, 50kg</span>
-          </article>
-        </div>
-      </section>
-
-      <section id="process" class="process band">
-        <div class="section-head">
-          <p class="eyebrow">Buying Process | खरीद प्रक्रिया</p>
-          <h2>Inquiry se dispatch tak clear B2B workflow.</h2>
-        </div>
-        <ol class="steps">
-          <li>
-            <strong>1. Requirement Share Karein</strong>
-            <span>Quantity, size, packing, delivery city aur buyer type WhatsApp par bhejein.</span>
-          </li>
-          <li>
-            <strong>2. Rate & Quality Confirm</strong>
-            <span>Current mandi rate, available lot, photos/video and packing details share honge.</span>
-          </li>
-          <li>
-            <strong>3. Loading & Dispatch</strong>
-            <span>Payment terms, transport and loading schedule final karke maal dispatch hoga.</span>
-          </li>
-        </ol>
-      </section>
-
-      <section id="enquiry" class="enquiry">
-        <div class="enquiry-copy">
-          <p class="eyebrow">WhatsApp Pe Baat Karo Format</p>
-          <h2>Send a clean B2B garlic enquiry in one tap.</h2>
-          <p>
-            Form bharte hi WhatsApp message ready ho jayega. Isse rate, availability,
-            packing aur dispatch details jaldi confirm ho sakte hain.
-          </p>
-          <div class="contact-strip">
-            <strong>mandsaurgarlic.com</strong>
-            <span>Wholesale | Export | Processing | Trading</span>
+        <section className="intro band">
+          <div className="section-head">
+            <p className="eyebrow">Why Mandsaur Garlic</p>
+            <h2>Hindi + English B2B communication, simple buying process.</h2>
           </div>
-        </div>
+          <div className="intro-grid">
+            <article>
+              <span className="mini-icon" aria-hidden="true"></span>
+              <h3>Direct Mandi Sourcing</h3>
+              <p>Mandsaur mandi se fresh garlic sourcing, daily availability aur rate discussion.</p>
+            </article>
+            <article>
+              <span className="mini-icon" aria-hidden="true"></span>
+              <h3>Bulk Buyer Focus</h3>
+              <p>Traders, wholesalers, exporters, processors, hotels aur food brands ke liye lots.</p>
+            </article>
+            <article>
+              <span className="mini-icon" aria-hidden="true"></span>
+              <h3>Dispatch Support</h3>
+              <p>Packaging, loading, transport coordination aur buyer location ke hisab se planning.</p>
+            </article>
+          </div>
+        </section>
 
-        <form class="enquiry-form" id="enquiryForm">
-          <label>
-            Buyer Type
-            <select id="buyerType" required>
-              <option value="Wholesaler / Trader">Wholesaler / Trader</option>
-              <option value="Exporter">Exporter</option>
-              <option value="Food Processor">Food Processor</option>
-              <option value="Hotel / Restaurant Supplier">Hotel / Restaurant Supplier</option>
-              <option value="Retail Chain">Retail Chain</option>
-            </select>
-          </label>
+        <section id="products" className="products">
+          <div className="section-head">
+            <p className="eyebrow">Products | Product</p>
+            <h2>Garlic lots for wholesale and commercial buying.</h2>
+          </div>
+          <div className="product-grid">
+            <article className="product-card">
+              <p className="tag">Fresh Garlic</p>
+              <h3>Whole Garlic Bulbs</h3>
+              <p>Clean, dry, market-ready garlic bulbs for traders and retailers.</p>
+              <span>Size: Small / Medium / Large</span>
+            </article>
+            <article className="product-card">
+              <p className="tag">Sorted Lots</p>
+              <h3>Graded Garlic</h3>
+              <p>Buyer requirement ke according size sorting and quality separation.</p>
+              <span>Use: Exporters, processors, wholesalers</span>
+            </article>
+            <article className="product-card">
+              <p className="tag">Packing</p>
+              <h3>Jute & Net Bags</h3>
+              <p>Bulk packing options for transport, storage and mandi trade.</p>
+              <span>Options: 10kg, 20kg, 25kg, 50kg</span>
+            </article>
+          </div>
+        </section>
 
-          <label>
-            Required Quantity
-            <input id="quantity" type="text" placeholder="Example: 5 ton / 200 bags" required>
-          </label>
+        <section id="process" className="process band">
+          <div className="section-head">
+            <p className="eyebrow">Buying Process | Kharid Prakriya</p>
+            <h2>Inquiry se dispatch tak clear B2B workflow.</h2>
+          </div>
+          <ol className="steps">
+            <li>
+              <strong>1. Requirement Share Karein</strong>
+              <span>Quantity, size, packing, delivery city aur buyer type WhatsApp par bhejein.</span>
+            </li>
+            <li>
+              <strong>2. Rate & Quality Confirm</strong>
+              <span>Current mandi rate, available lot, photos/video and packing details share honge.</span>
+            </li>
+            <li>
+              <strong>3. Loading & Dispatch</strong>
+              <span>Payment terms, transport and loading schedule final karke maal dispatch hoga.</span>
+            </li>
+          </ol>
+        </section>
 
-          <label>
-            Garlic Requirement
-            <select id="requirement" required>
-              <option value="Fresh whole garlic">Fresh whole garlic</option>
-              <option value="Graded garlic">Graded garlic</option>
-              <option value="Large size garlic">Large size garlic</option>
-              <option value="Medium size garlic">Medium size garlic</option>
-              <option value="Custom packing garlic">Custom packing garlic</option>
-            </select>
-          </label>
+        <section id="enquiry" className="enquiry">
+          <div className="enquiry-copy">
+            <p className="eyebrow">WhatsApp Pe Baat Karo Format</p>
+            <h2>Send a clean B2B garlic enquiry in one tap.</h2>
+            <p>
+              Form bharte hi WhatsApp message ready ho jayega. Isse rate, availability,
+              packing aur dispatch details jaldi confirm ho sakte hain.
+            </p>
+            <div className="contact-strip">
+              <strong>mandsaurgarlic.com</strong>
+              <span>Wholesale | Export | Processing | Trading</span>
+            </div>
+          </div>
 
-          <label>
-            Delivery Location
-            <input id="location" type="text" placeholder="City, State / Port" required>
-          </label>
+          <form className="enquiry-form" onSubmit={handleEnquirySubmit}>
+            <label>
+              Buyer Type
+              <select name="buyerType" required defaultValue="Wholesaler / Trader">
+                <option value="Wholesaler / Trader">Wholesaler / Trader</option>
+                <option value="Exporter">Exporter</option>
+                <option value="Food Processor">Food Processor</option>
+                <option value="Hotel / Restaurant Supplier">Hotel / Restaurant Supplier</option>
+                <option value="Retail Chain">Retail Chain</option>
+              </select>
+            </label>
 
-          <label>
-            Name / Company
-            <input id="name" type="text" placeholder="Your name or company">
-          </label>
+            <label>
+              Required Quantity
+              <input name="quantity" type="text" placeholder="Example: 5 ton / 200 bags" required />
+            </label>
 
-          <button class="btn primary full" type="submit">
-            <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
-            Open WhatsApp Enquiry
-          </button>
-          <p class="form-note">Note: WhatsApp number script.js me update karein.</p>
-        </form>
-      </section>
-    </main>
+            <label>
+              Garlic Requirement
+              <select name="requirement" required defaultValue="Fresh whole garlic">
+                <option value="Fresh whole garlic">Fresh whole garlic</option>
+                <option value="Graded garlic">Graded garlic</option>
+                <option value="Large size garlic">Large size garlic</option>
+                <option value="Medium size garlic">Medium size garlic</option>
+                <option value="Custom packing garlic">Custom packing garlic</option>
+              </select>
+            </label>
 
-    <footer class="site-footer">
-      <p>© 2026 Mandsaur Garlic. B2B garlic wholesale and sourcing.</p>
-      <a class="footer-whatsapp" data-whatsapp-link href="#">
-        <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
-        WhatsApp Pe Baat Karo
+            <label>
+              Delivery Location
+              <input name="location" type="text" placeholder="City, State / Port" required />
+            </label>
+
+            <label>
+              Name / Company
+              <input name="name" type="text" placeholder="Your name or company" />
+            </label>
+
+            <button className="btn primary full" type="submit">
+              <WhatsAppIcon />
+              Open WhatsApp Enquiry
+            </button>
+            <p className="form-note">WhatsApp number connected: +91 7772993222</p>
+          </form>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <p>© 2026 Mandsaur Garlic. B2B garlic wholesale and sourcing.</p>
+        <a className="footer-whatsapp" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon />
+          WhatsApp Pe Baat Karo
+        </a>
+      </footer>
+
+      <a className="floating-whatsapp" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp enquiry">
+        <WhatsAppIcon />
+        <strong>WhatsApp</strong>
       </a>
-    </footer>
-
-    <a class="floating-whatsapp" data-whatsapp-link href="#" aria-label="Open WhatsApp enquiry">
-      <img class="whatsapp-icon" src="assets/whatsapp-logo.svg" alt="" aria-hidden="true">
-      <strong>WhatsApp</strong>
-    </a>
-
-    <script src="script.js"></script>
-  </body>
-</html>
+    </>
+  );
+}
