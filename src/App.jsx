@@ -1,4 +1,5 @@
-                <dd>Trader-ready lots</dd>
+import "./App.css";
+<dd>Trader-ready lots</dd>
               </div>
             </dl>
           </div>
