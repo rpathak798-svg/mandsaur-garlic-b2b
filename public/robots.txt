@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://www.mandsaurgarlic.com/sitemap.xml
+
+Sitemap: https://mandsaurgarlic.com/sitemap.xml
