@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import "./App.css";
 
 const WHATSAPP_NUMBER = "917772993222";
 const whatsappIcon = "/whatsapp-logo.svg";
 const heroImage = "/garlic-b2b-hero.png";
+const mandiRateUrl = "/mandi-rate.json";
 
 const defaultMessage = [
   "Namaste Mandsaur Garlic,",
@@ -24,8 +26,71 @@ function WhatsAppIcon() {
   return <img className="whatsapp-icon" src={whatsappIcon} alt="" aria-hidden="true" />;
 }
 
+function formatPrice(value) {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "Rate pending";
+  }
+
+  return `Rs ${Math.round(value).toLocaleString("en-IN")}`;
+}
+
+function formatDate(value) {
+  if (!value) {
+    return "Update pending";
+  }
+
+  const parsed = new Date(`${value}T00:00:00+05:30`);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
 export default function App() {
   const openDefaultWhatsapp = whatsappUrl(defaultMessage);
+  const [mandiRate, setMandiRate] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch(mandiRateUrl, { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Mandi rate file not available");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        if (isMounted) {
+          setMandiRate(data);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setMandiRate(null);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const rateMessage = [
+    "Namaste Mandsaur Garlic,",
+    "Mujhe aaj ka mandi rate confirm karna hai.",
+    mandiRate?.status === "live" && mandiRate?.avgPrice
+      ? `Website par rate: Avg ${formatPrice(mandiRate.avgPrice)} / Quintal, Min ${formatPrice(mandiRate.minPrice)}, Max ${formatPrice(mandiRate.maxPrice)}.`
+      : "Website par rate update pending dikh raha hai.",
+    "",
+    "Please available quality, packing aur dispatch detail share karein."
+  ].join("\n");
 
   function handleEnquirySubmit(event) {
     event.preventDefault();
@@ -59,6 +124,7 @@ export default function App() {
           </span>
         </a>
         <nav className="nav-links" aria-label="Page sections">
+          <a href="#mandi-rate">Mandi Rate</a>
           <a href="#products">Products</a>
           <a href="#process">Process</a>
           <a href="#enquiry">Enquiry</a>
@@ -125,6 +191,49 @@ export default function App() {
               <h3>Dispatch Support</h3>
               <p>Packaging, loading, transport coordination aur buyer location ke hisab se planning.</p>
             </article>
+          </div>
+        </section>
+
+        <section id="mandi-rate" className="mandi-rate">
+          <div className="section-head">
+            <p className="eyebrow">Daily Mandsaur Mandi Rate</p>
+            <h2>Garlic mandi bhav auto update hota hai.</h2>
+            <p>
+              Source: CommodityOnline Mandsaur mandi page. Final deal se pehle quality,
+              grade aur loading ke hisab se rate WhatsApp par confirm karein.
+            </p>
+          </div>
+
+          <div className="rate-panel">
+            <div className="rate-main">
+              <span className="rate-label">Average Garlic Rate</span>
+              <strong>{formatPrice(mandiRate?.avgPrice)}</strong>
+              <small>per Quintal</small>
+            </div>
+            <dl className="rate-stats">
+              <div>
+                <dt>Min Rate</dt>
+                <dd>{formatPrice(mandiRate?.minPrice)}</dd>
+              </div>
+              <div>
+                <dt>Max Rate</dt>
+                <dd>{formatPrice(mandiRate?.maxPrice)}</dd>
+              </div>
+              <div>
+                <dt>Updated</dt>
+                <dd>{formatDate(mandiRate?.arrivalDate)}</dd>
+              </div>
+            </dl>
+            <div className="rate-source">
+              <span>{mandiRate?.status === "live" ? "Live data loaded" : "Waiting for daily update"}</span>
+              <a href={mandiRate?.sourceUrl || "https://www.commodityonline.com/hi/mandi/madhya-pradesh/mandsaur/mandsaur"} target="_blank" rel="noopener noreferrer">
+                View source
+              </a>
+            </div>
+            <a className="btn primary rate-cta" href={whatsappUrl(rateMessage)} target="_blank" rel="noopener noreferrer">
+              <WhatsAppIcon />
+              Confirm Today's Rate
+            </a>
           </div>
         </section>
 
@@ -238,7 +347,7 @@ export default function App() {
       </main>
 
       <footer className="site-footer">
-        <p>© 2026 Mandsaur Garlic. B2B garlic wholesale and sourcing.</p>
+        <p>&copy; 2026 Mandsaur Garlic. B2B garlic wholesale and sourcing.</p>
         <a className="footer-whatsapp" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer">
           <WhatsAppIcon />
           WhatsApp Pe Baat Karo
