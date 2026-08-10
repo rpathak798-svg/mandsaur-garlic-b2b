@@ -329,6 +329,21 @@ async function writeCandidate(candidate, previous) {
     note: "Auto-updated from mandi data sources. Confirm final B2B deal rate on WhatsApp before dispatch."
   };
 
+  const isSameRate =
+    previous.status === next.status &&
+    previous.minPrice === next.minPrice &&
+    previous.maxPrice === next.maxPrice &&
+    previous.avgPrice === next.avgPrice &&
+    previous.kgPrice === next.kgPrice &&
+    previous.arrivalDate === next.arrivalDate &&
+    previous.sourceName === next.sourceName &&
+    previous.sourceUrl === next.sourceUrl;
+
+  if (isSameRate) {
+    console.log(`Mandsaur garlic mandi rate already current: avg Rs ${next.avgPrice}/Quintal from ${next.sourceName}`);
+    return;
+  }
+
   await writeFile(outputPath, `${JSON.stringify(next, null, 2)}\n`);
   console.log(`Updated Mandsaur garlic mandi rate: avg Rs ${next.avgPrice}/Quintal from ${next.sourceName}`);
 }
@@ -411,14 +426,10 @@ async function main() {
   for (const warning of warnings) {
     console.error(`- ${warning}`);
   }
-  process.exit(1);
+  throw new Error("No mandi rate source returned usable data and no previous rate is available.");
 }
 
-main()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error(error.message);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error.message);
+  process.exitCode = 1;
+});

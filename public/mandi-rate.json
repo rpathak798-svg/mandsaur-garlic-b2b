@@ -5,14 +5,14 @@
   "district": "Mandsaur",
   "state": "Madhya Pradesh",
   "unit": "Quintal",
-  "minPrice": 13800,
+  "minPrice": 5753,
   "maxPrice": 13800,
   "avgPrice": 13800,
   "kgPrice": 138,
   "arrivalDate": "2026-08-10",
   "sourceName": "CommodityOnline",
-  "sourceUrl": "https://www.commodityonline.com/mandiprices/garlic/madhya-pradesh/mandsaur",
-  "updatedAtIso": "2026-08-10T17:55:20.350Z",
+  "sourceUrl": "https://www.commodityonline.com/mandi/madhya-pradesh/mandsaur/mandsaur/garlic",
+  "updatedAtIso": "2026-08-10T18:13:04.345Z",
   "previousAvgPrice": 13800,
   "note": "Auto-updated from mandi data sources. Confirm final B2B deal rate on WhatsApp before dispatch."
 }
