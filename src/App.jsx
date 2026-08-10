@@ -199,7 +199,7 @@ export default function App() {
             <p className="eyebrow">Daily Mandsaur Mandi Rate</p>
             <h2>Garlic mandi bhav auto update hota hai.</h2>
             <p>
-              Source: CommodityOnline Mandsaur mandi page. Final deal se pehle quality,
+              Source: Agmarknet and CommodityOnline mandi data. Final deal se pehle quality,
               grade aur loading ke hisab se rate WhatsApp par confirm karein.
             </p>
           </div>
@@ -226,7 +226,7 @@ export default function App() {
             </dl>
             <div className="rate-source">
               <span>{mandiRate?.status === "live" ? "Live data loaded" : "Waiting for daily update"}</span>
-              <a href={mandiRate?.sourceUrl || "https://www.commodityonline.com/hi/mandi/madhya-pradesh/mandsaur/mandsaur"} target="_blank" rel="noopener noreferrer">
+              <a href={mandiRate?.sourceUrl || "https://agmarknet.gov.in/home"} target="_blank" rel="noopener noreferrer">
                 View source
               </a>
             </div>

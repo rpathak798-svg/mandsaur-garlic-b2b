@@ -6,7 +6,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const outputPath = path.join(repoRoot, "public", "mandi-rate.json");
 
-const sources = [
+const primaryCommoditySources = [
+  "https://www.commodityonline.com/mandi/madhya-pradesh/mandsaur/mandsaur/garlic",
+  "https://www.commodityonline.com/hi/mandi/madhya-pradesh/mandsaur/mandsaur/garlic",
+  "https://www.commodityonline.com/mandi/madhya-pradesh/mandsaur/mandsaur"
+];
+
+const fallbackCommoditySources = [
   "https://www.commodityonline.com/hi/mandi/madhya-pradesh/mandsaur/mandsaur",
   "https://www.commodityonline.com/mandiprices/garlic/madhya-pradesh/mandsaur",
   "https://www.commodityonline.com/mandiprices/district/madhya-pradesh/mandsaur/garlic"
@@ -16,9 +22,45 @@ const requestHeaders = {
   "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
   "accept-language": "hi-IN,hi;q=0.9,en-IN;q=0.8,en;q=0.7",
   "cache-control": "no-cache",
+  "connection": "close",
   "pragma": "no-cache",
   "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 };
+
+const agmarknetHeaders = {
+  "accept": "application/json, text/plain, */*",
+  "connection": "close",
+  "content-type": "application/json",
+  "origin": "https://agmarknet.gov.in",
+  "referer": "https://agmarknet.gov.in/",
+  "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+};
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 20000) {
+  const controller = new AbortController();
+  let timeout;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeout = setTimeout(() => {
+      controller.abort();
+      reject(new Error(`${url} timed out after ${Math.round(timeoutMs / 1000)}s`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([fetch(url, {
+      ...options,
+      signal: controller.signal
+    }), timeoutPromise]);
+  } catch (error) {
+    if (error.name === "AbortError" || /timed out/i.test(error.message)) {
+      throw new Error(`${url} timed out after ${Math.round(timeoutMs / 1000)}s`);
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 function cleanNumber(value) {
   if (!value) {
@@ -39,6 +81,12 @@ function htmlToText(html) {
     .replace(/&#8377;|&rupee;/g, "Rs ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function todayInIndia(offsetDays = 0) {
+  const indiaNow = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+  indiaNow.setUTCDate(indiaNow.getUTCDate() - offsetDays);
+  return indiaNow.toISOString().slice(0, 10);
 }
 
 function normalizeDate(value) {
@@ -84,8 +132,13 @@ function isValidRate(candidate) {
       candidate.maxPrice >= candidate.minPrice &&
       candidate.avgPrice >= 100 &&
       candidate.avgPrice <= 100000 &&
-      candidate.arrivalDate
+      candidate.arrivalDate &&
+      candidate.sourceUrl
   );
+}
+
+function isOlderThanPrevious(candidate, previous) {
+  return Boolean(previous?.arrivalDate && candidate?.arrivalDate && candidate.arrivalDate < previous.arrivalDate);
 }
 
 function extractFromTableText(text, sourceUrl) {
@@ -149,7 +202,7 @@ function extractFromSummaryText(text, sourceUrl) {
 }
 
 async function fetchSource(sourceUrl) {
-  const response = await fetch(sourceUrl, {
+  const response = await fetchWithTimeout(sourceUrl, {
     headers: requestHeaders,
     redirect: "follow"
   });
@@ -161,6 +214,93 @@ async function fetchSource(sourceUrl) {
   return response.text();
 }
 
+async function fetchAgmarknetDailyReport(date) {
+  const response = await fetchWithTimeout("https://api.agmarknet.gov.in/v1/prices-and-arrivals/market-report/daily", {
+    method: "POST",
+    headers: agmarknetHeaders,
+    body: JSON.stringify({
+      date,
+      marketIds: [522],
+      stateIds: [19],
+      includeExcel: false
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Agmarknet ${date} returned HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+function extractFromAgmarknetReport(report, date) {
+  const rows = [];
+  const states = report.states || report.data?.states || [];
+
+  for (const state of states) {
+    for (const market of state.markets || []) {
+      if (String(market.marketId) !== "522") {
+        continue;
+      }
+
+      for (const commodity of market.commodities || []) {
+        if (String(commodity.commodityId) !== "25" && !/garlic/i.test(commodity.commodityName || "")) {
+          continue;
+        }
+
+        for (const row of commodity.data || []) {
+          const candidate = {
+            minPrice: cleanNumber(row.minimumPrice),
+            maxPrice: cleanNumber(row.maximumPrice),
+            avgPrice: cleanNumber(row.modalPrice),
+            arrivalDate: date,
+            sourceName: "Agmarknet",
+            sourceUrl: "https://agmarknet.gov.in/home"
+          };
+
+          if (isValidRate(candidate)) {
+            rows.push({
+              ...candidate,
+              variety: row.variety || "",
+              grade: row.grade || "",
+              arrivals: cleanNumber(row.arrivals) || 0
+            });
+          }
+        }
+      }
+    }
+  }
+
+  const preferred = rows.filter((row) => /^average$/i.test(row.variety));
+  const pool = preferred.length > 0 ? preferred : rows;
+
+  return pool.sort((a, b) => b.avgPrice - a.avgPrice || b.arrivals - a.arrivals)[0] || null;
+}
+
+async function fetchAgmarknetCandidate() {
+  const warnings = [];
+
+  for (let offset = 0; offset < 4; offset += 1) {
+    const date = todayInIndia(offset);
+
+    try {
+      console.log(`Checking Agmarknet daily report for ${date}`);
+      const report = await fetchAgmarknetDailyReport(date);
+      const candidate = extractFromAgmarknetReport(report, date);
+
+      if (candidate) {
+        return { candidate, warnings };
+      }
+
+      warnings.push(`Agmarknet ${date}: Garlic Mandsaur rate not found`);
+    } catch (error) {
+      warnings.push(error.message);
+    }
+  }
+
+  return { candidate: null, warnings };
+}
+
 async function readPrevious() {
   try {
     return JSON.parse(await readFile(outputPath, "utf8"));
@@ -169,11 +309,37 @@ async function readPrevious() {
   }
 }
 
+async function writeCandidate(candidate, previous) {
+  const next = {
+    status: "live",
+    commodity: "Garlic",
+    market: "Mandsaur",
+    district: "Mandsaur",
+    state: "Madhya Pradesh",
+    unit: "Quintal",
+    minPrice: candidate.minPrice,
+    maxPrice: candidate.maxPrice,
+    avgPrice: candidate.avgPrice,
+    kgPrice: Number((candidate.avgPrice / 100).toFixed(2)),
+    arrivalDate: candidate.arrivalDate,
+    sourceName: candidate.sourceName || "CommodityOnline",
+    sourceUrl: candidate.sourceUrl,
+    updatedAtIso: new Date().toISOString(),
+    previousAvgPrice: previous.avgPrice ?? null,
+    note: "Auto-updated from mandi data sources. Confirm final B2B deal rate on WhatsApp before dispatch."
+  };
+
+  await writeFile(outputPath, `${JSON.stringify(next, null, 2)}\n`);
+  console.log(`Updated Mandsaur garlic mandi rate: avg Rs ${next.avgPrice}/Quintal from ${next.sourceName}`);
+}
+
 async function main() {
   const warnings = [];
+  const previous = await readPrevious();
 
-  for (const sourceUrl of sources) {
+  for (const sourceUrl of primaryCommoditySources) {
     try {
+      console.log(`Checking CommodityOnline source ${sourceUrl}`);
       const html = await fetchSource(sourceUrl);
       const text = htmlToText(html);
       const candidate = extractFromTableText(text, sourceUrl) || extractFromSummaryText(text, sourceUrl);
@@ -183,32 +349,62 @@ async function main() {
         continue;
       }
 
-      const previous = await readPrevious();
-      const next = {
-        status: "live",
-        commodity: "Garlic",
-        market: "Mandsaur",
-        district: "Mandsaur",
-        state: "Madhya Pradesh",
-        unit: "Quintal",
-        minPrice: candidate.minPrice,
-        maxPrice: candidate.maxPrice,
-        avgPrice: candidate.avgPrice,
-        kgPrice: Number((candidate.avgPrice / 100).toFixed(2)),
-        arrivalDate: candidate.arrivalDate,
-        sourceName: "CommodityOnline",
-        sourceUrl: candidate.sourceUrl,
-        updatedAtIso: new Date().toISOString(),
-        previousAvgPrice: previous.avgPrice ?? null,
-        note: "Auto-updated from CommodityOnline. Confirm final B2B deal rate on WhatsApp before dispatch."
-      };
+      if (isOlderThanPrevious(candidate, previous)) {
+        warnings.push(`${sourceUrl}: latest date ${candidate.arrivalDate} is older than current file date ${previous.arrivalDate}`);
+        continue;
+      }
 
-      await writeFile(outputPath, `${JSON.stringify(next, null, 2)}\n`);
-      console.log(`Updated Mandsaur garlic mandi rate: avg Rs ${next.avgPrice}/Quintal from ${next.sourceUrl}`);
+      candidate.sourceName = "CommodityOnline";
+      await writeCandidate(candidate, previous);
       return;
     } catch (error) {
       warnings.push(error.message);
     }
+  }
+
+  const agmarknet = await fetchAgmarknetCandidate();
+  warnings.push(...agmarknet.warnings);
+
+  if (agmarknet.candidate && !isOlderThanPrevious(agmarknet.candidate, previous)) {
+    await writeCandidate(agmarknet.candidate, previous);
+    return;
+  }
+
+  if (agmarknet.candidate) {
+    warnings.push(`Agmarknet latest date ${agmarknet.candidate.arrivalDate} is older than current file date ${previous.arrivalDate}`);
+  }
+
+  for (const sourceUrl of fallbackCommoditySources) {
+    try {
+      console.log(`Checking CommodityOnline source ${sourceUrl}`);
+      const html = await fetchSource(sourceUrl);
+      const text = htmlToText(html);
+      const candidate = extractFromTableText(text, sourceUrl) || extractFromSummaryText(text, sourceUrl);
+
+      if (!candidate) {
+        warnings.push(`${sourceUrl}: Garlic Mandsaur rate not found`);
+        continue;
+      }
+
+      if (isOlderThanPrevious(candidate, previous)) {
+        warnings.push(`${sourceUrl}: latest date ${candidate.arrivalDate} is older than current file date ${previous.arrivalDate}`);
+        continue;
+      }
+
+      candidate.sourceName = "CommodityOnline";
+      await writeCandidate(candidate, previous);
+      return;
+    } catch (error) {
+      warnings.push(error.message);
+    }
+  }
+
+  if (previous.avgPrice && previous.arrivalDate) {
+    console.warn(`Keeping previous mandi rate: avg Rs ${previous.avgPrice}/Quintal from ${previous.arrivalDate}`);
+    for (const warning of warnings) {
+      console.warn(`- ${warning}`);
+    }
+    return;
   }
 
   console.error("Could not update mandi rate.");
@@ -218,4 +414,11 @@ async function main() {
   process.exit(1);
 }
 
-main();
+main()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error(error.message);
+    process.exit(1);
+  });
