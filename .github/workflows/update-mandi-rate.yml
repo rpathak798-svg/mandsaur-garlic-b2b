@@ -24,17 +24,19 @@ jobs:
           node-version: 20
 
       - name: Update mandi rate file
-        run: npm run update:mandi-rate
-
-      - name: Commit updated mandi rate
         run: |
-          if git diff --quiet -- public/mandi-rate.json; then
-            echo "No mandi rate change to commit."
+          npm run update:mandi-rate
+          npm run update:mandi-history
+
+      - name: Commit updated mandi data
+        run: |
+          if git diff --quiet -- public/mandi-rate.json public/mandi-history.json; then
+            echo "No mandi data change to commit."
             exit 0
           fi
           git pull --rebase origin main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/mandi-rate.json
-          git commit -m "Update Mandsaur garlic mandi rate"
+          git add public/mandi-rate.json public/mandi-history.json
+          git commit -m "Update Mandsaur garlic mandi data"
           git push

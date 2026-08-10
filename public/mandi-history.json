@@ -1,0 +1,336 @@
+{
+  "commodity": "Garlic",
+  "market": "Mandsaur APMC",
+  "state": "Madhya Pradesh",
+  "unit": "Quintal",
+  "sourceName": "Agmarknet",
+  "sourceUrl": "https://agmarknet.gov.in/home",
+  "updatedAtIso": "2026-08-10T18:30:43.888Z",
+  "note": "Historical mandi records used for trend-based AI-style rate prediction. Confirm final B2B deal rate on WhatsApp.",
+  "records": [
+    {
+      "date": "2023-09-22",
+      "minPrice": 8600,
+      "maxPrice": 18500,
+      "avgPrice": 9900,
+      "arrivals": 1620,
+      "variety": "Other",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2023-10-25",
+      "minPrice": 4000,
+      "maxPrice": 15000,
+      "avgPrice": 9500,
+      "arrivals": 1000,
+      "variety": "Other",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2023-11-24",
+      "minPrice": 11050,
+      "maxPrice": 21500,
+      "avgPrice": 15475,
+      "arrivals": 1500,
+      "variety": "Other",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2023-12-22",
+      "minPrice": 5000,
+      "maxPrice": 24500,
+      "avgPrice": 14000,
+      "arrivals": 154.07,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-01-23",
+      "minPrice": 7000,
+      "maxPrice": 26900,
+      "avgPrice": 24000,
+      "arrivals": 129.64,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-02-22",
+      "minPrice": 3000,
+      "maxPrice": 18000,
+      "avgPrice": 11000,
+      "arrivals": 440.29,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-03-23",
+      "minPrice": 9000,
+      "maxPrice": 9000,
+      "avgPrice": 9000,
+      "arrivals": 1.32,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-04-22",
+      "minPrice": 2600,
+      "maxPrice": 28001,
+      "avgPrice": 7000,
+      "arrivals": 408.05,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-05-22",
+      "minPrice": 6500,
+      "maxPrice": 7000,
+      "avgPrice": 8000,
+      "arrivals": 189.965,
+      "variety": "Average",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-06-21",
+      "minPrice": 2000,
+      "maxPrice": 29002,
+      "avgPrice": 10000,
+      "arrivals": 378.94,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-07-21",
+      "minPrice": 10573,
+      "maxPrice": 10727,
+      "avgPrice": 10727,
+      "arrivals": 21.95,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-08-20",
+      "minPrice": 23210,
+      "maxPrice": 23210,
+      "avgPrice": 23210,
+      "arrivals": 206.32,
+      "variety": "Garlic-Organic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-09-19",
+      "minPrice": 1000,
+      "maxPrice": 34200,
+      "avgPrice": 18000,
+      "arrivals": 353.4,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-10-19",
+      "minPrice": 3800,
+      "maxPrice": 37700,
+      "avgPrice": 23000,
+      "arrivals": 256.55,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-11-18",
+      "minPrice": 1000,
+      "maxPrice": 41600,
+      "avgPrice": 27000,
+      "arrivals": 326.57,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2024-12-18",
+      "minPrice": 3000,
+      "maxPrice": 29800,
+      "avgPrice": 16000,
+      "arrivals": 198.53,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-01-17",
+      "minPrice": 200,
+      "maxPrice": 26600,
+      "avgPrice": 8000,
+      "arrivals": 352.4,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-02-15",
+      "minPrice": 1000,
+      "maxPrice": 8092,
+      "avgPrice": 4000,
+      "arrivals": 836.07,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-03-18",
+      "minPrice": 800,
+      "maxPrice": 13852,
+      "avgPrice": 4000,
+      "arrivals": 381.81,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-04-17",
+      "minPrice": 1300,
+      "maxPrice": 12501,
+      "avgPrice": 4000,
+      "arrivals": 357.73,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-05-17",
+      "minPrice": 1900,
+      "maxPrice": 15900,
+      "avgPrice": 3600,
+      "arrivals": 426.37,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-06-16",
+      "minPrice": 2400,
+      "maxPrice": 12900,
+      "avgPrice": 3000,
+      "arrivals": 204.83,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-07-16",
+      "minPrice": 1000,
+      "maxPrice": 12501,
+      "avgPrice": 3300,
+      "arrivals": 270,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-08-14",
+      "minPrice": 1500,
+      "maxPrice": 14800,
+      "avgPrice": 3300,
+      "arrivals": 470.79,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-09-11",
+      "minPrice": 2512,
+      "maxPrice": 2512,
+      "avgPrice": 2512,
+      "arrivals": 250.8,
+      "variety": "Average",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-10-14",
+      "minPrice": 500,
+      "maxPrice": 15301,
+      "avgPrice": 4000,
+      "arrivals": 347.955,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-11-13",
+      "minPrice": 2000,
+      "maxPrice": 15200,
+      "avgPrice": 4400,
+      "arrivals": 194.05100000000002,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2025-12-12",
+      "minPrice": 3200,
+      "maxPrice": 3412,
+      "avgPrice": 3412,
+      "arrivals": 0.227,
+      "variety": "Average",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2026-01-12",
+      "minPrice": 4701,
+      "maxPrice": 11300,
+      "avgPrice": 11300,
+      "arrivals": 0.351,
+      "variety": "Average",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2026-02-11",
+      "minPrice": 6900,
+      "maxPrice": 11800,
+      "avgPrice": 11800,
+      "arrivals": 2.426,
+      "variety": "Garlic-Organic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2026-03-12",
+      "minPrice": 5352,
+      "maxPrice": 5352,
+      "avgPrice": 5352,
+      "arrivals": 0.8970000000000001,
+      "variety": "Average",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2026-04-10",
+      "minPrice": 500,
+      "maxPrice": 26400,
+      "avgPrice": 4000,
+      "arrivals": 311.607,
+      "variety": "Garlic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2026-05-12",
+      "minPrice": 6100,
+      "maxPrice": 6100,
+      "avgPrice": 6100,
+      "arrivals": 1.012,
+      "variety": "Garlic-Organic",
+      "grade": "Non-FAQ"
+    },
+    {
+      "date": "2026-06-11",
+      "minPrice": 1200,
+      "maxPrice": 22001,
+      "avgPrice": 5800,
+      "arrivals": 282.55,
+      "variety": "Garlic",
+      "grade": "Non-FAQ"
+    },
+    {
+      "date": "2026-07-10",
+      "minPrice": 6000,
+      "maxPrice": 22300,
+      "avgPrice": 9000,
+      "arrivals": 2.222,
+      "variety": "Garlic-Organic",
+      "grade": "FAQ"
+    },
+    {
+      "date": "2026-08-10",
+      "minPrice": 5753,
+      "maxPrice": 13800,
+      "avgPrice": 13800,
+      "arrivals": 0.759,
+      "variety": "Average",
+      "grade": "Non-FAQ"
+    }
+  ]
+}

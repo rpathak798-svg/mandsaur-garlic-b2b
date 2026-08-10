@@ -424,6 +424,125 @@ section {
   width: fit-content;
 }
 
+.prediction-panel {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 18px 45px rgba(29, 37, 33, 0.08);
+}
+
+.prediction-chart {
+  display: grid;
+  gap: 16px;
+  min-height: 250px;
+  padding: 22px;
+  color: #fff;
+  background: #24382d;
+  border-radius: 8px;
+}
+
+.prediction-topline,
+.prediction-meta,
+.prediction-source {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.prediction-topline span,
+.prediction-meta {
+  color: #d9f1df;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.prediction-topline strong {
+  color: #f2c46d;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.trend-chart {
+  width: 100%;
+  min-height: 150px;
+}
+
+.trend-chart line {
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1;
+}
+
+.trend-chart polyline {
+  fill: none;
+  stroke: #f2c46d;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.forecast-card {
+  min-height: 185px;
+  padding: 18px;
+  background: #fffdf8;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.forecast-card span {
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.forecast-card h3 {
+  margin: 12px 0 8px;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1;
+}
+
+.forecast-card p,
+.forecast-card small {
+  color: var(--muted);
+}
+
+.forecast-card small {
+  display: block;
+  margin-top: 12px;
+  font-weight: 800;
+}
+
+.forecast-empty {
+  grid-column: 1 / -1;
+}
+
+.prediction-source {
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+  color: var(--muted);
+  background: #fbfaf5;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.prediction-source a {
+  color: var(--green-dark);
+}
+
 .steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -597,12 +716,15 @@ a:focus-visible {
   .steps,
   .enquiry,
   .rate-panel,
-  .rate-stats {
+  .rate-stats,
+  .prediction-panel,
+  .forecast-grid {
     grid-template-columns: 1fr;
   }
 
   .rate-source,
-  .rate-cta {
+  .rate-cta,
+  .prediction-source {
     grid-column: 1;
   }
 }
@@ -657,5 +779,12 @@ a:focus-visible {
 
   .floating-whatsapp {
     padding-right: 10px;
+  }
+
+  .prediction-topline,
+  .prediction-meta,
+  .prediction-source {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

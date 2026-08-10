@@ -5,6 +5,7 @@ const WHATSAPP_NUMBER = "917772993222";
 const whatsappIcon = "/whatsapp-logo.svg";
 const heroImage = "/garlic-b2b-hero.png";
 const mandiRateUrl = "/mandi-rate.json";
+const mandiHistoryUrl = "/mandi-history.json";
 
 const defaultMessage = [
   "Namaste Mandsaur Garlic,",
@@ -51,9 +52,126 @@ function formatDate(value) {
   });
 }
 
+function daysBetween(start, end) {
+  const startDate = new Date(`${start}T00:00:00+05:30`);
+  const endDate = new Date(`${end}T00:00:00+05:30`);
+  const diff = endDate.getTime() - startDate.getTime();
+  return Math.max(1, Math.round(diff / 86400000));
+}
+
+function average(values) {
+  const valid = values.filter((value) => typeof value === "number" && Number.isFinite(value));
+  if (valid.length === 0) {
+    return null;
+  }
+
+  return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function buildPrediction(history, currentRate) {
+  const records = Array.isArray(history?.records) ? history.records : [];
+  const points = records
+    .map((record) => ({
+      date: record.date,
+      avgPrice: Number(record.avgPrice),
+      minPrice: Number(record.minPrice),
+      maxPrice: Number(record.maxPrice)
+    }))
+    .filter((record) => record.date && Number.isFinite(record.avgPrice));
+
+  if (currentRate?.arrivalDate && currentRate?.avgPrice) {
+    points.push({
+      date: currentRate.arrivalDate,
+      avgPrice: currentRate.avgPrice,
+      minPrice: currentRate.minPrice,
+      maxPrice: currentRate.maxPrice
+    });
+  }
+
+  const byDate = new Map(points.map((point) => [point.date, point]));
+  const sorted = [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+
+  if (sorted.length < 3) {
+    return {
+      status: "waiting",
+      points: sorted,
+      message: "Prediction ke liye abhi history collect ho rahi hai."
+    };
+  }
+
+  const latest = sorted[sorted.length - 1];
+  const recent = sorted.slice(-6);
+  const previous = sorted.slice(-12, -6);
+  const recentAvg = average(recent.map((point) => point.avgPrice)) || latest.avgPrice;
+  const previousAvg = average(previous.map((point) => point.avgPrice)) || sorted[0].avgPrice;
+  const recentWindowDays = daysBetween(recent[0].date, latest.date);
+  const dailyTrend = (recentAvg - previousAvg) / Math.max(1, recentWindowDays);
+  const latestMonth = new Date(`${latest.date}T00:00:00+05:30`).getMonth();
+  const seasonalAvg = average(sorted.filter((point) => new Date(`${point.date}T00:00:00+05:30`).getMonth() === latestMonth).map((point) => point.avgPrice));
+  const seasonalPull = seasonalAvg ? (seasonalAvg - latest.avgPrice) * 0.08 : 0;
+
+  const changes = sorted.slice(1).map((point, index) => {
+    const previousPoint = sorted[index];
+    return Math.abs(point.avgPrice - previousPoint.avgPrice) / Math.max(1, previousPoint.avgPrice);
+  });
+  const volatility = clamp(average(changes) || 0.06, 0.03, 0.18);
+  const trendPercent = previousAvg ? ((recentAvg - previousAvg) / previousAvg) * 100 : 0;
+  const confidence = clamp(Math.round(42 + sorted.length * 1.2 - volatility * 110), 35, 82);
+
+  const forecasts = [7, 15, 30].map((days) => {
+    const trendMove = dailyTrend * days;
+    const estimate = clamp(latest.avgPrice + trendMove + seasonalPull, latest.avgPrice * 0.75, latest.avgPrice * 1.25);
+    const band = estimate * volatility * Math.sqrt(days / 7);
+
+    return {
+      days,
+      date: formatDate(new Date(Date.now() + days * 86400000).toISOString().slice(0, 10)),
+      price: Math.round(estimate),
+      low: Math.round(Math.max(1, estimate - band)),
+      high: Math.round(estimate + band)
+    };
+  });
+
+  return {
+    status: "ready",
+    points: sorted,
+    latest,
+    forecasts,
+    trendPercent,
+    confidence,
+    sourceName: history?.sourceName || "Agmarknet",
+    sourceUrl: history?.sourceUrl || "https://agmarknet.gov.in/home"
+  };
+}
+
+function makeChartPath(points) {
+  const chartPoints = points.slice(-36);
+  if (chartPoints.length < 2) {
+    return "";
+  }
+
+  const values = chartPoints.map((point) => point.avgPrice);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = Math.max(1, max - min);
+
+  return chartPoints
+    .map((point, index) => {
+      const x = (index / (chartPoints.length - 1)) * 100;
+      const y = 38 - ((point.avgPrice - min) / range) * 32;
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    })
+    .join(" ");
+}
+
 export default function App() {
   const openDefaultWhatsapp = whatsappUrl(defaultMessage);
   const [mandiRate, setMandiRate] = useState(null);
+  const [mandiHistory, setMandiHistory] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -77,10 +195,32 @@ export default function App() {
         }
       });
 
+    fetch(mandiHistoryUrl, { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Mandi history file not available");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        if (isMounted) {
+          setMandiHistory(data);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setMandiHistory(null);
+        }
+      });
+
     return () => {
       isMounted = false;
     };
   }, []);
+
+  const prediction = buildPrediction(mandiHistory, mandiRate);
+  const chartPath = makeChartPath(prediction.points || []);
 
   const rateMessage = [
     "Namaste Mandsaur Garlic,",
@@ -125,6 +265,7 @@ export default function App() {
         </a>
         <nav className="nav-links" aria-label="Page sections">
           <a href="#mandi-rate">Mandi Rate</a>
+          <a href="#prediction">AI Prediction</a>
           <a href="#products">Products</a>
           <a href="#process">Process</a>
           <a href="#enquiry">Enquiry</a>
@@ -234,6 +375,69 @@ export default function App() {
               <WhatsAppIcon />
               Confirm Today's Rate
             </a>
+          </div>
+        </section>
+
+        <section id="prediction" className="prediction band">
+          <div className="section-head">
+            <p className="eyebrow">AI Rate Prediction</p>
+            <h2>Last 3 years ke mandi signals se garlic rate forecast.</h2>
+            <p>
+              Yeh forecast historical Mandsaur APMC records, latest mandi rate, trend aur volatility se estimate banta hai.
+              Final trading rate quality, size, demand aur transport ke hisab se confirm karein.
+            </p>
+          </div>
+
+          <div className="prediction-panel">
+            <div className="prediction-chart">
+              <div className="prediction-topline">
+                <span>Trend Signal</span>
+                <strong>
+                  {prediction.status === "ready"
+                    ? `${prediction.trendPercent >= 0 ? "+" : ""}${prediction.trendPercent.toFixed(1)}%`
+                    : "Collecting"}
+                </strong>
+              </div>
+              <svg className="trend-chart" viewBox="0 0 100 42" role="img" aria-label="Garlic rate history trend chart">
+                <line x1="0" y1="38" x2="100" y2="38" />
+                {chartPath ? <polyline points={chartPath} /> : null}
+              </svg>
+              <div className="prediction-meta">
+                <span>{prediction.points?.length || 0} history points</span>
+                <span>{prediction.status === "ready" ? `${prediction.confidence}% confidence` : "Waiting for more data"}</span>
+              </div>
+            </div>
+
+            <div className="forecast-grid">
+              {prediction.status === "ready" ? (
+                prediction.forecasts.map((forecast) => (
+                  <article className="forecast-card" key={forecast.days}>
+                    <span>{forecast.days} Days</span>
+                    <h3>{formatPrice(forecast.price)}</h3>
+                    <p>{forecast.date}</p>
+                    <small>
+                      Range: {formatPrice(forecast.low)} to {formatPrice(forecast.high)}
+                    </small>
+                  </article>
+                ))
+              ) : (
+                <article className="forecast-card forecast-empty">
+                  <span>Data Required</span>
+                  <h3>History loading</h3>
+                  <p>{prediction.message}</p>
+                  <small>Daily automation ab historical data collect karega.</small>
+                </article>
+              )}
+            </div>
+
+            <div className="prediction-source">
+              <span>
+                Source: {prediction.sourceName || "Agmarknet"} | Last rate: {formatPrice(prediction.latest?.avgPrice || mandiRate?.avgPrice)}
+              </span>
+              <a href={prediction.sourceUrl || "https://agmarknet.gov.in/home"} target="_blank" rel="noopener noreferrer">
+                View data source
+              </a>
+            </div>
           </div>
         </section>
 
