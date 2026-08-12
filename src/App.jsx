@@ -173,10 +173,6 @@ export default function App() {
       <header className="site-header" aria-label="Main navigation">
         <a className="brand" href="#top" aria-label="Mandsaur Garlic home">
           <img className="brand-logo" src={logoImage} alt="Mandsaur Garlic logo" />
-          <span>
-            <strong>Mandsaur Garlic</strong>
-            <small>Wholesale | Mandi Rate | Prediction</small>
-          </span>
         </a>
         <nav className="nav-links" aria-label="Page sections">
           <a href="#mandi-rate">Mandi Rate</a>

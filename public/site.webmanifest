@@ -9,7 +9,7 @@
   "icons": [
     {
       "src": "/mandsaur-garlic-logo.svg",
-      "sizes": "256x256",
+      "sizes": "430x130",
       "type": "image/svg+xml",
       "purpose": "any"
     }
