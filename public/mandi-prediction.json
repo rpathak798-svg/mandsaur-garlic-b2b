@@ -1,0 +1,301 @@
+{
+  "status": "ready",
+  "generatedAtIso": "2026-08-12T14:45:48.576Z",
+  "model": "Trend + seasonality + volatility",
+  "sourceName": "Agmarknet",
+  "sourceUrl": "https://agmarknet.gov.in/home",
+  "latest": {
+    "date": "2026-08-11",
+    "avgPrice": 13000,
+    "minPrice": 5200,
+    "maxPrice": 21500,
+    "arrivals": 0
+  },
+  "trendPercent": 28.402543214782423,
+  "confidence": 67,
+  "volatilityPercent": 18,
+  "points": [
+    {
+      "date": "2023-09-22",
+      "avgPrice": 9900,
+      "minPrice": 8600,
+      "maxPrice": 18500,
+      "arrivals": 1620
+    },
+    {
+      "date": "2023-10-25",
+      "avgPrice": 9500,
+      "minPrice": 4000,
+      "maxPrice": 15000,
+      "arrivals": 1000
+    },
+    {
+      "date": "2023-11-24",
+      "avgPrice": 15475,
+      "minPrice": 11050,
+      "maxPrice": 21500,
+      "arrivals": 1500
+    },
+    {
+      "date": "2023-12-22",
+      "avgPrice": 14000,
+      "minPrice": 5000,
+      "maxPrice": 24500,
+      "arrivals": 154.07
+    },
+    {
+      "date": "2024-01-23",
+      "avgPrice": 24000,
+      "minPrice": 7000,
+      "maxPrice": 26900,
+      "arrivals": 129.64
+    },
+    {
+      "date": "2024-02-22",
+      "avgPrice": 11000,
+      "minPrice": 3000,
+      "maxPrice": 18000,
+      "arrivals": 440.29
+    },
+    {
+      "date": "2024-03-23",
+      "avgPrice": 9000,
+      "minPrice": 9000,
+      "maxPrice": 9000,
+      "arrivals": 1.32
+    },
+    {
+      "date": "2024-04-22",
+      "avgPrice": 7000,
+      "minPrice": 2600,
+      "maxPrice": 28001,
+      "arrivals": 408.05
+    },
+    {
+      "date": "2024-05-22",
+      "avgPrice": 8000,
+      "minPrice": 6500,
+      "maxPrice": 7000,
+      "arrivals": 189.965
+    },
+    {
+      "date": "2024-06-21",
+      "avgPrice": 10000,
+      "minPrice": 2000,
+      "maxPrice": 29002,
+      "arrivals": 378.94
+    },
+    {
+      "date": "2024-07-21",
+      "avgPrice": 10727,
+      "minPrice": 10573,
+      "maxPrice": 10727,
+      "arrivals": 21.95
+    },
+    {
+      "date": "2024-08-20",
+      "avgPrice": 23210,
+      "minPrice": 23210,
+      "maxPrice": 23210,
+      "arrivals": 206.32
+    },
+    {
+      "date": "2024-09-19",
+      "avgPrice": 18000,
+      "minPrice": 1000,
+      "maxPrice": 34200,
+      "arrivals": 353.4
+    },
+    {
+      "date": "2024-10-19",
+      "avgPrice": 23000,
+      "minPrice": 3800,
+      "maxPrice": 37700,
+      "arrivals": 256.55
+    },
+    {
+      "date": "2024-11-18",
+      "avgPrice": 27000,
+      "minPrice": 1000,
+      "maxPrice": 41600,
+      "arrivals": 326.57
+    },
+    {
+      "date": "2024-12-18",
+      "avgPrice": 16000,
+      "minPrice": 3000,
+      "maxPrice": 29800,
+      "arrivals": 198.53
+    },
+    {
+      "date": "2025-01-17",
+      "avgPrice": 8000,
+      "minPrice": 200,
+      "maxPrice": 26600,
+      "arrivals": 352.4
+    },
+    {
+      "date": "2025-02-15",
+      "avgPrice": 4000,
+      "minPrice": 1000,
+      "maxPrice": 8092,
+      "arrivals": 836.07
+    },
+    {
+      "date": "2025-03-18",
+      "avgPrice": 4000,
+      "minPrice": 800,
+      "maxPrice": 13852,
+      "arrivals": 381.81
+    },
+    {
+      "date": "2025-04-17",
+      "avgPrice": 4000,
+      "minPrice": 1300,
+      "maxPrice": 12501,
+      "arrivals": 357.73
+    },
+    {
+      "date": "2025-05-17",
+      "avgPrice": 3600,
+      "minPrice": 1900,
+      "maxPrice": 15900,
+      "arrivals": 426.37
+    },
+    {
+      "date": "2025-06-16",
+      "avgPrice": 3000,
+      "minPrice": 2400,
+      "maxPrice": 12900,
+      "arrivals": 204.83
+    },
+    {
+      "date": "2025-07-16",
+      "avgPrice": 3300,
+      "minPrice": 1000,
+      "maxPrice": 12501,
+      "arrivals": 270
+    },
+    {
+      "date": "2025-08-14",
+      "avgPrice": 3300,
+      "minPrice": 1500,
+      "maxPrice": 14800,
+      "arrivals": 470.79
+    },
+    {
+      "date": "2025-09-11",
+      "avgPrice": 2512,
+      "minPrice": 2512,
+      "maxPrice": 2512,
+      "arrivals": 250.8
+    },
+    {
+      "date": "2025-10-14",
+      "avgPrice": 4000,
+      "minPrice": 500,
+      "maxPrice": 15301,
+      "arrivals": 347.955
+    },
+    {
+      "date": "2025-11-13",
+      "avgPrice": 4400,
+      "minPrice": 2000,
+      "maxPrice": 15200,
+      "arrivals": 194.05100000000002
+    },
+    {
+      "date": "2025-12-12",
+      "avgPrice": 3412,
+      "minPrice": 3200,
+      "maxPrice": 3412,
+      "arrivals": 0.227
+    },
+    {
+      "date": "2026-01-12",
+      "avgPrice": 11300,
+      "minPrice": 4701,
+      "maxPrice": 11300,
+      "arrivals": 0.351
+    },
+    {
+      "date": "2026-02-11",
+      "avgPrice": 11800,
+      "minPrice": 6900,
+      "maxPrice": 11800,
+      "arrivals": 2.426
+    },
+    {
+      "date": "2026-03-12",
+      "avgPrice": 5352,
+      "minPrice": 5352,
+      "maxPrice": 5352,
+      "arrivals": 0.8970000000000001
+    },
+    {
+      "date": "2026-04-10",
+      "avgPrice": 4000,
+      "minPrice": 500,
+      "maxPrice": 26400,
+      "arrivals": 311.607
+    },
+    {
+      "date": "2026-05-12",
+      "avgPrice": 6100,
+      "minPrice": 6100,
+      "maxPrice": 6100,
+      "arrivals": 1.012
+    },
+    {
+      "date": "2026-06-11",
+      "avgPrice": 5800,
+      "minPrice": 1200,
+      "maxPrice": 22001,
+      "arrivals": 282.55
+    },
+    {
+      "date": "2026-07-10",
+      "avgPrice": 9000,
+      "minPrice": 6000,
+      "maxPrice": 22300,
+      "arrivals": 2.222
+    },
+    {
+      "date": "2026-08-10",
+      "avgPrice": 13800,
+      "minPrice": 5753,
+      "maxPrice": 13800,
+      "arrivals": 0.759
+    },
+    {
+      "date": "2026-08-11",
+      "avgPrice": 13000,
+      "minPrice": 5200,
+      "maxPrice": 21500,
+      "arrivals": 0
+    }
+  ],
+  "forecasts": [
+    {
+      "days": 7,
+      "date": "2026-08-18",
+      "price": 13135,
+      "low": 10770,
+      "high": 15499
+    },
+    {
+      "days": 15,
+      "date": "2026-08-26",
+      "price": 13259,
+      "low": 9765,
+      "high": 16752
+    },
+    {
+      "days": 30,
+      "date": "2026-09-10",
+      "price": 13491,
+      "low": 8464,
+      "high": 18518
+    }
+  ]
+}

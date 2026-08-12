@@ -1,11 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 import "./App.css";
 
 const WHATSAPP_NUMBER = "917772993222";
 const whatsappIcon = "/whatsapp-logo.svg";
 const heroImage = "/garlic-b2b-hero.png";
 const mandiRateUrl = "/mandi-rate.json";
-const mandiHistoryUrl = "/mandi-history.json";
+const mandiPredictionUrl = "/mandi-prediction.json";
 
 const defaultMessage = [
   "Namaste Mandsaur Garlic,",
@@ -40,7 +50,7 @@ function formatDate(value) {
     return "Update pending";
   }
 
-  const parsed = new Date(`${value}T00:00:00+05:30`);
+  const parsed = new Date(`${value}T12:00:00Z`);
   if (Number.isNaN(parsed.getTime())) {
     return value;
   }
@@ -48,130 +58,28 @@ function formatDate(value) {
   return parsed.toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",
-    year: "numeric"
+    year: "numeric",
+    timeZone: "Asia/Kolkata"
   });
 }
 
-function daysBetween(start, end) {
-  const startDate = new Date(`${start}T00:00:00+05:30`);
-  const endDate = new Date(`${end}T00:00:00+05:30`);
-  const diff = endDate.getTime() - startDate.getTime();
-  return Math.max(1, Math.round(diff / 86400000));
-}
-
-function average(values) {
-  const valid = values.filter((value) => typeof value === "number" && Number.isFinite(value));
-  if (valid.length === 0) {
-    return null;
-  }
-
-  return valid.reduce((sum, value) => sum + value, 0) / valid.length;
-}
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function buildPrediction(history, currentRate) {
-  const records = Array.isArray(history?.records) ? history.records : [];
-  const points = records
-    .map((record) => ({
-      date: record.date,
-      avgPrice: Number(record.avgPrice),
-      minPrice: Number(record.minPrice),
-      maxPrice: Number(record.maxPrice)
-    }))
-    .filter((record) => record.date && Number.isFinite(record.avgPrice));
-
-  if (currentRate?.arrivalDate && currentRate?.avgPrice) {
-    points.push({
-      date: currentRate.arrivalDate,
-      avgPrice: currentRate.avgPrice,
-      minPrice: currentRate.minPrice,
-      maxPrice: currentRate.maxPrice
-    });
-  }
-
-  const byDate = new Map(points.map((point) => [point.date, point]));
-  const sorted = [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
-
-  if (sorted.length < 3) {
-    return {
-      status: "waiting",
-      points: sorted,
-      message: "Prediction ke liye abhi history collect ho rahi hai."
-    };
-  }
-
-  const latest = sorted[sorted.length - 1];
-  const recent = sorted.slice(-6);
-  const previous = sorted.slice(-12, -6);
-  const recentAvg = average(recent.map((point) => point.avgPrice)) || latest.avgPrice;
-  const previousAvg = average(previous.map((point) => point.avgPrice)) || sorted[0].avgPrice;
-  const recentWindowDays = daysBetween(recent[0].date, latest.date);
-  const dailyTrend = (recentAvg - previousAvg) / Math.max(1, recentWindowDays);
-  const latestMonth = new Date(`${latest.date}T00:00:00+05:30`).getMonth();
-  const seasonalAvg = average(sorted.filter((point) => new Date(`${point.date}T00:00:00+05:30`).getMonth() === latestMonth).map((point) => point.avgPrice));
-  const seasonalPull = seasonalAvg ? (seasonalAvg - latest.avgPrice) * 0.08 : 0;
-
-  const changes = sorted.slice(1).map((point, index) => {
-    const previousPoint = sorted[index];
-    return Math.abs(point.avgPrice - previousPoint.avgPrice) / Math.max(1, previousPoint.avgPrice);
-  });
-  const volatility = clamp(average(changes) || 0.06, 0.03, 0.18);
-  const trendPercent = previousAvg ? ((recentAvg - previousAvg) / previousAvg) * 100 : 0;
-  const confidence = clamp(Math.round(42 + sorted.length * 1.2 - volatility * 110), 35, 82);
-
-  const forecasts = [7, 15, 30].map((days) => {
-    const trendMove = dailyTrend * days;
-    const estimate = clamp(latest.avgPrice + trendMove + seasonalPull, latest.avgPrice * 0.75, latest.avgPrice * 1.25);
-    const band = estimate * volatility * Math.sqrt(days / 7);
-
-    return {
-      days,
-      date: formatDate(new Date(Date.now() + days * 86400000).toISOString().slice(0, 10)),
-      price: Math.round(estimate),
-      low: Math.round(Math.max(1, estimate - band)),
-      high: Math.round(estimate + band)
-    };
-  });
-
-  return {
-    status: "ready",
-    points: sorted,
-    latest,
-    forecasts,
-    trendPercent,
-    confidence,
-    sourceName: history?.sourceName || "Agmarknet",
-    sourceUrl: history?.sourceUrl || "https://agmarknet.gov.in/home"
-  };
-}
-
-function makeChartPath(points) {
-  const chartPoints = points.slice(-36);
-  if (chartPoints.length < 2) {
-    return "";
-  }
-
-  const values = chartPoints.map((point) => point.avgPrice);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = Math.max(1, max - min);
-
-  return chartPoints
-    .map((point, index) => {
-      const x = (index / (chartPoints.length - 1)) * 100;
-      const y = 38 - ((point.avgPrice - min) / range) * 32;
-      return `${x.toFixed(2)},${y.toFixed(2)}`;
-    })
-    .join(" ");
+function ChartTooltip({ active, payload }) {
+  if (!active || !payload?.[0]?.payload) return null;
+  const point = payload[0].payload;
+  return (
+    <div className="chart-tooltip">
+      <strong>{formatDate(point.date)}</strong>
+      <span>Modal: {formatPrice(point.avgPrice)}</span>
+      <small>Low {formatPrice(point.minPrice)} | High {formatPrice(point.maxPrice)}</small>
+    </div>
+  );
 }
 
 export default function App() {
   const openDefaultWhatsapp = whatsappUrl(defaultMessage);
   const [mandiRate, setMandiRate] = useState(null);
-  const [mandiHistory, setMandiHistory] = useState(null);
+  const [prediction, setPrediction] = useState({ status: "loading", points: [], forecasts: [] });
+  const [chartRange, setChartRange] = useState(12);
 
   useEffect(() => {
     let isMounted = true;
@@ -195,22 +103,22 @@ export default function App() {
         }
       });
 
-    fetch(mandiHistoryUrl, { cache: "no-store" })
+    fetch(mandiPredictionUrl, { cache: "no-store" })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Mandi history file not available");
+          throw new Error("Mandi prediction file not available");
         }
 
         return response.json();
       })
       .then((data) => {
         if (isMounted) {
-          setMandiHistory(data);
+          setPrediction(data);
         }
       })
       .catch(() => {
         if (isMounted) {
-          setMandiHistory(null);
+          setPrediction({ status: "waiting", points: [], forecasts: [] });
         }
       });
 
@@ -219,8 +127,14 @@ export default function App() {
     };
   }, []);
 
-  const prediction = buildPrediction(mandiHistory, mandiRate);
-  const chartPath = makeChartPath(prediction.points || []);
+  const chartData = useMemo(() => {
+    const points = prediction.points || [];
+    return chartRange === 0 ? points : points.slice(-chartRange);
+  }, [prediction.points, chartRange]);
+  const chartAverage = useMemo(() => {
+    if (!chartData.length) return 0;
+    return Math.round(chartData.reduce((sum, point) => sum + point.avgPrice, 0) / chartData.length);
+  }, [chartData]);
 
   const rateMessage = [
     "Namaste Mandsaur Garlic,",
@@ -391,20 +305,57 @@ export default function App() {
           <div className="prediction-panel">
             <div className="prediction-chart">
               <div className="prediction-topline">
-                <span>Trend Signal</span>
-                <strong>
+                <div>
+                  <span>Latest mandi signal</span>
+                  <strong>{formatPrice(prediction.latest?.avgPrice || mandiRate?.avgPrice)}</strong>
+                </div>
+                <div className={`trend-badge ${prediction.trendPercent >= 0 ? "up" : "down"}`}>
                   {prediction.status === "ready"
-                    ? `${prediction.trendPercent >= 0 ? "+" : ""}${prediction.trendPercent.toFixed(1)}%`
+                    ? `${prediction.trendPercent >= 0 ? "+" : "-"}${Math.abs(prediction.trendPercent).toFixed(1)}%`
                     : "Collecting"}
-                </strong>
+                </div>
               </div>
-              <svg className="trend-chart" viewBox="0 0 100 42" role="img" aria-label="Garlic rate history trend chart">
-                <line x1="0" y1="38" x2="100" y2="38" />
-                {chartPath ? <polyline points={chartPath} /> : null}
-              </svg>
+              <div className="chart-range" aria-label="Chart time range">
+                {[
+                  [3, "3M"],
+                  [12, "1Y"],
+                  [0, "3Y"]
+                ].map(([value, label]) => (
+                  <button
+                    className={chartRange === value ? "active" : ""}
+                    key={label}
+                    type="button"
+                    onClick={() => setChartRange(value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="trend-chart" role="img" aria-label="Interactive garlic mandi rate history chart">
+                {chartData.length > 1 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 10, right: 4, left: -18, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="rateFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#42c77a" stopOpacity={0.4} />
+                          <stop offset="100%" stopColor="#42c77a" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="rgba(255,255,255,0.1)" vertical={false} />
+                      <XAxis dataKey="date" tickFormatter={(date) => date.slice(5)} minTickGap={28} />
+                      <YAxis tickFormatter={(value) => `${Math.round(value / 1000)}k`} domain={["dataMin - 1000", "dataMax + 1000"]} />
+                      <Tooltip content={<ChartTooltip />} cursor={{ stroke: "rgba(255,255,255,0.35)" }} />
+                      <ReferenceLine y={chartAverage} stroke="rgba(242,196,109,0.7)" strokeDasharray="5 5" />
+                      <Area type="monotone" dataKey="avgPrice" stroke="#42c77a" strokeWidth={3} fill="url(#rateFill)" activeDot={{ r: 5, fill: "#f2c46d" }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <span className="chart-loading">Rate history loading...</span>
+                )}
+              </div>
               <div className="prediction-meta">
-                <span>{prediction.points?.length || 0} history points</span>
-                <span>{prediction.status === "ready" ? `${prediction.confidence}% confidence` : "Waiting for more data"}</span>
+                <span>Average {formatPrice(chartAverage)}</span>
+                <span>{prediction.points?.length || 0} verified points</span>
               </div>
             </div>
 
@@ -412,12 +363,16 @@ export default function App() {
               {prediction.status === "ready" ? (
                 prediction.forecasts.map((forecast) => (
                   <article className="forecast-card" key={forecast.days}>
-                    <span>{forecast.days} Days</span>
+                    <div className="forecast-label">
+                      <span>{forecast.days} Days</span>
+                      <b>{prediction.confidence}% confidence</b>
+                    </div>
                     <h3>{formatPrice(forecast.price)}</h3>
-                    <p>{forecast.date}</p>
-                    <small>
-                      Range: {formatPrice(forecast.low)} to {formatPrice(forecast.high)}
-                    </small>
+                    <p>{formatDate(forecast.date)}</p>
+                    <div className="forecast-range">
+                      <i style={{ left: `${Math.max(8, Math.min(92, ((forecast.price - forecast.low) / (forecast.high - forecast.low)) * 100))}%` }} />
+                    </div>
+                    <small>{formatPrice(forecast.low)} - {formatPrice(forecast.high)}</small>
                   </article>
                 ))
               ) : (
@@ -432,7 +387,7 @@ export default function App() {
 
             <div className="prediction-source">
               <span>
-                Source: {prediction.sourceName || "Agmarknet"} | Last rate: {formatPrice(prediction.latest?.avgPrice || mandiRate?.avgPrice)}
+                Auto-updated: {formatDate(prediction.latest?.date)} | Model: {prediction.model || "Trend analysis"}
               </span>
               <a href={prediction.sourceUrl || "https://agmarknet.gov.in/home"} target="_blank" rel="noopener noreferrer">
                 View data source

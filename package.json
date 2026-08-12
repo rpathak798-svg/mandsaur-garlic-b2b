@@ -12,7 +12,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "update:mandi-rate": "node scripts/update-mandi-rate.mjs",
-    "update:mandi-history": "node scripts/update-mandi-history.mjs"
+    "update:mandi-history": "node scripts/update-mandi-history.mjs",
+    "update:mandi-prediction": "node scripts/update-mandi-prediction.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.0",
