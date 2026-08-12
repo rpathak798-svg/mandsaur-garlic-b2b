@@ -34,9 +34,9 @@ jobs:
             echo "No mandi data change to commit."
             exit 0
           fi
-          git pull --rebase origin main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/mandi-rate.json public/mandi-history.json
           git commit -m "Update Mandsaur garlic mandi data"
+          git pull --rebase origin main
           git push
