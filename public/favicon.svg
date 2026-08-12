@@ -1,10 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#ffffff"/>
-  <path d="M32 8c2 7 0 13-6 20-6 6-10 13-9 22 1 9 8 15 17 16 11 1 20-5 22-15 1-9-4-16-11-22-7-7-11-13-13-21Z" fill="#fff7e8" stroke="#72583d" stroke-width="3.5" stroke-linejoin="round"/>
-  <path d="M25 29c-9 7-15 15-14 24 1 7 6 12 15 13-6-8-8-19-1-37Z" fill="#f6ead4" stroke="#72583d" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M39 29c8 9 11 19 9 28-1 5-5 8-13 10 6-12 6-24 4-38Z" fill="#fff1da" stroke="#72583d" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M32 31c6 13 6 24 0 36-6-12-6-23 0-36Z" fill="#fffaf1" stroke="#d1b286" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M32 10c-3 5-2 11 3 16 3-7 3-12-3-16Z" fill="#73a83b" stroke="#5b6e2b" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M36 12c2-5 5-8 9-10 0 6-2 10-7 15" fill="none" stroke="#72583d" stroke-width="3.5" stroke-linecap="round"/>
-  <path d="M43 51c10 1 17-2 20-8-2 8-8 14-17 16-3-1-5-4-3-8Z" fill="#f3d6d7" stroke="#72583d" stroke-width="3" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <rect width="160" height="160" fill="#ffffff"/>
+  <defs>
+    <path id="ftop" d="M25 83a55 55 0 0 1 110 0"/>
+    <path id="fbottom" d="M135 87a55 55 0 0 1-110 0"/>
+  </defs>
+  <circle cx="80" cy="80" r="73" fill="#ffffff" stroke="#1f1d1d" stroke-width="4"/>
+  <circle cx="80" cy="80" r="64" fill="#1f1d1d"/>
+  <circle cx="80" cy="80" r="40" fill="#ffffff"/>
+  <path d="M14 64h31a41 41 0 0 0 0 32H14Z" fill="#ffffff"/>
+  <path d="M115 64h31v32h-31a41 41 0 0 0 0-32Z" fill="#ffffff"/>
+  <text font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="800" fill="#ffffff" letter-spacing="2">
+    <textPath href="#ftop" startOffset="50%" text-anchor="middle">MANDSAUR GARLIC</textPath>
+  </text>
+  <text font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="800" fill="#ffffff" letter-spacing="2">
+    <textPath href="#fbottom" startOffset="50%" text-anchor="middle">B2B WHOLESALE</textPath>
+  </text>
+  <text x="20" y="86" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="800" fill="#1f1d1d">EST</text>
+  <text x="113" y="86" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="800" fill="#1f1d1d">26</text>
+  <path d="M80 37c4 11 2 21-8 33-9 11-15 22-13 37 2 15 13 24 27 25 16 1 30-9 32-24 2-14-6-25-17-36-11-10-17-21-21-35Z" fill="#ffffff" stroke="#1f1d1d" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M68 72c-11 10-16 21-15 34 1 10 7 18 18 22-7-15-8-33-3-56Z" fill="#ffffff" stroke="#1f1d1d" stroke-width="2.3" stroke-linejoin="round"/>
+  <path d="M92 72c9 11 13 24 11 37-2 10-7 16-17 20 7-18 7-36 6-57Z" fill="#ffffff" stroke="#1f1d1d" stroke-width="2.3" stroke-linejoin="round"/>
+  <path d="M80 73c7 17 7 36 0 56-7-20-7-39 0-56Z" fill="#ffffff" stroke="#1f1d1d" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M88 111c21 2 37-4 46-18-4 17-15 28-34 34-7-3-11-8-12-16Z" fill="#1f1d1d" stroke="#1f1d1d" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M100 119c10 1 20-2 28-8" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
 </svg>
