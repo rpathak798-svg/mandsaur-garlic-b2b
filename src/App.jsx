@@ -13,7 +13,7 @@ import "./App.css";
 
 const WHATSAPP_NUMBER = "917772993222";
 const whatsappIcon = "/whatsapp-logo.svg";
-const logoImage = "/mandsaur-garlic-logo.svg";
+const logoImage = "/mandsaur-garlic-logo.jpeg";
 const heroImage = "/garlic-b2b-hero.png";
 const mandiRateUrl = "/mandi-rate.json";
 const mandiPredictionUrl = "/mandi-prediction.json";

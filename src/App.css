@@ -51,8 +51,8 @@ img {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  min-height: 84px;
-  padding: 8px clamp(18px, 4vw, 56px);
+  min-height: 128px;
+  padding: 6px clamp(18px, 4vw, 56px);
   background: rgba(255, 253, 248, 0.94);
   border-bottom: 1px solid rgba(232, 224, 212, 0.85);
   backdrop-filter: blur(14px);
@@ -61,14 +61,16 @@ img {
 .brand {
   display: inline-flex;
   align-items: center;
-  min-width: 286px;
+  min-width: 260px;
 }
 
 .brand-logo {
-  width: 286px;
-  height: auto;
+  width: 260px;
+  height: 122px;
+  object-fit: cover;
+  object-position: center 51%;
   max-width: none;
-  flex: 0 0 286px;
+  flex: 0 0 260px;
 }
 
 .nav-links {
@@ -855,7 +857,7 @@ a:focus-visible {
 
 @media (max-width: 900px) {
   .site-header {
-    min-height: 66px;
+    min-height: 92px;
   }
 
   .nav-links {
@@ -864,7 +866,7 @@ a:focus-visible {
 
   .hero {
     min-height: 94vh;
-    padding-top: 110px;
+    padding-top: 130px;
   }
 
   .hero-overlay {
@@ -899,8 +901,9 @@ a:focus-visible {
   }
 
   .brand-logo {
-    width: 196px;
-    flex-basis: 196px;
+    width: 170px;
+    height: 80px;
+    flex-basis: 170px;
   }
 
   .brand {

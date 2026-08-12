@@ -8,9 +8,9 @@
   "theme_color": "#0e3b27",
   "icons": [
     {
-      "src": "/mandsaur-garlic-logo.svg",
-      "sizes": "560x160",
-      "type": "image/svg+xml",
+      "src": "/mandsaur-garlic-logo.jpeg",
+      "sizes": "1280x1209",
+      "type": "image/jpeg",
       "purpose": "any"
     }
   ]
