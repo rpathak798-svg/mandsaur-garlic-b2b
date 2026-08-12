@@ -13,6 +13,7 @@ import "./App.css";
 
 const WHATSAPP_NUMBER = "917772993222";
 const whatsappIcon = "/whatsapp-logo.svg";
+const logoImage = "/mandsaur-garlic-logo.svg";
 const heroImage = "/garlic-b2b-hero.png";
 const mandiRateUrl = "/mandi-rate.json";
 const mandiPredictionUrl = "/mandi-prediction.json";
@@ -171,16 +172,18 @@ export default function App() {
     <>
       <header className="site-header" aria-label="Main navigation">
         <a className="brand" href="#top" aria-label="Mandsaur Garlic home">
-          <span className="brand-mark">MG</span>
+          <img className="brand-logo" src={logoImage} alt="Mandsaur Garlic logo" />
           <span>
             <strong>Mandsaur Garlic</strong>
-            <small>B2B Wholesale</small>
+            <small>Wholesale | Mandi Rate | Prediction</small>
           </span>
         </a>
         <nav className="nav-links" aria-label="Page sections">
           <a href="#mandi-rate">Mandi Rate</a>
           <a href="#prediction">AI Prediction</a>
           <a href="#products">Products</a>
+          <a href="#service-area">Supply Area</a>
+          <a href="#faq">FAQ</a>
           <a href="#process">Process</a>
           <a href="#enquiry">Enquiry</a>
         </nav>
@@ -195,11 +198,11 @@ export default function App() {
           <img className="hero-image" src={heroImage} alt="Fresh garlic sacks ready for bulk trade" />
           <div className="hero-overlay"></div>
           <div className="hero-content">
-            <p className="eyebrow">Mandsaur, Madhya Pradesh | Mandi se seedha B2B Supply</p>
-            <h1>Bulk Garlic Supply for Traders, Exporters & Food Businesses</h1>
+            <p className="eyebrow">Mandsaur, Madhya Pradesh | Daily Garlic Mandi Bhav</p>
+            <h1>Mandsaur Garlic Wholesale Supplier with Live Mandi Rate</h1>
             <p className="hero-copy">
-              Fresh Mandsaur garlic in graded lots, mandi sourcing, jute/net bag packing,
-              and dispatch support. Rate, quality aur quantity ke liye WhatsApp pe baat karo.
+              Fresh Mandsaur garlic for traders, exporters, wholesalers and food businesses.
+              Daily mandi rate, AI price prediction, graded lots, packing and dispatch support.
             </p>
             <div className="hero-actions">
               <a className="btn primary" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer">
@@ -210,16 +213,16 @@ export default function App() {
             </div>
             <dl className="hero-metrics" aria-label="Business highlights">
               <div>
-                <dt>10kg-50kg</dt>
-                <dd>Packaging options</dd>
+                <dt>Daily</dt>
+                <dd>Mandi rate update</dd>
               </div>
               <div>
                 <dt>Graded</dt>
-                <dd>Size & quality sorting</dd>
+                <dd>Small to large lots</dd>
               </div>
               <div>
-                <dt>Bulk</dt>
-                <dd>Trader-ready lots</dd>
+                <dt>India</dt>
+                <dd>Dispatch support</dd>
               </div>
             </dl>
           </div>
@@ -228,23 +231,53 @@ export default function App() {
         <section className="intro band">
           <div className="section-head">
             <p className="eyebrow">Why Mandsaur Garlic</p>
-            <h2>Hindi + English B2B communication, simple buying process.</h2>
+            <h2>Trusted B2B garlic sourcing from the Mandsaur mandi belt.</h2>
           </div>
           <div className="intro-grid">
             <article>
               <span className="mini-icon" aria-hidden="true"></span>
               <h3>Direct Mandi Sourcing</h3>
-              <p>Mandsaur mandi se fresh garlic sourcing, daily availability aur rate discussion.</p>
+              <p>Fresh garlic lots sourced around Mandsaur APMC with daily availability and rate discussion.</p>
             </article>
             <article>
               <span className="mini-icon" aria-hidden="true"></span>
-              <h3>Bulk Buyer Focus</h3>
-              <p>Traders, wholesalers, exporters, processors, hotels aur food brands ke liye lots.</p>
+              <h3>Wholesale Buyer Focus</h3>
+              <p>Trader, exporter, processor, hotel supplier and retail-chain enquiries handled in a clear format.</p>
             </article>
             <article>
               <span className="mini-icon" aria-hidden="true"></span>
-              <h3>Dispatch Support</h3>
-              <p>Packaging, loading, transport coordination aur buyer location ke hisab se planning.</p>
+              <h3>Rate + Prediction Desk</h3>
+              <p>Live mandi bhav and AI-style garlic price trend signals help buyers time B2B discussions.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="service-area" className="market-proof">
+          <div className="section-head">
+            <p className="eyebrow">Mandsaur Garlic Wholesale</p>
+            <h2>Bulk garlic supply for mandis, traders and commercial buyers across India.</h2>
+            <p>
+              Mandsaur Garlic helps buyers compare mandi bhav, discuss quality grade, confirm packing,
+              and plan dispatch from Madhya Pradesh. Common buyer requirements include fresh whole garlic,
+              graded garlic, large-size garlic, medium-size garlic, and custom bag packing.
+            </p>
+          </div>
+          <div className="service-grid">
+            <article>
+              <strong>Primary Market</strong>
+              <span>Mandsaur APMC, Madhya Pradesh</span>
+            </article>
+            <article>
+              <strong>Buyer Types</strong>
+              <span>Wholesalers, traders, exporters, processors, food suppliers</span>
+            </article>
+            <article>
+              <strong>Supply Support</strong>
+              <span>Sorting, packing, loading and transport coordination</span>
+            </article>
+            <article>
+              <strong>Rate Signals</strong>
+              <span>Daily mandi rate, historical chart and 7/15/30 day prediction range</span>
             </article>
           </div>
         </section>
@@ -442,6 +475,27 @@ export default function App() {
               <span>Payment terms, transport and loading schedule final karke maal dispatch hoga.</span>
             </li>
           </ol>
+        </section>
+
+        <section id="faq" className="faq">
+          <div className="section-head">
+            <p className="eyebrow">Buyer Questions</p>
+            <h2>Mandsaur garlic B2B buying FAQs.</h2>
+          </div>
+          <div className="faq-grid">
+            <article>
+              <h3>Do you supply bulk garlic from Mandsaur?</h3>
+              <p>Yes. We support B2B buyers with Mandsaur garlic sourcing, quality discussion, packing and dispatch coordination.</p>
+            </article>
+            <article>
+              <h3>Is the mandi rate final deal rate?</h3>
+              <p>No. Mandi bhav is a reference signal. Final B2B rate depends on quality, size, grade, quantity, packing and loading.</p>
+            </article>
+            <article>
+              <h3>Can I check future garlic price trend?</h3>
+              <p>The AI Prediction section shows 7, 15 and 30 day estimated ranges from historical mandi signals and volatility.</p>
+            </article>
+          </div>
         </section>
 
         <section id="enquiry" className="enquiry">

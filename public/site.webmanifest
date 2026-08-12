@@ -1,0 +1,17 @@
+{
+  "name": "Mandsaur Garlic",
+  "short_name": "Mandsaur Garlic",
+  "description": "Mandsaur garlic B2B wholesale supplier with daily mandi rate and AI price prediction.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf5",
+  "theme_color": "#0e3b27",
+  "icons": [
+    {
+      "src": "/mandsaur-garlic-logo.svg",
+      "sizes": "256x256",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

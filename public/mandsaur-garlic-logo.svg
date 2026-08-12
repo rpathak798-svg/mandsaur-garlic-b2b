@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Mandsaur Garlic logo</title>
+  <desc id="desc">Premium garlic bulb mark for Mandsaur Garlic B2B wholesale supply.</desc>
+  <rect width="256" height="256" rx="42" fill="#0e3b27"/>
+  <circle cx="196" cy="58" r="26" fill="#f2c46d"/>
+  <path d="M128 42c12 18 17 34 12 49 24-4 48 14 52 43 5 39-28 76-64 85-36-9-69-46-64-85 4-29 28-47 52-43-5-15 0-31 12-49Z" fill="#fffaf0"/>
+  <path d="M101 111c-17 9-26 26-23 48 3 24 22 43 45 52-9-31-12-63-22-100Z" fill="#ead9ba"/>
+  <path d="M155 111c17 9 26 26 23 48-3 24-22 43-45 52 9-31 12-63 22-100Z" fill="#f7ecd7"/>
+  <path d="M128 94c19 28 20 76 0 122-20-46-19-94 0-122Z" fill="#fff3dc"/>
+  <path d="M105 99c13-10 31-10 46 0M92 131c14-12 25-16 36-16s22 4 36 16M86 162c22-11 34-14 42-14s20 3 42 14" fill="none" stroke="#c7a06c" stroke-width="7" stroke-linecap="round"/>
+  <path d="M72 209h112" stroke="#f2c46d" stroke-width="10" stroke-linecap="round"/>
+</svg>
