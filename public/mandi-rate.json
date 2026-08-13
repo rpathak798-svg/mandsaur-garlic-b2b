@@ -10,9 +10,9 @@
   "avgPrice": 13000,
   "kgPrice": 130,
   "arrivalDate": "2026-08-11",
-  "sourceName": "Agmarknet",
-  "sourceUrl": "https://agmarknet.gov.in/home",
-  "updatedAtIso": "2026-08-12T14:17:14.544Z",
-  "previousAvgPrice": 13800,
+  "sourceName": "CommodityOnline",
+  "sourceUrl": "https://www.commodityonline.com/mandi/madhya-pradesh/mandsaur/mandsaur/garlic",
+  "updatedAtIso": "2026-08-13T04:24:36.039Z",
+  "previousAvgPrice": 13000,
   "note": "Auto-updated from mandi data sources. Confirm final B2B deal rate on WhatsApp before dispatch."
 }
