@@ -13,7 +13,7 @@ import "./App.css";
 
 const WHATSAPP_NUMBER = "917772993222";
 const whatsappIcon = "/whatsapp-logo.svg";
-const logoImage = "/mandsaur-garlic-logo.jpeg";
+const logoImage = "/mandsaur-garlic-logo.svg";
 const heroImage = "/garlic-b2b-hero.png";
 const mandiRateUrl = "/mandi-rate.json";
 const mandiPredictionUrl = "/mandi-prediction.json";
@@ -81,6 +81,7 @@ export default function App() {
   const [mandiRate, setMandiRate] = useState(null);
   const [prediction, setPrediction] = useState({ status: "loading", points: [], forecasts: [] });
   const [chartRange, setChartRange] = useState(12);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -174,19 +175,31 @@ export default function App() {
         <a className="brand" href="#top" aria-label="Mandsaur Garlic home">
           <img className="brand-logo" src={logoImage} alt="Mandsaur Garlic logo" />
         </a>
-        <nav className="nav-links" aria-label="Page sections">
-          <a href="#mandi-rate">Mandi Rate</a>
-          <a href="#prediction">AI Prediction</a>
-          <a href="#products">Products</a>
-          <a href="#service-area">Supply Area</a>
-          <a href="#faq">FAQ</a>
-          <a href="#process">Process</a>
-          <a href="#enquiry">Enquiry</a>
+        <nav className={`nav-links ${menuOpen ? "open" : ""}`} aria-label="Page sections">
+          <a href="#mandi-rate" onClick={() => setMenuOpen(false)}>Mandi Rate</a>
+          <a href="#prediction" onClick={() => setMenuOpen(false)}>AI Prediction</a>
+          <a href="#products" onClick={() => setMenuOpen(false)}>Products</a>
+          <a href="#service-area" onClick={() => setMenuOpen(false)}>Supply Area</a>
+          <a href="#faq" onClick={() => setMenuOpen(false)}>FAQ</a>
+          <a href="#enquiry" onClick={() => setMenuOpen(false)}>Enquiry</a>
         </nav>
-        <a className="nav-cta" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer" aria-label="Talk on WhatsApp">
-          <WhatsAppIcon />
-          WhatsApp
-        </a>
+        <div className="header-actions">
+          <a className="nav-cta" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer" aria-label="Talk on WhatsApp">
+            <WhatsAppIcon />
+            <span>WhatsApp</span>
+          </a>
+          <button
+            className={`menu-toggle ${menuOpen ? "open" : ""}`}
+            type="button"
+            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <i />
+            <i />
+            <i />
+          </button>
+        </div>
       </header>
 
       <main id="top">
@@ -200,6 +213,18 @@ export default function App() {
               Fresh Mandsaur garlic for traders, exporters, wholesalers and food businesses.
               Daily mandi rate, AI price prediction, graded lots, packing and dispatch support.
             </p>
+            <div className="hero-rate" aria-label="Latest Mandsaur garlic rate">
+              <div>
+                <span>Today's modal rate</span>
+                <strong>{formatPrice(mandiRate?.avgPrice)}</strong>
+                <small>per quintal</small>
+              </div>
+              <div>
+                <span>Updated</span>
+                <strong>{formatDate(mandiRate?.arrivalDate)}</strong>
+                <small>{mandiRate?.status === "live" ? "Verified data loaded" : "Update in progress"}</small>
+              </div>
+            </div>
             <div className="hero-actions">
               <a className="btn primary" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon />
@@ -556,7 +581,15 @@ export default function App() {
       </main>
 
       <footer className="site-footer">
-        <p>&copy; 2026 Mandsaur Garlic. B2B garlic wholesale and sourcing.</p>
+        <div>
+          <strong>MandsaurGarlic.com</strong>
+          <p>&copy; 2026 B2B garlic wholesale, mandi rate and sourcing from Mandsaur.</p>
+        </div>
+        <nav className="footer-links" aria-label="SEO pages">
+          <a href="/mandsaur-garlic-mandi-rate/">Mandi Rate</a>
+          <a href="/garlic-wholesale-supplier/">Wholesale Supply</a>
+          <a href="/garlic-rate-prediction/">Rate Prediction</a>
+        </nav>
         <a className="footer-whatsapp" href={openDefaultWhatsapp} target="_blank" rel="noopener noreferrer">
           <WhatsAppIcon />
           WhatsApp Pe Baat Karo

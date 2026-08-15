@@ -1,5 +1,39 @@
 {
   "buildCommand": "npx vite build",
   "outputDirectory": "dist",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "mandsaurgarlic.com" }],
+      "destination": "https://www.mandsaurgarlic.com/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/mandsaur-garlic-mandi-rate", "destination": "/mandsaur-garlic-mandi-rate/index.html" },
+    { "source": "/mandsaur-garlic-mandi-rate/", "destination": "/mandsaur-garlic-mandi-rate/index.html" },
+    { "source": "/garlic-wholesale-supplier", "destination": "/garlic-wholesale-supplier/index.html" },
+    { "source": "/garlic-wholesale-supplier/", "destination": "/garlic-wholesale-supplier/index.html" },
+    { "source": "/garlic-rate-prediction", "destination": "/garlic-rate-prediction/index.html" },
+    { "source": "/garlic-rate-prediction/", "destination": "/garlic-rate-prediction/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*\\.(?:png|jpg|jpeg|svg|webp|woff2))",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/(mandi-rate|mandi-history|mandi-prediction).json",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, stale-while-revalidate=600" }]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    }
+  ]
 }

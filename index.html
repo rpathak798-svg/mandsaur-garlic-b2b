@@ -10,6 +10,9 @@
       content="Mandsaur Garlic is a B2B garlic wholesale supplier from Mandsaur, Madhya Pradesh with daily garlic mandi rate, AI rate prediction, graded lots, packing and dispatch support."
     />
     <link rel="canonical" href="https://www.mandsaurgarlic.com/" />
+    <link rel="alternate" hreflang="en-IN" href="https://www.mandsaurgarlic.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://www.mandsaurgarlic.com/" />
+    <link rel="preload" as="image" href="/garlic-b2b-hero.png" fetchpriority="high" />
     <link rel="icon" type="image/jpeg" href="/favicon.jpeg" />
     <link rel="apple-touch-icon" href="/mandsaur-garlic-logo.jpeg" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -52,6 +55,7 @@
               "addressCountry": "IN"
             },
             "areaServed": ["India", "Madhya Pradesh", "Mandsaur"],
+            "sameAs": ["https://wa.me/917772993222"],
             "knowsAbout": ["Mandsaur garlic", "garlic mandi rate", "bulk garlic supply", "graded garlic", "garlic wholesale"]
           },
           {
@@ -63,6 +67,41 @@
             "about": { "@id": "https://www.mandsaurgarlic.com/#business" },
             "primaryImageOfPage": "https://www.mandsaurgarlic.com/garlic-b2b-hero.png",
             "inLanguage": "en-IN"
+          },
+          {
+            "@type": "ItemList",
+            "@id": "https://www.mandsaurgarlic.com/#services",
+            "name": "Mandsaur Garlic B2B Services",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                  "@type": "Service",
+                  "name": "Bulk Garlic Supply",
+                  "provider": { "@id": "https://www.mandsaurgarlic.com/#business" },
+                  "areaServed": "India"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@type": "Service",
+                  "name": "Garlic Grading and Packing",
+                  "provider": { "@id": "https://www.mandsaurgarlic.com/#business" }
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@type": "Service",
+                  "name": "Garlic Dispatch Coordination",
+                  "provider": { "@id": "https://www.mandsaurgarlic.com/#business" }
+                }
+              }
+            ]
           },
           {
             "@type": "FAQPage",
