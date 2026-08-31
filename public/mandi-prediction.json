@@ -1,6 +1,6 @@
 {
   "status": "ready",
-  "generatedAtIso": "2026-08-31T08:47:15.513Z",
+  "generatedAtIso": "2026-08-31T09:58:41.274Z",
   "model": "Trend + seasonality + volatility",
   "sourceName": "Agmarknet",
   "sourceUrl": "https://agmarknet.gov.in/home",
@@ -9,7 +9,7 @@
     "avgPrice": 13500,
     "minPrice": 7600,
     "maxPrice": 26500,
-    "arrivals": 6.146000000000001
+    "arrivals": 0
   },
   "trendPercent": -9.272173324306026,
   "confidence": 81,
@@ -349,14 +349,14 @@
       "avgPrice": 7900,
       "minPrice": 7900,
       "maxPrice": 7900,
-      "arrivals": 0
+      "arrivals": 0.149
     },
     {
       "date": "2026-08-31",
       "avgPrice": 13500,
       "minPrice": 7600,
       "maxPrice": 26500,
-      "arrivals": 6.146000000000001
+      "arrivals": 0
     }
   ],
   "forecasts": [
