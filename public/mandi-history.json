@@ -5,7 +5,7 @@
   "unit": "Quintal",
   "sourceName": "Agmarknet",
   "sourceUrl": "https://agmarknet.gov.in/home",
-  "updatedAtIso": "2026-09-01T08:49:43.248Z",
+  "updatedAtIso": "2026-09-01T09:33:30.944Z",
   "note": "Historical mandi records used for trend-based AI-style rate prediction. Confirm final B2B deal rate on WhatsApp.",
   "records": [
     {
@@ -451,10 +451,10 @@
     },
     {
       "date": "2026-09-01",
-      "minPrice": 9600,
-      "maxPrice": 9600,
-      "avgPrice": 9600,
-      "arrivals": 0.431,
+      "minPrice": 6101,
+      "maxPrice": 17400,
+      "avgPrice": 11000,
+      "arrivals": 12.314,
       "variety": "Garlic",
       "grade": "Non-FAQ"
     }
