@@ -1,17 +1,17 @@
 {
   "status": "ready",
-  "generatedAtIso": "2026-09-24T07:43:12.527Z",
+  "generatedAtIso": "2026-09-24T08:38:05.700Z",
   "model": "Trend + seasonality + volatility",
   "sourceName": "Agmarknet",
   "sourceUrl": "https://agmarknet.gov.in/home",
   "latest": {
-    "date": "2026-09-23",
-    "avgPrice": 6000,
-    "minPrice": 3000,
-    "maxPrice": 28000,
+    "date": "2026-09-24",
+    "avgPrice": 10000,
+    "minPrice": 9000,
+    "maxPrice": 23400,
     "arrivals": 0
   },
-  "trendPercent": 0.47846889952152677,
+  "trendPercent": 12.74509803921569,
   "confidence": 82,
   "volatilityPercent": 18,
   "points": [
@@ -461,30 +461,37 @@
       "avgPrice": 6000,
       "minPrice": 3000,
       "maxPrice": 28000,
+      "arrivals": 189.656
+    },
+    {
+      "date": "2026-09-24",
+      "avgPrice": 10000,
+      "minPrice": 9000,
+      "maxPrice": 23400,
       "arrivals": 0
     }
   ],
   "forecasts": [
     {
       "days": 7,
-      "date": "2026-09-30",
-      "price": 6175,
-      "low": 5064,
-      "high": 7287
+      "date": "2026-10-01",
+      "price": 10837,
+      "low": 8887,
+      "high": 12788
     },
     {
       "days": 15,
-      "date": "2026-10-08",
-      "price": 6220,
-      "low": 4581,
-      "high": 7859
+      "date": "2026-10-09",
+      "price": 11993,
+      "low": 8833,
+      "high": 15153
     },
     {
       "days": 30,
-      "date": "2026-10-23",
-      "price": 6303,
-      "low": 3954,
-      "high": 8652
+      "date": "2026-10-24",
+      "price": 12500,
+      "low": 7842,
+      "high": 17158
     }
   ]
 }
