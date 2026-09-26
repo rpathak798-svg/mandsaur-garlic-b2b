@@ -7,12 +7,12 @@
   "unit": "Quintal",
   "minPrice": 3400,
   "maxPrice": 26601,
-  "avgPrice": 11000,
-  "kgPrice": 110,
+  "avgPrice": 8000,
+  "kgPrice": 80,
   "arrivalDate": "2026-09-24",
   "sourceName": "Agmarknet",
   "sourceUrl": "https://agmarknet.gov.in/home",
-  "updatedAtIso": "2026-09-25T08:03:02.617Z",
-  "previousAvgPrice": 10000,
+  "updatedAtIso": "2026-09-26T07:54:23.257Z",
+  "previousAvgPrice": 11000,
   "note": "Auto-updated from mandi data sources. Confirm final B2B deal rate on WhatsApp before dispatch."
 }
