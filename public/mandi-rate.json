@@ -6,13 +6,13 @@
   "state": "Madhya Pradesh",
   "unit": "Quintal",
   "minPrice": 1000,
-  "maxPrice": 16500,
-  "avgPrice": 8500,
-  "kgPrice": 85,
+  "maxPrice": 28300,
+  "avgPrice": 11000,
+  "kgPrice": 110,
   "arrivalDate": "2026-10-01",
   "sourceName": "Agmarknet",
   "sourceUrl": "https://agmarknet.gov.in/home",
-  "updatedAtIso": "2026-10-01T09:13:10.665Z",
-  "previousAvgPrice": 10800,
+  "updatedAtIso": "2026-10-01T10:21:21.496Z",
+  "previousAvgPrice": 8500,
   "note": "Auto-updated from mandi data sources. Confirm final B2B deal rate on WhatsApp before dispatch."
 }
