@@ -5,14 +5,14 @@
   "district": "Mandsaur",
   "state": "Madhya Pradesh",
   "unit": "Quintal",
-  "minPrice": 9852,
+  "minPrice": 4000,
   "maxPrice": 13052,
-  "avgPrice": 13052,
-  "kgPrice": 130.52,
+  "avgPrice": 6000,
+  "kgPrice": 60,
   "arrivalDate": "2026-10-08",
   "sourceName": "Agmarknet",
   "sourceUrl": "https://agmarknet.gov.in/home",
-  "updatedAtIso": "2026-10-08T10:49:10.955Z",
+  "updatedAtIso": "2026-10-08T11:33:48.770Z",
   "previousAvgPrice": 13052,
   "note": "Auto-updated from mandi data sources. Confirm final B2B deal rate on WhatsApp before dispatch."
 }
