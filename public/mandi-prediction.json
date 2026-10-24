@@ -1,6 +1,6 @@
 {
   "status": "ready",
-  "generatedAtIso": "2026-10-23T09:30:30.074Z",
+  "generatedAtIso": "2026-10-24T07:30:00.205Z",
   "model": "Trend + seasonality + volatility",
   "sourceName": "Agmarknet",
   "sourceUrl": "https://agmarknet.gov.in/home",
